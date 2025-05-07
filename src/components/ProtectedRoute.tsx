@@ -2,19 +2,20 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from "next/image";
 
-export default function Home() {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      router.push('/dashboard');
-    } else {
+    if (!token) {
       router.push('/login');
     }
   }, [router]);
 
-  return null;
-}
+  return <>{children}</>;
+} 

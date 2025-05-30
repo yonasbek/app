@@ -9,6 +9,7 @@ interface EditContactPageProps {
   params: {
     id: string;
   };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export default function EditContactPage({ params }: EditContactPageProps) {

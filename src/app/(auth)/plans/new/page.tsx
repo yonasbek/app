@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { planService } from '@/services/planService';
 import { CreatePlanDto } from '@/types/plan';
 import { PlanType } from '@/types/activity';
 
-export default function NewPlanPage() {
+function NewPlanContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const planType = searchParams.get('type') as PlanType;
@@ -164,5 +164,17 @@ export default function NewPlanPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function NewPlanPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+      </div>
+    }>
+      <NewPlanContent />
+    </Suspense>
   );
 } 

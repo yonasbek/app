@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Plan } from '@/types/plan';
 import { PlanType } from '@/types/activity';
 import { planService } from '@/services/planService';
 
-export default function PlansListPage() {
+function PlansListContent() {
   const searchParams = useSearchParams();
   const planType = searchParams.get('type') as PlanType;
   
@@ -171,5 +171,17 @@ export default function PlansListPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function PlansListPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+      </div>
+    }>
+      <PlansListContent />
+    </Suspense>
   );
 } 

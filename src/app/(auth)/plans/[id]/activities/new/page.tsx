@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { activityService } from '@/services/activityService';
 import { CreateActivityDto, PlanType } from '@/types/activity';
+import { use } from 'react';
 
-export default function NewActivityPage({ params }: { params: { id: string } }) {
+export default function NewActivityPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const resolvedParams = use(params);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -23,7 +25,7 @@ export default function NewActivityPage({ params }: { params: { id: string } }) 
     status: 'NOT_STARTED',
     remarks: '',
     supporting_documents: [],
-    plan_id: params.id,
+    plan_id: resolvedParams.id,
   });
 
   const handleChange = (
@@ -49,7 +51,7 @@ export default function NewActivityPage({ params }: { params: { id: string } }) 
 
     try {
       await activityService.create(formData, files);
-      router.push(`/plans/${params.id}/activities`);
+      router.push(`/plans/${resolvedParams.id}/activities`);
     } catch (err) {
       setError('Failed to create activity. Please try again.');
       console.error(err);

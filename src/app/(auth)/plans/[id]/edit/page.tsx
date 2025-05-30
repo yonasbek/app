@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { planService } from '@/services/planService';
 import { Plan, UpdatePlanDto } from '@/types/plan';
+import { use } from 'react';
 
-export default function EditPlanPage({ params }: { params: { id: string } }) {
+export default function EditPlanPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -23,7 +25,7 @@ export default function EditPlanPage({ params }: { params: { id: string } }) {
 
   const fetchPlan = async () => {
     try {
-      const plan = await planService.getById(params.id);
+      const plan = await planService.getById(resolvedParams.id);
       setFormData({
         title: plan.title,
         fiscal_year: plan.fiscal_year,
@@ -54,7 +56,7 @@ export default function EditPlanPage({ params }: { params: { id: string } }) {
     setError(null);
 
     try {
-      await planService.update(params.id, formData);
+      await planService.update(resolvedParams.id, formData);
       router.push('/plans');
     } catch (err) {
       setError('Failed to update plan. Please try again.');

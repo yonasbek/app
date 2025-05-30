@@ -6,8 +6,10 @@ import { Activity } from '@/types/activity';
 import { Plan } from '@/types/plan';
 import { activityService } from '@/services/activityService';
 import { planService } from '@/services/planService';
+import { use } from 'react';
 
-export default function PlanActivitiesPage({ params }: { params: { id: string } }) {
+export default function PlanActivitiesPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [plan, setPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,8 +23,8 @@ export default function PlanActivitiesPage({ params }: { params: { id: string } 
     try {
       setLoading(true);
       const [planData, activitiesData] = await Promise.all([
-        planService.getById(params.id),
-        activityService.getByPlanId(params.id)
+        planService.getById(resolvedParams.id),
+        activityService.getByPlanId(resolvedParams.id)
       ]);
       setPlan(planData);
       setActivities(activitiesData);
@@ -72,7 +74,7 @@ export default function PlanActivitiesPage({ params }: { params: { id: string } 
           </p>
         </div>
         <Link
-          href={`/plans/${params.id}/activities/new`}
+          href={`/plans/${resolvedParams.id}/activities/new`}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Add Activity
@@ -131,13 +133,13 @@ export default function PlanActivitiesPage({ params }: { params: { id: string } 
                     <div className="col-span-2">
                       <div className="flex space-x-2">
                         <Link
-                          href={`/plans/${params.id}/activities/${activity.id}/edit`}
+                          href={`/plans/${resolvedParams.id}/activities/${activity.id}/edit`}
                           className="text-sm text-blue-600 hover:text-blue-800"
                         >
                           Edit
                         </Link>
                         <Link
-                          href={`/plans/${params.id}/activities/${activity.id}`}
+                          href={`/plans/${resolvedParams.id}/activities/${activity.id}`}
                           className="text-sm text-gray-600 hover:text-gray-800"
                         >
                           View

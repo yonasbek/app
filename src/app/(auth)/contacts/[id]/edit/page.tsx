@@ -1,15 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import ContactForm, { ContactFormData } from '@/components/contact/ContactForm';
 import { contactService } from '@/services/contactService';
 
 interface EditContactPageProps {
-  params: {
-    id: string;
-  };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ id: string }>
 }
 
 export default function EditContactPage({ params }: EditContactPageProps) {
@@ -17,14 +14,14 @@ export default function EditContactPage({ params }: EditContactPageProps) {
   const [contact, setContact] = useState<ContactFormData | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
+  const resolvedParams = use(params);
   useEffect(() => {
     loadContact();
-  }, [params.id]);
+  }, [resolvedParams.id]);
 
   const loadContact = async () => {
     try {
-      const data = await contactService.getById(params.id);
+      const data = await contactService.getById(resolvedParams.id);
       setContact(data);
     } catch (error) {
       console.error('Error loading contact:', error);
@@ -38,7 +35,7 @@ export default function EditContactPage({ params }: EditContactPageProps) {
   const handleSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     try {
-      await contactService.update(params.id, data);
+      await contactService.update(resolvedParams.id, data);
       router.push('/contacts');
     } catch (error) {
       console.error('Error updating contact:', error);

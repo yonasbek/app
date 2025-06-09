@@ -68,7 +68,7 @@ export default function MemoDetail({ memoId }: MemoDetailProps) {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{memo.title}</h1>
+        <h1 className="text-2xl text-gray-900 font-bold">{memo.title}</h1>
         <div className="flex gap-2">
           {memo.status === MemoStatus.DRAFT && (
             <>

@@ -6,8 +6,8 @@ export default function KnowledgeBaseUpload({ onUpload }: { onUpload: () => void
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFile(e.target.files?.[0] || null);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | null) => {
+    setFile(e?.target.files?.[0] || null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -16,12 +16,16 @@ export default function KnowledgeBaseUpload({ onUpload }: { onUpload: () => void
     setIsUploading(true);
     try {
       await knowledgeBaseService.upload(file);
-      setFile(null);
-      onUpload();
+      // setFile(null);
+      // handleChange(null);
+      window.location.reload();
+      // onUpload();
     } catch (err) {
       alert('Failed to upload file');
     } finally {
       setIsUploading(false);
+      // handleChange(null);
+      // setFile(null);
     }
   };
 

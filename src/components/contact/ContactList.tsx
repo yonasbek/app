@@ -49,7 +49,7 @@ export default function ContactList() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Contacts</h1>
+        <h1 className="text-2xl text-gray-900 font-bold">Contacts</h1>
         <button
           onClick={() => router.push('/contacts/new')}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"

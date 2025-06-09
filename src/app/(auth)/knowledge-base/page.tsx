@@ -31,7 +31,7 @@ export default function KnowledgeBasePage() {
     const normalizedUrl = file.document_url.replace(/\\/g, '/')
     console.log('normalizedUrl', normalizedUrl);
     // const response = await fetch('http://localhost:3000/' + normalizedUrl);
-    window.open('http://localhost:3000/' + normalizedUrl, '_blank');
+    window.open('https://api-mo6f.onrender.com/' + normalizedUrl, '_blank');
     // const blob = await response.blob();
     // const url = window.URL.createObjectURL(new Blob([blob]));
     // const a = document.createElement('a');

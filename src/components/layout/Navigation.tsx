@@ -13,6 +13,7 @@ const menuItems = [
   { path: '/attendance', name: 'Attendance' },
   { path: '/rooms', name: 'Meeting Rooms' },
   { path: '/contacts', name: 'Contacts' },
+  { path: '/users', name: 'Users' },
 ];
 
 export default function Navigation() {

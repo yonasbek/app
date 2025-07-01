@@ -14,6 +14,7 @@ const menuItems = [
   { path: '/rooms', name: 'Meeting Rooms' },
   { path: '/contacts', name: 'Contacts' },
   { path: '/users', name: 'Users' },
+  { path: '/reports', name: 'Reports' },
 ];
 
 export default function Navigation() {

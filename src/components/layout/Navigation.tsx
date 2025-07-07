@@ -15,6 +15,7 @@ const menuItems = [
   { path: '/contacts', name: 'Contacts' },
   { path: '/users', name: 'Users' },
   { path: '/reports', name: 'Reports' },
+  {path:'/my-tasks', name: 'My Tasks'}
 ];
 
 export default function Navigation() {

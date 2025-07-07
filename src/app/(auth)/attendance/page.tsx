@@ -186,7 +186,13 @@ export default function AttendancePage() {
         <div className="space-y-6">
           {activeTab === 'checkin' && (
             <div className="space-y-6">
-              <ManualAttendancePanel users={users} loading={loading} />
+              <ManualAttendancePanel 
+              onAttendanceUpdate={() => {}}
+              // users={users} 
+              // loading={loading} 
+              // currentUser={currentUser}
+              // isManager={isManager}
+              />
             </div>
           )}
 
@@ -195,7 +201,7 @@ export default function AttendancePage() {
               <AttendanceFilters 
                 onFiltersChange={handleFilterChange} 
                 users={users}
-                loading={loading}
+                // loading={loading}
               />
               <AttendanceRecords filters={filters} onRecordUpdate={handleRecordUpdate} />
             </div>
@@ -210,15 +216,15 @@ export default function AttendancePage() {
 
           {activeTab === 'reports' && (isManager || isAdmin) && (
             <MonthlyReports 
-              currentUser={currentUser}
-              isManager={isManager}
+              // currentUser={currentUser}
+              // isManager={isManager}
             />
           )}
 
           {activeTab === 'bulk' && isAdmin && (
             <BulkOperations 
-              currentUser={currentUser}
-              isAdmin={isAdmin}
+              // currentUser={currentUser}
+              // isAdmin={isAdmin}
             />
           )}
 

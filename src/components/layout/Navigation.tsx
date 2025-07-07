@@ -7,7 +7,8 @@ import { useState } from 'react';
 const menuItems = [
   { path: '/dashboard', name: 'Dashboard' },
   { path: '/plans', name: 'Annual Plans' },
-  { path: '/indicators', name: 'Medical Indicators' },
+  {path:'/my-tasks', name: 'My Tasks'},
+  // { path: '/indicators', name: 'Medical Indicators' },
   { path: '/knowledge-base', name: 'Knowledge Base' },
   { path: '/memos', name: 'Memos & Proposals' },
   { path: '/attendance', name: 'Attendance' },
@@ -15,7 +16,6 @@ const menuItems = [
   { path: '/contacts', name: 'Contacts' },
   { path: '/users', name: 'Users' },
   { path: '/reports', name: 'Reports' },
-  {path:'/my-tasks', name: 'My Tasks'}
 ];
 
 export default function Navigation() {

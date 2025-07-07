@@ -1,4 +1,4 @@
-export type PlanType = 'PFRD' | 'ECCD' | 'HDD' | 'SRD';
+export type PlanType = 'PFRD' | 'ECCD' | 'HDD' | 'SRD' | 'LEO';
 
 export interface Activity {
   id: string;

@@ -23,6 +23,11 @@ const planTypes: { type: PlanType; title: string; description: string }[] = [
     type: 'SRD',
     title: 'Specialty & Rehabilitative Services Plan',
     description: 'Planning for specialty care and rehabilitation services'
+  },
+  {
+    type: 'LEO',
+    title: 'Lead Executive Officer Plan',
+    description: 'Strategic planning and management for lead executive officer initiatives'
   }
 ];
 

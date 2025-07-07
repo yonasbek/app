@@ -56,6 +56,7 @@ function PlansListContent() {
       case 'ECCD': return 'Emergency & Critical Care Development Plan';
       case 'HDD': return 'Hospital Development Directorate Plan';
       case 'SRD': return 'Specialty & Rehabilitative Services Plan';
+      case 'LEO': return 'Lead Executive Officer Plan';
     }
   };
 

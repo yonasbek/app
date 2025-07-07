@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { attendanceService } from '@/services/attendanceService';
 import { AttendanceRecord, User } from '@/types/attendance';
-import { Clock, User as UserIcon, CheckCircle, XCircle, Calendar, Edit } from 'lucide-react';
+import { Edit } from 'lucide-react';
 
 interface ManualAttendancePanelProps {
   users: User[];
@@ -19,6 +19,8 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
   const [checkInTime, setCheckInTime] = useState('');
   const [checkOutTime, setCheckOutTime] = useState('');
   const [leaveReason, setLeaveReason] = useState('');
+  const leaveTypes = ["Sick Leave", "Vacation", "Work from Home", "Holiday", "Maternity Leave", "Bereavement Leave"];
+  const [leaveType, setLeaveType] = useState(leaveTypes[0]);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const fetchUserTodayAttendance = useCallback(async () => {
@@ -91,22 +93,47 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
     }
   };
   
-  const handleMarkOnLeave = async () => {
-    if (!selectedUser || !leaveReason) {
-      alert('Please select a user and provide a reason for the leave.');
+  const handleLeaveSubmit = async () => {
+    if (!selectedUser) {
+      alert('Please select a user.');
       return;
     }
 
     setIsProcessing(true);
     try {
-      await attendanceService.markOnLeave(selectedUser, leaveReason, selectedDate);
+      const startDate = new Date(selectedDate);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(selectedDate);
+      endDate.setHours(23, 59, 59, 999);
 
-      alert('User marked as on leave successfully!');
+      const status = leaveType === 'Holiday' ? 'holiday' : 'leave';
+
+      const leaveData = {
+        user_id: selectedUser,
+        status: status,
+        check_in: {
+          timestamp: startDate.toISOString(),
+          location: { latitude: 0, longitude: 0, address: "N/A" },
+          notes: ""
+        },
+        check_out: {
+          timestamp: endDate.toISOString(),
+          location: { latitude: 0, longitude: 0, address: "N/A" },
+          notes: ""
+        },
+        leave_type: leaveType,
+        leave_reason: leaveReason
+      };
+
+      await attendanceService.submitLeaveRequest(leaveData);
+
+      alert('Leave request submitted successfully!');
       fetchUserTodayAttendance();
       setLeaveReason('');
+      setLeaveType(leaveTypes[0]);
     } catch (error) {
-      console.error('Marking on leave failed:', error);
-      alert('Failed to mark user as on leave.');
+      console.error('Leave request failed:', error);
+      alert('Failed to submit leave request.');
     } finally {
       setIsProcessing(false);
     }
@@ -201,24 +228,35 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
           </div>
           
           {/* On Leave Section */}
-          <div>
-             <label htmlFor="leave-reason" className="block text-sm font-medium text-gray-700">Mark as On Leave</label>
-             <input 
-                type="text" 
-                id="leave-reason"
-                value={leaveReason}
-                onChange={(e) => setLeaveReason(e.target.value)}
-                placeholder="Reason for leave"
-                className="w-full p-2 border border-gray-300 rounded-md mt-1 bg-white text-gray-900 focus:ring-blue-500 focus:border-blue-500"
-                disabled={!!userTodayAttendance}
-              />
-              <button 
-                onClick={handleMarkOnLeave}
-                disabled={isProcessing || !!userTodayAttendance}
-                className="mt-2 w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50"
-              >
-                Mark as On Leave
-              </button>
+          <div className="space-y-2">
+            <label htmlFor="leave-type" className="block text-sm font-medium text-gray-700">Mark as On Leave</label>
+            <select
+              id="leave-type"
+              value={leaveType}
+              onChange={(e) => setLeaveType(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+              disabled={!!userTodayAttendance}
+            >
+              {leaveTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+            <input 
+              type="text" 
+              id="leave-reason"
+              value={leaveReason}
+              onChange={(e) => setLeaveReason(e.target.value)}
+              placeholder="Reason for leave (optional)"
+              className="w-full p-2 border border-gray-300 rounded-md mt-1 bg-white text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+              disabled={!!userTodayAttendance}
+            />
+            <button 
+              onClick={handleLeaveSubmit}
+              disabled={isProcessing || !!userTodayAttendance}
+              className="mt-2 w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50"
+            >
+              Submit Leave Request
+            </button>
           </div>
         </div>
       )}

@@ -585,19 +585,25 @@ class AttendanceService {
 
   async markOnLeave(userId: string, reason: string, date: string): Promise<any> {
     try {
-      // In a real app, this would be a dedicated, secure endpoint.
-      // e.g., POST /attendance/mark-on-leave
-      console.log(`[Frontend Only] Simulating marking user ${userId} on leave on ${date} for: ${reason}`);
-      
-      const response = await api.post(`${this.baseUrl}/request-leave`, {
-        user_id: userId, // Backend must be able to handle this
-        leave_type: 'Full Day',
-        leave_reason: reason,
-        timestamp: new Date(date).toISOString()
+      const response = await api.post(`${this.baseUrl}/mark-on-leave`, {
+        user_id: userId,
+        date: date,
+        status: 'On Leave',
+        notes: reason,
       });
       return response.data;
     } catch (error) {
       console.error('Error marking user on leave:', error);
+      throw error;
+    }
+  }
+
+  async submitLeaveRequest(leaveData: any): Promise<any> {
+    try {
+      const response = await api.post(`${this.baseUrl}/leave`, leaveData);
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting leave request:', error);
       throw error;
     }
   }

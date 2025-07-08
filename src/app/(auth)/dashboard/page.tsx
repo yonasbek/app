@@ -9,6 +9,11 @@ const modules = [
     description: 'Track and manage annual plans and activities'
   },
   { 
+    path: '/my-tasks', 
+    name: 'My Tasks',
+    description: 'View and update your assigned subactivities'
+  },
+  { 
     path: '/indicators', 
     name: 'Medical Indicators',
     description: 'Monitor medical service performance indicators'

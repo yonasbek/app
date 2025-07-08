@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, AttendanceFilters as IAttendanceFilters } from '@/types/attendance';
 import { attendanceService } from '@/services/attendanceService';
 
@@ -16,20 +16,6 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [departments, setDepartments] = useState<string[]>([]);
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  // Memoize the filter application to prevent infinite loops
-  const applyFilters = useCallback(() => {
-    const filters: IAttendanceFilters = {};
-    
-    if (selectedUser) filters.userId = selectedUser;
-    if (startDate) filters.startDate = startDate;
-    if (endDate) filters.endDate = endDate;
-    if (selectedStatus) filters.status = selectedStatus;
-    if (selectedDepartment) filters.department = selectedDepartment;
-
-    onFiltersChange(filters);
-  }, [selectedUser, startDate, endDate, selectedStatus, selectedDepartment, onFiltersChange]);
 
   useEffect(() => {
     const loadDepartments = async () => {
@@ -56,7 +42,6 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
     
     setStartDate(startDateStr);
     setEndDate(endDateStr);
-    // Initial load is now manual, so no need to set isInitialized
   }, [users]);
 
   const handleApplyFilters = () => {
@@ -75,14 +60,9 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
     setSelectedUser('');
     setSelectedStatus('');
     setSelectedDepartment('');
-    
-    // Reset to current month but keep date range
-    const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    
-    setStartDate(firstDay.toISOString().split('T')[0]);
-    setEndDate(lastDay.toISOString().split('T')[0]);
+    setStartDate('');
+    setEndDate('');
+    onFiltersChange({});
   };
 
   const setQuickDateRange = (range: 'today' | 'week' | 'month') => {
@@ -124,7 +104,7 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
           <select
             value={selectedUser}
             onChange={(e) => setSelectedUser(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           >
             <option value="">All Employees</option>
             {users.map((user) => (
@@ -145,7 +125,7 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           />
         </div>
 
@@ -159,7 +139,7 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           />
         </div>
 
@@ -171,13 +151,14 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           >
             <option value="">All Status</option>
             <option value="present">Present</option>
             <option value="absent">Absent</option>
             <option value="late">Late</option>
             <option value="early_departure">Early Departure</option>
+            <option value="on_leave">On Leave</option>
           </select>
         </div>
 
@@ -189,7 +170,7 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
           <select
             value={selectedDepartment}
             onChange={(e) => setSelectedDepartment(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           >
             <option value="">All Departments</option>
             {departments.map((dept) => (
@@ -246,9 +227,7 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
       </div>
       
       {/* Note about required fields */}
-      <div className="mt-4 text-xs text-gray-500">
-        <span className="text-red-500">*</span> Required fields for backend API
-      </div>
+      
     </div>
   );
 } 

@@ -227,9 +227,10 @@ export default function UserAttendancePage() {
                         record.status === 'present' ? 'bg-green-100 text-green-800' :
                         record.status === 'absent' ? 'bg-red-100 text-red-800' :
                         record.status === 'late' ? 'bg-yellow-100 text-yellow-800' :
+                        (record.status === 'on_leave' || record.status === 'leave' || record.status === 'holiday') ? 'bg-purple-100 text-purple-800' :
                         'bg-orange-100 text-orange-800'
                       }`}>
-                        {record.status.replace('_', ' ').toUpperCase()}
+                        {(record.status === 'on_leave' || record.status === 'leave' || record.status === 'holiday') && record.leaveType ? record.leaveType : record.status.replace('_', ' ').toUpperCase()}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

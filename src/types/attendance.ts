@@ -32,7 +32,7 @@ export interface AttendanceRecord {
   date: string;
   checkInTime: string;
   checkOutTime?: string;
-  status: 'present' | 'absent' | 'late' | 'early_departure' | 'on_leave';
+  status: 'present' | 'absent' | 'late' | 'early_departure' | 'on_leave' | 'leave' | 'holiday';
   workHours?: number;
   notes?: string;
   location?: {
@@ -41,6 +41,8 @@ export interface AttendanceRecord {
   };
   breakTime?: number;
   overtimeHours?: number;
+  leaveType?: string;
+  leaveReason?: string;
 }
 
 export interface AttendanceStats {

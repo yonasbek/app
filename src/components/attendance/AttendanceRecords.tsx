@@ -2,19 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { AttendanceRecord } from '@/types/attendance';
+import { AttendanceRecord, User } from '@/types/attendance';
 import { attendanceService } from '@/services/attendanceService';
 
 interface AttendanceRecordsProps {
   onRecordUpdate: () => void;
-  filters: any;
+  filters: Record<string, unknown>;
 }
 
 export default function AttendanceRecords({ onRecordUpdate, filters }: AttendanceRecordsProps) {
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingRecord, setEditingRecord] = useState<string | null>(null);
-  const [editNotes, setEditNotes] = useState('');
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -58,12 +56,24 @@ export default function AttendanceRecords({ onRecordUpdate, filters }: Attendanc
     return `${hours.toFixed(1)}h`;
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, leaveType?: string) => {
+    // For leave statuses, show the specific leave type if available
+    if ((status === 'leave' || status === 'on_leave' || status === 'holiday') && leaveType) {
+      return (
+        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+          {leaveType}
+        </span>
+      );
+    }
+
     const statusConfig = {
       present: { color: 'bg-green-100 text-green-800', label: 'Present' },
       absent: { color: 'bg-red-100 text-red-800', label: 'Absent' },
       late: { color: 'bg-yellow-100 text-yellow-800', label: 'Late' },
-      early_departure: { color: 'bg-orange-100 text-orange-800', label: 'Early Departure' }
+      early_departure: { color: 'bg-orange-100 text-orange-800', label: 'Early Departure' },
+      on_leave: { color: 'bg-purple-100 text-purple-800', label: 'On Leave' },
+      leave: { color: 'bg-purple-100 text-purple-800', label: 'Leave' },
+      holiday: { color: 'bg-purple-100 text-purple-800', label: 'Holiday' }
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || 
@@ -76,7 +86,7 @@ export default function AttendanceRecords({ onRecordUpdate, filters }: Attendanc
     );
   };
 
-  const getUserInitials = (user: any) => {
+  const getUserInitials = (user: User | undefined) => {
     if (!user) return 'U';
     
     if (!user.name || user.name.trim() === '') {
@@ -92,31 +102,9 @@ export default function AttendanceRecords({ onRecordUpdate, filters }: Attendanc
       .substring(0, 2); // Limit to 2 characters max
   };
 
-  const getUserDisplayName = (user: any) => {
+  const getUserDisplayName = (user: User | undefined) => {
     if (!user) return 'Unknown User';
     return user.name || user.email || 'Unknown User';
-  };
-
-  const handleEditNotes = (record: AttendanceRecord) => {
-    setEditingRecord(record.id);
-    setEditNotes(record.notes || '');
-  };
-
-  const handleSaveNotes = async (recordId: string) => {
-    try {
-      await attendanceService.updateAttendance(recordId, { notes: editNotes });
-      setEditingRecord(null);
-      setEditNotes('');
-      onRecordUpdate();
-    } catch (error) {
-      console.error('Failed to update notes:', error);
-      alert('Failed to update notes. Please try again.');
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingRecord(null);
-    setEditNotes('');
   };
 
   const handleDeleteRecord = async (recordId: string) => {
@@ -231,45 +219,15 @@ export default function AttendanceRecords({ onRecordUpdate, filters }: Attendanc
                   {calculateWorkHours(record.checkInTime, record.checkOutTime)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {getStatusBadge(record.status)}
+                  {getStatusBadge(record.status, record.leaveType)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs">
-                  {editingRecord === record.id ? (
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={editNotes}
-                        onChange={(e) => setEditNotes(e.target.value)}
-                        className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
-                        placeholder="Add notes..."
-                      />
-                      <button
-                        onClick={() => handleSaveNotes(record.id)}
-                        className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={handleCancelEdit}
-                        className="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="truncate">
-                      {record.notes || '-'}
-                    </div>
-                  )}
+                  <div className="truncate">
+                    {record.notes || '-'}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEditNotes(record)}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      Edit Notes
-                    </button>
                     <button
                       onClick={() => handleDeleteRecord(record.id)}
                       className="text-red-600 hover:text-red-900"

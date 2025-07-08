@@ -98,7 +98,7 @@ class AttendanceService {
       const response = await api.get(url);
       
       // Step 3: Transform API response and enrich with user data
-      return response.data.map((record: any) => {
+      let records = response.data.map((record: any) => {
         const user = userMap.get(record.user_id) || record.user;
         return {
           id: record.id,
@@ -115,9 +115,16 @@ class AttendanceService {
             checkOut: record.check_out?.location?.address
           },
           breakTime: 0, // Not provided by API
-          overtimeHours: record.work_hours > 8 ? record.work_hours - 8 : 0
+          overtimeHours: record.work_hours > 8 ? record.work_hours - 8 : 0,
+          leaveType: record.leave_type || record.leaveType || null,
+          leaveReason: record.leave_reason || record.leaveReason || null
         };
       });
+      // Client-side department filter
+      if (filters.department) {
+        records = records.filter(r => r.user?.department === filters.department);
+      }
+      return records;
     } catch (error) {
       console.error('Error fetching attendance records:', error);
       throw error;
@@ -145,7 +152,9 @@ class AttendanceService {
           checkOut: record.check_out?.location?.address
         },
         breakTime: 0,
-        overtimeHours: record.work_hours > 8 ? record.work_hours - 8 : 0
+        overtimeHours: record.work_hours > 8 ? record.work_hours - 8 : 0,
+        leaveType: record.leave_type || record.leaveType || null,
+        leaveReason: record.leave_reason || record.leaveReason || null
       };
     } catch (error) {
       console.error('Error fetching attendance record:', error);

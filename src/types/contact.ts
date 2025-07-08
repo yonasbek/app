@@ -64,16 +64,17 @@ export interface ContactFormData {
 
 export interface ContactSuggestion {
   id: string;
-  type: SuggestionType;
+  suggestionType: SuggestionType;
   status: SuggestionStatus;
-  contactId?: string;
+  contact_id?: string;
   existingData?: Partial<Contact>;
-  suggestedData: Partial<Contact>;
+  suggestedChanges: Partial<Contact>;
   reason?: string;
   adminComment?: string;
-  createdByUser: {
+  suggestedBy: {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
   };
   reviewedByUser?: {
@@ -81,14 +82,14 @@ export interface ContactSuggestion {
     name: string;
     email: string;
   };
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ContactSuggestionFormData {
-  type: SuggestionType;
-  contactId?: string;
-  suggestedData: Partial<ContactFormData>;
+  suggestionType: SuggestionType;
+  contact_id?: string;
+  suggestedChanges: Partial<ContactFormData>;
   reason?: string;
 }
 

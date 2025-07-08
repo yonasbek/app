@@ -63,6 +63,12 @@ const CheckIcon = () => (
   </svg>
 );
 
+const SuggestIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
 export default function ContactsPage() {
   const router = useRouter();
   const [searchResponse, setSearchResponse] = useState<ContactSearchResponse>({
@@ -174,6 +180,20 @@ export default function ContactsPage() {
           <p className="text-gray-600 mt-1">Manage healthcare organization contacts</p>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={() => router.push('/contacts/suggestions')}
+            className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700"
+          >
+            View Suggestions
+          </button>
+          {!isAdmin && (
+            <button
+              onClick={() => router.push('/contacts/suggest-new')}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Suggest New Contact
+            </button>
+          )}
           {isAdmin && (
             <>
               <button
@@ -316,11 +336,9 @@ export default function ContactsPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                {isAdmin && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                )}
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -383,24 +401,32 @@ export default function ContactsPage() {
                       {contact.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
-                  {isAdmin && (
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => router.push(`/contacts/${contact.id}/edit`)}
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          <EditIcon />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(contact.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <TrashIcon />
-                        </button>
-                      </div>
-                    </td>
-                  )}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex gap-2">
+                      {isAdmin && (
+                        <>
+                          <button
+                            onClick={() => router.push(`/contacts/${contact.id}/edit`)}
+                            className="text-indigo-600 hover:text-indigo-900"
+                          >
+                            <EditIcon />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(contact.id)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            <TrashIcon />
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={() => router.push(`/contacts/${contact.id}/suggest`)}
+                        className="text-yellow-600 hover:text-yellow-900"
+                      >
+                        <SuggestIcon />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

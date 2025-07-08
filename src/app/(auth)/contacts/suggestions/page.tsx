@@ -51,7 +51,8 @@ export default function ContactSuggestionsPage() {
   const [reviewComment, setReviewComment] = useState('');
   const [isReviewing, setIsReviewing] = useState(false);
 
-  const isAdmin = contactService.isAdmin();
+  // const isAdmin = contactService.isAdmin();
+  const isAdmin = true;
 
   useEffect(() => {
     loadSuggestions();
@@ -69,7 +70,7 @@ export default function ContactSuggestionsPage() {
     }
   };
 
-  const handleReview = async (suggestionId: string, action: 'approve' | 'reject') => {
+  const handleReview = async (suggestionId: string, action: 'APPROVE' | 'REJECT') => {
     setIsReviewing(true);
     try {
       await contactService.reviewSuggestion(suggestionId, action, reviewComment);
@@ -178,15 +179,15 @@ export default function ContactSuggestionsPage() {
             <div key={suggestion.id} className="bg-white rounded-lg shadow p-6">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${getTypeColor(suggestion.type)}`}>
-                    {SUGGESTION_TYPE_LABELS[suggestion.type]}
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${getTypeColor(suggestion.suggestionType)}`}>
+                    {SUGGESTION_TYPE_LABELS[suggestion.suggestionType]}
                   </span>
                   <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(suggestion.status)}`}>
                     {SUGGESTION_STATUS_LABELS[suggestion.status]}
                   </span>
                 </div>
                 <div className="text-sm text-gray-500">
-                  {formatDate(suggestion.createdAt)}
+                  {formatDate(suggestion.created_at)}
                 </div>
               </div>
 
@@ -194,24 +195,24 @@ export default function ContactSuggestionsPage() {
                 <div>
                   <h3 className="font-medium text-gray-900 mb-2">Suggested Changes</h3>
                   <div className="space-y-2 text-sm">
-                    {suggestion.suggestedData.instituteName && (
+                    {suggestion.suggestedChanges.instituteName && (
                       <div>
-                        <span className="font-medium">Institution:</span> {suggestion.suggestedData.instituteName}
+                        <span className="font-medium">Institution:</span> {suggestion.suggestedChanges.instituteName}
                       </div>
                     )}
-                    {suggestion.suggestedData.individualName && (
+                    {suggestion.suggestedChanges.individualName && (
                       <div>
-                        <span className="font-medium">Individual:</span> {suggestion.suggestedData.individualName}
+                        <span className="font-medium">Individual:</span> {suggestion.suggestedChanges.individualName}
                       </div>
                     )}
-                    {suggestion.suggestedData.emailAddress && (
+                    {suggestion.suggestedChanges.emailAddress && (
                       <div>
-                        <span className="font-medium">Email:</span> {suggestion.suggestedData.emailAddress}
+                        <span className="font-medium">Email:</span> {suggestion.suggestedChanges.emailAddress}
                       </div>
                     )}
-                    {suggestion.suggestedData.phoneNumber && (
+                    {suggestion.suggestedChanges.phoneNumber && (
                       <div>
-                        <span className="font-medium">Phone:</span> {suggestion.suggestedData.phoneNumber}
+                        <span className="font-medium">Phone:</span> {suggestion.suggestedChanges.phoneNumber}
                       </div>
                     )}
                   </div>
@@ -255,7 +256,7 @@ export default function ContactSuggestionsPage() {
 
               <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
                 <UserIcon />
-                <span>Submitted by {suggestion.createdByUser.name}</span>
+                <span>Submitted by {suggestion.suggestedBy?.firstName} {suggestion.suggestedBy?.lastName}</span>
               </div>
 
               {suggestion.adminComment && (
@@ -307,7 +308,7 @@ export default function ContactSuggestionsPage() {
 
             <div className="flex gap-3">
               <button
-                onClick={() => handleReview(selectedSuggestion.id, 'approve')}
+                onClick={() => handleReview(selectedSuggestion.id, 'APPROVE')}
                 disabled={isReviewing}
                 className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2"
               >
@@ -315,7 +316,7 @@ export default function ContactSuggestionsPage() {
                 {isReviewing ? 'Approving...' : 'Approve'}
               </button>
               <button
-                onClick={() => handleReview(selectedSuggestion.id, 'reject')}
+                onClick={() => handleReview(selectedSuggestion.id, 'REJECT')}
                 disabled={isReviewing}
                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2"
               >

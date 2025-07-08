@@ -100,9 +100,14 @@ class ContactService {
     }
   }
 
-  async reviewSuggestion(id: string, action: 'approve' | 'reject', comment?: string): Promise<ContactSuggestion> {
+  async reviewSuggestion(id: string, action: 'APPROVE' | 'REJECT', comment?: string): Promise<ContactSuggestion> {
     try {
-      const response = await api.patch(`${this.baseUrl}/suggestions/${id}/review`, { action, comment });
+      // Map frontend action to backend status
+      const status = action === 'APPROVE' ? 'APPROVED' : 'REJECTED';
+      const response = await api.patch(`${this.baseUrl}/suggestions/${id}/review`, { 
+        status, 
+        reviewNotes: comment 
+      });
       return response.data;
     } catch (error) {
       console.error('Error reviewing suggestion:', error);
@@ -160,9 +165,15 @@ class ContactService {
 
   // Helper method to determine if user is admin (you may need to adjust this based on your auth system)
   isAdmin(): boolean {
-    // This should be implemented based on your auth system
-    // For now, returning true - you'll need to implement proper role checking
-    return true;
+    // Check if user role is stored in localStorage or sessionStorage
+    try {
+      const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+      return userRole === 'admin' || userRole === 'administrator';
+    } catch (error) {
+      // Fallback: assume admin for now (should be updated when proper auth is implemented)
+      console.warn('Unable to determine user role, defaulting to admin');
+      return true;
+    }
   }
 }
 

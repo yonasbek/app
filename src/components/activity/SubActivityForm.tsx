@@ -47,7 +47,7 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
         user_id: subActivity.user_id || '',
         start_date: subActivity.start_date ? new Date(subActivity.start_date).toISOString().split('T')[0] : '',
         end_date: subActivity.end_date ? new Date(subActivity.end_date).toISOString().split('T')[0] : '',
-        priority: subActivity.priority || 'MEDIUM',
+        priority: subActivity.priority as 'HIGH' | 'MEDIUM' | 'LOW' || 'MEDIUM' as ``,
         notes: subActivity.notes || ''
       });
     }

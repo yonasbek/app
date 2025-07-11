@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { AttendanceRecord, User } from '@/types/attendance';
+import { AttendanceRecord, AttendanceFilters as AttendanceFiltersType, User } from '@/types/attendance';
 import { attendanceService } from '@/services/attendanceService';
 
 interface AttendanceRecordsProps {
   onRecordUpdate: () => void;
-  filters: Record<string, unknown>;
+  filters: AttendanceFiltersType;
 }
 
 export default function AttendanceRecords({ onRecordUpdate, filters }: AttendanceRecordsProps) {

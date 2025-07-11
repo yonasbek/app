@@ -43,9 +43,11 @@ export default function UserAttendancePage() {
 
       // Get attendance statistics
       const userStats = await attendanceService.getAttendanceStats(
-        userId,
-        dateRange.startDate,
-        dateRange.endDate
+        {
+          userId,
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate
+        }
       );
       setStats(userStats);
     } catch (error) {

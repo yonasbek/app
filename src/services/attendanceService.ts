@@ -122,7 +122,7 @@ class AttendanceService {
       });
       // Client-side department filter
       if (filters.department) {
-        records = records.filter(r => r.user?.department === filters.department);
+        records = records.filter((r: any) => r.user?.department === filters.department);
       }
       return records;
     } catch (error) {
@@ -165,7 +165,7 @@ class AttendanceService {
   // ==================== CHECK IN/OUT OPERATIONS ====================
 
   // Check in - User ID is extracted from JWT token automatically
-  async checkIn(notes?: string, location?: { latitude: number; longitude: number; address?: string }): Promise<AttendanceRecord> {
+  async checkIn(notes?: string, location?: { latitude?: number; longitude?: number; address?: string }): Promise<AttendanceRecord> {
     try {
       const checkInData = {
         check_in: {

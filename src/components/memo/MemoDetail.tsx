@@ -10,16 +10,16 @@ interface MemoDetailProps {
 }
 
 const statusColors = {
-  [MemoStatus.DRAFT]: 'bg-gray-500',
-  [MemoStatus.PENDING]: 'bg-yellow-500',
+  [MemoStatus.DRAFT]: 'bg-neutral-500',
+  [MemoStatus.PENDING]: 'bg-amber-500',
   [MemoStatus.APPROVED]: 'bg-green-500',
   [MemoStatus.REJECTED]: 'bg-red-500',
 };
 
 const priorityColors = {
-  [PriorityLevel.NORMAL]: 'bg-blue-500',
+  [PriorityLevel.NORMAL]: 'bg-app-primary',
   [PriorityLevel.URGENT]: 'bg-orange-500',
-  [PriorityLevel.CONFIDENTIAL]: 'bg-purple-500',
+  [PriorityLevel.CONFIDENTIAL]: 'bg-app-primary-light',
 };
 
 export default function MemoDetail({ memoId }: MemoDetailProps) {
@@ -49,7 +49,7 @@ export default function MemoDetail({ memoId }: MemoDetailProps) {
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this memo?')) return;
-    
+
     try {
       await memoService.delete(memoId);
       router.push('/memos');
@@ -68,17 +68,17 @@ export default function MemoDetail({ memoId }: MemoDetailProps) {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl text-gray-900 font-bold">{memo.title}</h1>
+        <h1 className="text-2xl text-app-foreground font-bold">{memo.title}</h1>
         <div className="flex gap-2">
           {memo.status === MemoStatus.DRAFT && (
             <>
-              <button 
+              <button
                 onClick={handleEdit}
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
               >
                 Edit
               </button>
-              <button 
+              <button
                 onClick={handleDelete}
                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
               >
@@ -86,7 +86,7 @@ export default function MemoDetail({ memoId }: MemoDetailProps) {
               </button>
             </>
           )}
-          <button 
+          <button
             onClick={() => router.push('/memos')}
             className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
           >
@@ -109,7 +109,7 @@ export default function MemoDetail({ memoId }: MemoDetailProps) {
             </div>
             <div className="flex justify-between">
               <span className="font-semibold">Date of Issue:</span>
-              <span>{memo.date_of_issue.toLocaleDateString()}</span>
+              <span>{new Date(memo.date_of_issue).toLocaleDateString()}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-semibold">Priority:</span>
@@ -148,7 +148,7 @@ export default function MemoDetail({ memoId }: MemoDetailProps) {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     <span>{recipient.name}</span>
-                    <span className="text-gray-500">({recipient.department})</span>
+                    <span className="text-neutral-500">({recipient.department})</span>
                   </div>
                 ))}
               </div>
@@ -181,7 +181,7 @@ export default function MemoDetail({ memoId }: MemoDetailProps) {
                   <span>{fileName}</span>
                 </div>
                 <button
-                  className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100"
+                  className="px-3 py-1 border border-app-secondary rounded hover:bg-app-accent"
                   onClick={() => handleDownloadAttachment(fileName)}
                 >
                   Download
@@ -203,7 +203,7 @@ export default function MemoDetail({ memoId }: MemoDetailProps) {
               >
                 <div>
                   <div className="font-semibold">{signature.signer_name}</div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-neutral-500">
                     {signature.signed_at.toLocaleDateString()}
                   </div>
                   {signature.comments && (
@@ -211,9 +211,8 @@ export default function MemoDetail({ memoId }: MemoDetailProps) {
                   )}
                 </div>
                 <span
-                  className={`px-2 py-1 rounded text-white ${
-                    signature.action === 'APPROVE' ? 'bg-green-500' : 'bg-red-500'
-                  }`}
+                  className={`px-2 py-1 rounded text-white ${signature.action === 'APPROVE' ? 'bg-green-500' : 'bg-red-500'
+                    }`}
                 >
                   {signature.action}
                 </span>

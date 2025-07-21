@@ -23,6 +23,9 @@ export default function TopBar({ onSidebarToggle, sidebarCollapsed, isMobileMenu
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showFullContent, setShowFullContent] = useState(false);
     const router = useRouter();
+    const fullName = JSON.parse(localStorage.getItem('fullName') || '{}');
+    const email = JSON.parse(localStorage.getItem('email') || '{}');
+    const role = JSON.parse(localStorage.getItem('role') || '{}');
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -109,8 +112,8 @@ export default function TopBar({ onSidebarToggle, sidebarCollapsed, isMobileMenu
                                 <User className="w-4 h-4 text-white" />
                             </div>
                             <div className="hidden sm:block text-left">
-                                <p className="text-sm font-medium text-neutral-800">John Doe</p>
-                                <p className="text-xs text-neutral-500">Administrator</p>
+                                <p className="text-sm font-medium text-neutral-800">{fullName}</p>
+                                <p className="text-xs text-neutral-500">{role}</p>
                             </div>
                             <ChevronDown className="w-4 h-4 text-neutral-400" />
                         </button>
@@ -119,8 +122,8 @@ export default function TopBar({ onSidebarToggle, sidebarCollapsed, isMobileMenu
                         {showUserMenu && (
                             <div className="absolute right-0 mt-2 w-48 bg-app-card rounded-lg shadow-lg border border-app-secondary">
                                 <div className="p-4 border-b border-app-secondary">
-                                    <p className="font-medium text-neutral-800">John Doe</p>
-                                    <p className="text-sm text-neutral-500">john.doe@company.com</p>
+                                    <p className="font-medium text-neutral-800">{fullName}</p>
+                                    <p className="text-sm text-neutral-500">{email}</p>
                                 </div>
 
                                 <button className="flex items-center space-x-3 w-full px-3 py-2.5 rounded-lg text-neutral-600 hover:bg-app-accent hover:text-app-foreground transition-colors duration-200">

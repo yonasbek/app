@@ -78,28 +78,32 @@ const stats = [
     value: '142',
     trend: 'up',
     change: '+5',
-    color: 'text-green-600'
+    color: 'text-green-600',
+    icon: Users
   },
   {
     label: 'Pending Reviews',
     value: '23',
     trend: 'up',
     change: '+12',
-    color: 'text-app-primary'
+    color: 'text-app-primary',
+    icon: FileText
   },
   {
     label: 'Room Bookings',
     value: '38',
     trend: 'down',
     change: '-3',
-    color: 'text-app-primary-light'
+    color: 'text-app-primary-light',
+    icon: Building
   },
   {
     label: 'Reports Generated',
     value: '156',
     trend: 'up',
     change: '+8',
-    color: 'text-orange-600'
+    color: 'text-orange-600',
+    icon: BarChart3
   }
 ];
 
@@ -127,7 +131,7 @@ export default function DashboardPage() {
               <div>
                 <div className="flex items-center space-x-2">
                   <div className={`w-12 h-12 rounded-lg bg-app-accent flex items-center justify-center ${stat.color}`}>
-                    {/* Icon could be added here */}
+                    <stat.icon className="w-6 h-6 text-app-foreground" />
                   </div>
                   <span className={`text-sm font-medium flex items-center ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
                     }`}>

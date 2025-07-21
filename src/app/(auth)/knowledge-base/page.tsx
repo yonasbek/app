@@ -28,7 +28,7 @@ export default function KnowledgeBasePage() {
   const handleDownload = async (id: string) => {
     const file = files.find(f => f.id === id);
     if (!file) return;
-    const normalizedUrl = file.url.replace(/\\/g, '/');
+    const normalizedUrl = file.document_url.replace(/\\/g, '/');
     window.open('https://api-mo6f.onrender.com/' + normalizedUrl, '_blank');
   };
 

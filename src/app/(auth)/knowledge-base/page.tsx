@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { knowledgeBaseService, KnowledgeBaseFile } from '@/services/knowledgeBaseService';
 import KnowledgeBaseUpload from './KnowledgeBaseUpload';
 import KnowledgeBaseList from './KnowledgeBaseList';
+import { Loader2, FileText } from 'lucide-react';
 
 export default function KnowledgeBasePage() {
-  const [files, setFiles] = useState<any[]>([]);
+  const [files, setFiles] = useState<KnowledgeBaseFile[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadFiles = async () => {
@@ -27,21 +28,8 @@ export default function KnowledgeBasePage() {
   const handleDownload = async (id: string) => {
     const file = files.find(f => f.id === id);
     if (!file) return;
-    // const responsePath = await knowledgeBaseService.download(file.document_url);
-    const normalizedUrl = file.document_url.replace(/\\/g, '/')
-    console.log('normalizedUrl', normalizedUrl);
-    // const response = await fetch('http://localhost:3000/' + normalizedUrl);
+    const normalizedUrl = file.url.replace(/\\/g, '/');
     window.open('https://api-mo6f.onrender.com/' + normalizedUrl, '_blank');
-    // const blob = await response.blob();
-    // const url = window.URL.createObjectURL(new Blob([blob]));
-    // const a = document.createElement('a');
-    // a.href = url;
-    // a.download = file.name;
-    // document.body.appendChild(a);
-    // a.click();
-    // a.remove();
-    // window.URL.revokeObjectURL(url);
-
   };
 
   useEffect(() => {
@@ -49,14 +37,42 @@ export default function KnowledgeBasePage() {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Knowledge Base</h1>
-      <KnowledgeBaseUpload onUpload={loadFiles} />
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <KnowledgeBaseList files={files} onDelete={handleDelete} onDownload={handleDownload} />
-      )}
+    <div className="max-w-5xl mx-auto px-4 py-10">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100">
+          <FileText className="w-7 h-7 text-blue-600" />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold text-app-foreground mb-1">Knowledge Base</h1>
+          <p className="text-neutral-600 text-sm">
+            Upload, manage, and download your knowledge base documents.
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow border border-app-secondary p-6 mb-8">
+        <KnowledgeBaseUpload onUpload={loadFiles} />
+      </div>
+
+      <div className="bg-white rounded-xl shadow border border-app-secondary p-6">
+        <h2 className="text-lg font-semibold text-app-foreground mb-4">Uploaded Documents</h2>
+        {loading ? (
+          <div className="flex items-center gap-2 text-blue-600 py-8 justify-center">
+            <Loader2 className="animate-spin w-5 h-5" />
+            <span>Loading documents...</span>
+          </div>
+        ) : files.length === 0 ? (
+          <div className="text-neutral-500 text-center py-8">
+            No documents found. Upload your first file above.
+          </div>
+        ) : (
+          <KnowledgeBaseList
+            files={files}
+            onDelete={handleDelete}
+            onDownload={handleDownload}
+          />
+        )}
+      </div>
     </div>
   );
 }

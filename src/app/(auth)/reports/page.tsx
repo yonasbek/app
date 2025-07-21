@@ -207,49 +207,51 @@ export default function ReportsPage() {
       <div className="space-y-8">
         {/* Memo Summary */}
         <ReportSection title="Memo Summary">
-          <AppTable
-            columns={[
-              { label: 'Title' },
-              { label: 'Type' },
-              { label: 'Issued By' },
-              { label: 'Date' },
-              { label: 'Status' }
-            ]}
-          >
-            {reports.memoSummary.map((memo, index) => (
-              <tr
-                key={index}
-                className={`transition-colors group ${index % 2 === 0 ? 'bg-white' : 'bg-app-secondary'} hover:bg-app-accent`}
-              >
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-app-foreground group-hover:text-app-primary transition-colors">
-                  {memo.title}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
-                  {memo.type}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
-                  {memo.issuedBy}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
-                  {memo.dateIssued}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-3 py-1 text-xs font-semibold rounded-full
-                      ${memo.status === 'Active'
-                        ? 'bg-app-primary text-white'
-                        : memo.status === 'Closed'
-                          ? 'bg-app-secondary text-app-foreground'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }
-                    `}
-                  >
-                    {memo.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </AppTable>
+          <div className="overflow-x-auto">
+            <AppTable
+              columns={[
+                { label: 'Title' },
+                { label: 'Type' },
+                { label: 'Issued By' },
+                { label: 'Date' },
+                { label: 'Status' }
+              ]}
+            >
+              {reports.memoSummary.map((memo, index) => (
+                <tr
+                  key={index}
+                  className={`transition-colors group ${index % 2 === 0 ? 'bg-white' : 'bg-app-secondary'} hover:bg-app-accent`}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-app-foreground group-hover:text-app-primary transition-colors">
+                    {memo.title}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {memo.type}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {memo.issuedBy}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {memo.dateIssued}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-3 py-1 text-xs font-semibold rounded-full
+                        ${memo.status === 'Active'
+                          ? 'bg-app-primary text-white'
+                          : memo.status === 'Closed'
+                            ? 'bg-app-secondary text-app-foreground'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }
+                      `}
+                    >
+                      {memo.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </AppTable>
+          </div>
         </ReportSection>
 
         {/* Meeting Room Bookings */}

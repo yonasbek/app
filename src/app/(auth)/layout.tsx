@@ -44,34 +44,28 @@ export default function AuthLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:block">
-        <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
-      </div>
-
-      {/* Mobile Sidebar Overlay */}
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-40 lg:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-75" />
-          <div className="fixed left-0 top-0 h-full w-64">
-            <Sidebar isCollapsed={false} onToggle={toggleSidebar} />
-          </div>
-        </div>
-      )}
+      {/* Unified Sidebar - handles both mobile and desktop states */}
+      <Sidebar
+        isCollapsed={sidebarCollapsed}
+        onToggle={toggleSidebar}
+        isMobileOpen={isMobileMenuOpen}
+      />
 
       {/* Top Bar */}
       <TopBar
         onSidebarToggle={toggleSidebar}
         sidebarCollapsed={sidebarCollapsed}
+        isMobileMenuOpen={isMobileMenuOpen}
       />
 
       {/* Main Content */}
       <main
-        className={`pt-16 transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
-          }`}
+        className={`pt-16 transition-all duration-300 ease-in-out
+          ${/* Mobile: no left margin */ ''}
+          ml-0
+          ${/* Desktop: left margin based on sidebar state */ ''}
+          ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}
+        `}
       >
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="animate-fadeIn">

@@ -15,9 +15,10 @@ import { useRouter } from 'next/navigation';
 interface TopBarProps {
     onSidebarToggle: () => void;
     sidebarCollapsed: boolean;
+    isMobileMenuOpen?: boolean;
 }
 
-export default function TopBar({ onSidebarToggle, sidebarCollapsed }: TopBarProps) {
+export default function TopBar({ onSidebarToggle, sidebarCollapsed, isMobileMenuOpen }: TopBarProps) {
     const [showNotifications, setShowNotifications] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showFullContent, setShowFullContent] = useState(false);
@@ -30,10 +31,14 @@ export default function TopBar({ onSidebarToggle, sidebarCollapsed }: TopBarProp
 
     return (
         <header
-            className={`fixed top-0 right-0 h-16 z-20 transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'left-16' : 'left-64'
-                }`}
+            className={`fixed top-0 right-0 h-16 z-20 transition-all duration-300 ease-in-out
+                ${/* Mobile: full width */ ''}
+                left-0
+                ${/* Desktop: adjust for sidebar */ ''}
+                ${sidebarCollapsed ? 'lg:left-16' : 'lg:left-64'}
+            `}
         >
-            <div className="h-full bg-app-card border-b border-app-secondary px-6 flex items-center justify-between shadow-sm">
+            <div className="h-full bg-app-card border-b border-app-secondary px-4 sm:px-6 flex items-center justify-between shadow-sm">
                 {/* Left Section - Mobile Menu & Welcome */}
                 <div className="flex items-center space-x-4">
                     <button
@@ -50,7 +55,7 @@ export default function TopBar({ onSidebarToggle, sidebarCollapsed }: TopBarProp
                 </div>
 
                 {/* Right Section - Notifications & User */}
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 sm:space-x-4">
                     {/* Notifications */}
                     <div className="relative">
                         <button
@@ -65,7 +70,7 @@ export default function TopBar({ onSidebarToggle, sidebarCollapsed }: TopBarProp
 
                         {/* Notifications Dropdown */}
                         {showNotifications && (
-                            <div className="absolute right-0 mt-2 w-80 bg-app-card rounded-lg shadow-lg border border-app-secondary">
+                            <div className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-app-card rounded-lg shadow-lg border border-app-secondary">
                                 <div className="p-4 border-b border-app-secondary">
                                     <h3 className="font-medium text-neutral-800">Notifications</h3>
                                 </div>
@@ -98,12 +103,12 @@ export default function TopBar({ onSidebarToggle, sidebarCollapsed }: TopBarProp
                     <div className="relative">
                         <button
                             onClick={() => setShowUserMenu(!showUserMenu)}
-                            className="flex items-center space-x-3 p-1.5 rounded-lg hover:bg-app-accent transition-colors"
+                            className="flex items-center space-x-2 sm:space-x-3 p-1.5 rounded-lg hover:bg-app-accent transition-colors"
                         >
                             <div className="w-8 h-8 bg-app-foreground rounded-full flex items-center justify-center">
                                 <User className="w-4 h-4 text-white" />
                             </div>
-                            <div className="hidden md:block text-left">
+                            <div className="hidden sm:block text-left">
                                 <p className="text-sm font-medium text-neutral-800">John Doe</p>
                                 <p className="text-xs text-neutral-500">Administrator</p>
                             </div>

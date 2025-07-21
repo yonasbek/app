@@ -95,7 +95,7 @@ export default function LoginPage() {
               <Building className="w-6 h-6 text-white" />
             </div>
 
-            <h2 className="text-xl font-bold text-app-foreground">Office Manager</h2>
+            <h2 className="text-xl font-bold text-app-foreground">MSLeo</h2>
           </div>
 
           {/* Welcome Message */}

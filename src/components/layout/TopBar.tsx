@@ -23,9 +23,9 @@ export default function TopBar({ onSidebarToggle, sidebarCollapsed, isMobileMenu
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showFullContent, setShowFullContent] = useState(false);
     const [userInfo, setUserInfo] = useState({
-        fullName: 'John Doe',
-        email: 'john.doe@company.com',
-        role: 'Administrator'
+        fullName: '',
+        email: '',
+        role: ''
     });
     const router = useRouter();
 
@@ -37,9 +37,9 @@ export default function TopBar({ onSidebarToggle, sidebarCollapsed, isMobileMenu
             const role = localStorage.getItem('role');
 
             setUserInfo({
-                fullName: fullName ? JSON.parse(fullName) : 'John Doe',
-                email: email ? JSON.parse(email) : 'john.doe@company.com',
-                role: role ? JSON.parse(role) : 'Administrator'
+                fullName: fullName ? JSON.parse(fullName) : '',
+                email: email ? JSON.parse(email) : '',
+                role: role ? JSON.parse(role) : ''
             });
         }
     }, []);

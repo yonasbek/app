@@ -30,9 +30,9 @@ export default function LoginPage() {
 
     try {
       const response = await api.post('/auth/login', formData);
-      window.localStorage.setItem('fullName', JSON.stringify(response.data.fullName));
-      window.localStorage.setItem('email', JSON.stringify(response.data.email));
-      window.localStorage.setItem('role', JSON.stringify(response.data.role));
+      window.localStorage.setItem('fullName', JSON.stringify(response.data?.fullName));
+      window.localStorage.setItem('email', JSON.stringify(response.data?.email));
+      window.localStorage.setItem('role', JSON.stringify(response.data?.role));
       window.localStorage.setItem('token', response.data.token);
       if (rememberMe) {
         window.localStorage.setItem('rememberMe', 'true');

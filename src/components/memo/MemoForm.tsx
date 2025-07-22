@@ -25,8 +25,8 @@ export default function MemoForm({ initialData, mode }: MemoFormProps) {
       : new Date().toISOString().split('T')[0],
     priority_level: initialData?.priority_level || PriorityLevel.NORMAL,
     signature: initialData?.signature || '',
-    authorId: initialData?.author_id || '',
-    approverIds: initialData?.approver_ids || [],
+    authorId:  '',
+    approverIds:  [],
     status: initialData?.status || MemoStatus.DRAFT,
   });
 

@@ -2,6 +2,88 @@
 
 import { useEffect, useState } from 'react';
 import reportService, { AllReports } from '../../../services/reportService';
+import Card from '@/components/ui/Card';
+import {
+  FileText,
+  Calendar,
+  Users,
+  FolderOpen,
+  CheckSquare,
+  Download,
+  FileSpreadsheet,
+  Loader2
+} from 'lucide-react';
+
+// Metric Card Component
+function MetricCard({
+  title,
+  value,
+  icon: Icon
+}: {
+  title: string;
+  value: string | number;
+  icon: React.ComponentType<{ className?: string }>;
+}) {
+  return (
+    <Card className="border border-app-secondary bg-gradient-to-br from-app-accent/80 to-white shadow-md hover:shadow-lg transition-shadow duration-200 rounded-xl p-0 max-w-[220px] w-full mx-auto">
+      <div className="flex items-center gap-3 px-3 py-3">
+        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-app-primary/10 shadow-inner">
+          <Icon className="w-5 h-5 text-app-primary" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-app-foreground mb-0.5 ">{title}</p>
+          <p className="text-xl font-extrabold text-app-foreground tracking-tight ">{value}</p>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+// Report Section Component
+function ReportSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Card className="border border-app-secondary" padding="sm">
+      <div className="px-2 py-2 border-b border-app-secondary mb-4">
+        <h3 className="text-lg font-medium text-app-foreground">{title}</h3>
+      </div>
+      <div>{children}</div>
+    </Card>
+  );
+}
+
+// Table wrapper for consistent table structure
+function AppTable({
+  columns,
+  children
+}: {
+  columns: { label: string; className?: string }[];
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="overflow-x-auto">
+      <div className="rounded-xl border border-app-secondary overflow-hidden shadow-sm">
+        <table className="min-w-full bg-app-foreground">
+          <thead className="bg-app-secondary">
+            <tr>
+              {columns.map((col, idx) => (
+                <th
+                  key={col.label}
+                  className={
+                    col.className ??
+                    'px-6 py-3 text-left text-xs font-semibold text-app-foreground uppercase tracking-wider'
+                  }
+                >
+                  {col.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-app-secondary">{children}</tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
 
 export default function ReportsPage() {
   const [reports, setReports] = useState<AllReports | null>(null);
@@ -36,10 +118,10 @@ export default function ReportsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-app-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading reports...</p>
+          <Loader2 className="h-12 w-12 text-app-primary animate-spin mx-auto" />
+          <p className="mt-4 text-neutral-600">Loading reports...</p>
         </div>
       </div>
     );
@@ -47,12 +129,12 @@ export default function ReportsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-app-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 text-lg">{error}</p>
-          <button 
+          <p className="text-neutral-600 text-lg">{error}</p>
+          <button
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-app-primary text-app-foreground rounded-lg hover:bg-app-secondary transition-colors"
           >
             Retry
           </button>
@@ -64,278 +146,296 @@ export default function ReportsPage() {
   if (!reports) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard Reports</h1>
-            <p className="text-gray-600">Comprehensive overview of system metrics and analytics</p>
-          </div>
-          <div className="flex space-x-3">
-            <button
-              onClick={handleExportPDF}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Export as PDF
-            </button>
-            <button
-              onClick={handleExportExcel}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-            >
-              Export as Excel
-            </button>
-          </div>
+    <div className="space-y-8 animate-fadeIn">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-app-foreground mb-2">Dashboard Reports</h1>
+          <p className="text-neutral-600">Comprehensive overview of system metrics and analytics</p>
         </div>
-
-        {/* Top Section - Key Metrics */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Key Performance Indicators</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            <MetricCard 
-              title="Active Memos" 
-              value={reports.dashboardMetrics.activeMemos}
-              icon="📝"
-              color="bg-blue-500"
-            />
-            <MetricCard 
-              title="Upcoming Meetings" 
-              value={reports.dashboardMetrics.upcomingMeetings}
-              icon="📅"
-              color="bg-green-500"
-            />
-            <MetricCard 
-              title="Attendance Today" 
-              value={`${reports.dashboardMetrics.attendanceToday}%`}
-              icon="👥"
-              color="bg-yellow-500"
-            />
-            <MetricCard 
-              title="Documents (Month)" 
-              value={reports.dashboardMetrics.documentsUploadedThisMonth}
-              icon="📄"
-              color="bg-purple-500"
-            />
-            <MetricCard 
-              title="Tasks Due (Week)" 
-              value={reports.dashboardMetrics.tasksDueThisWeek}
-              icon="✅"
-              color="bg-red-500"
-            />
-          </div>
+        <div className="flex flex-wrap gap-3 mt-4 sm:mt-0">
+          <button
+            onClick={handleExportPDF}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-app-primary text-app-accent rounded-md shadow-sm hover:bg-app-secondary hover:text-app-foreground transition-colors font-semibold focus-ring"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export PDF</span>
+          </button>
+          <button
+            onClick={handleExportExcel}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-app-secondary text-app-foreground rounded-md shadow-sm hover:bg-app-primary hover:text-app-accent transition-colors font-semibold focus-ring"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            <span>Export Excel</span>
+          </button>
         </div>
+      </div>
 
-        {/* Mid Section - Lists and Tables */}
-        <div className="space-y-8">
-          {/* Memo Summary */}
-          <ReportSection title="Memo Summary">
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issued By</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {reports.memoSummary.map((memo, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{memo.title}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{memo.type}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{memo.issuedBy}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{memo.dateIssued}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                          {memo.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </ReportSection>
+      {/* Top Section - Key Metrics */}
+      <div>
+        <h2 className="text-xl font-medium text-app-foreground mb-6">Key Performance Indicators</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          <MetricCard
+            title="Active Memos"
+            value={reports.dashboardMetrics.activeMemos}
+            icon={FileText}
+          />
+          <MetricCard
+            title="Upcoming Meetings"
+            value={reports.dashboardMetrics.upcomingMeetings}
+            icon={Calendar}
+          />
+          <MetricCard
+            title="Attendance Today"
+            value={`${reports.dashboardMetrics.attendanceToday}%`}
+            icon={Users}
+          />
+          <MetricCard
+            title="Documents (Month)"
+            value={reports.dashboardMetrics.documentsUploadedThisMonth}
+            icon={FolderOpen}
+          />
+          <MetricCard
+            title="Tasks Due (Week)"
+            value={reports.dashboardMetrics.tasksDueThisWeek}
+            icon={CheckSquare}
+          />
+        </div>
+      </div>
 
-          {/* Meeting Room Bookings */}
-          <ReportSection title="Meeting Room Booking Overview">
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booked By</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meeting Title</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {reports.meetingRoomBookings.map((booking, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{booking.room}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.date}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.time}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.bookedBy}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.meetingTitle}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          booking.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {booking.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </ReportSection>
+      {/* Mid Section - Lists and Tables */}
+      <div className="space-y-8">
+        {/* Memo Summary */}
+        <ReportSection title="Memo Summary">
+          <div className="overflow-x-auto">
+            <AppTable
+              columns={[
+                { label: 'Title' },
+                { label: 'Type' },
+                { label: 'Issued By' },
+                { label: 'Date' },
+                { label: 'Status' }
+              ]}
+            >
+              {reports.memoSummary.map((memo, index) => (
+                <tr
+                  key={index}
+                  className={`transition-colors group ${index % 2 === 0 ? 'bg-white' : 'bg-app-secondary'} hover:bg-app-accent`}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-app-foreground group-hover:text-app-primary transition-colors">
+                    {memo.title}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {memo.type}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {memo.issuedBy}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {memo.dateIssued}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-3 py-1 text-xs font-semibold rounded-full
+                        ${memo.status === 'Active'
+                          ? 'bg-app-primary text-white'
+                          : memo.status === 'Closed'
+                            ? 'bg-app-secondary text-app-foreground'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }
+                      `}
+                    >
+                      {memo.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </AppTable>
+          </div>
+        </ReportSection>
 
-          {/* Document Library Insights */}
-          <ReportSection title="Document Library Insights">
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uploaded By</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Downloads</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {reports.documentLibraryInsights.map((doc, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{doc.title}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{doc.uploadedBy}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{doc.date}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{doc.category}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{doc.downloads}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </ReportSection>
+        {/* Meeting Room Bookings */}
+        <ReportSection title="Meeting Room Booking Overview">
+          <AppTable
+            columns={[
+              { label: 'Room' },
+              { label: 'Date' },
+              { label: 'Time' },
+              { label: 'Booked By' },
+              { label: 'Meeting Title' },
+              { label: 'Status' }
+            ]}
+          >
+            {reports.meetingRoomBookings.map((booking, index) => {
+              const isEvenRow = index % 2 === 0;
+              const rowBgClass = isEvenRow ? 'bg-white' : 'bg-app-secondary';
+              const statusStyles =
+                booking.status === 'Scheduled'
+                  ? 'bg-app-primary text-white'
+                  : booking.status === 'Completed'
+                    ? 'bg-app-secondary text-app-foreground'
+                    : 'bg-yellow-100 text-yellow-800';
 
-          {/* Task Tracking Snapshot */}
-          <ReportSection title="Task Tracking Snapshot">
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task Title</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {reports.taskTrackingSnapshot.map((task, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{task.title}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.assignedTo}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.dueDate}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full" 
-                            style={{ width: `${task.progress}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-xs text-gray-500">{task.progress}%</span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          task.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : 
-                          task.status === 'Completed' ? 'bg-green-100 text-green-800' : 
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {task.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </ReportSection>
+              return (
+                <tr
+                  key={index}
+                  className={`transition-colors group ${rowBgClass} hover:bg-app-accent`}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-app-foreground group-hover:text-app-primary transition-colors">
+                    {booking.room}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {booking.date}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {booking.time}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {booking.bookedBy}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {booking.meetingTitle}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-3 py-1 text-xs font-semibold rounded-full ${statusStyles}`}
+                    >
+                      {booking.status}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </AppTable>
+        </ReportSection>
 
-          {/* Attendance Analytics */}
-          <ReportSection title="Attendance Analytics">
-            <div className="bg-white p-6">
-              <div className="mb-4">
-                <h4 className="text-lg font-medium text-gray-900 mb-2">Weekly Attendance Overview</h4>
-                <div className="grid grid-cols-5 gap-4">
-                  {reports.attendanceAnalytics.dates.map((date, index) => (
-                    <div key={index} className="text-center">
-                      <div className="text-sm font-medium text-gray-700">{date}</div>
-                      <div className="mt-2 space-y-1">
-                        <div className="flex justify-between text-xs">
-                          <span>Present:</span>
-                          <span className="font-medium text-green-600">{reports.attendanceAnalytics.present[index]}%</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span>Absent:</span>
-                          <span className="font-medium text-red-600">{reports.attendanceAnalytics.absent[index]}%</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span>Late:</span>
-                          <span className="font-medium text-yellow-600">{reports.attendanceAnalytics.late[index]}%</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span>WFH:</span>
-                          <span className="font-medium text-blue-600">{reports.attendanceAnalytics.wfh[index]}%</span>
-                        </div>
-                      </div>
+        {/* Document Library Insights */}
+        <ReportSection title="Document Library Insights">
+          <AppTable
+            columns={[
+              { label: 'Title' },
+              { label: 'Uploaded By' },
+              { label: 'Date' },
+              { label: 'Category' },
+              { label: 'Downloads' }
+            ]}
+          >
+            {reports.documentLibraryInsights.map((doc, index) => {
+              const isEvenRow = index % 2 === 0;
+              const rowBgClass = isEvenRow ? 'bg-white' : 'bg-app-secondary';
+
+              return (
+                <tr
+                  key={index}
+                  className={`transition-colors group ${rowBgClass} hover:bg-app-accent`}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-app-foreground group-hover:text-app-primary transition-colors">
+                    {doc.title}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {doc.uploadedBy}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {doc.date}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {doc.category}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {doc.downloads}
+                  </td>
+                </tr>
+              );
+            })}
+          </AppTable>
+        </ReportSection>
+
+        {/* Task Tracking Snapshot */}
+        <ReportSection title="Task Tracking Snapshot">
+          <AppTable
+            columns={[
+              { label: 'Task Title' },
+              { label: 'Assigned To' },
+              { label: 'Due Date' },
+              { label: 'Progress' },
+              { label: 'Status' }
+            ]}
+          >
+            {reports.taskTrackingSnapshot.map((task, index) => {
+              const isEvenRow = index % 2 === 0;
+              const rowBgClass = isEvenRow ? 'bg-white' : 'bg-app-secondary';
+
+              let statusBgClass = '';
+              switch (task.status) {
+                case 'In Progress':
+                  statusBgClass = 'bg-app-warning text-app-foreground';
+                  break;
+                case 'Completed':
+                  statusBgClass = 'bg-app-success text-app-foreground';
+                  break;
+                default:
+                  statusBgClass = 'bg-app-secondary text-app-foreground';
+              }
+
+              return (
+                <tr
+                  key={index}
+                  className={`transition-colors group ${rowBgClass} hover:bg-app-accent`}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-app-foreground group-hover:text-app-primary transition-colors">
+                    {task.title}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {task.assignedTo}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    {task.dueDate}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                    <div className="w-full bg-app-secondary rounded-full h-2">
+                      <div
+                        className="bg-app-primary h-2 rounded-full"
+                        style={{ width: `${task.progress}%` }}
+                      ></div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </ReportSection>
-        </div>
+                    <span className="text-xs text-neutral-600">{task.progress}%</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusBgClass}`}
+                    >
+                      {task.status}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </AppTable>
+        </ReportSection>
+
+        {/* Attendance Analytics */}
+        <ReportSection title="Attendance Analytics">
+          <AppTable
+            columns={[
+              { label: 'Date' },
+              { label: 'Present (%)' },
+              { label: 'Absent (%)' },
+              { label: 'Late (%)' },
+              { label: 'WFH (%)' }
+            ]}
+          >
+            {reports.attendanceAnalytics.dates.map((date, index) => (
+              <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-app-secondary'}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-app-foreground">{date}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">{reports.attendanceAnalytics.present[index]}%</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">{reports.attendanceAnalytics.absent[index]}%</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">{reports.attendanceAnalytics.late[index]}%</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">{reports.attendanceAnalytics.wfh[index]}%</td>
+              </tr>
+            ))}
+          </AppTable>
+        </ReportSection>
       </div>
     </div>
   );
 }
-
-// Metric Card Component
-function MetricCard({ title, value, icon, color }: { 
-  title: string; 
-  value: string | number; 
-  icon: string; 
-  color: string; 
-}) {
-  return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex items-center">
-        <div className={`flex-shrink-0 ${color} rounded-md p-3`}>
-          <span className="text-2xl">{icon}</span>
-        </div>
-        <div className="ml-4">
-          <div className="text-sm font-medium text-gray-500">{title}</div>
-          <div className="text-2xl font-bold text-gray-900">{value}</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Report Section Component
-function ReportSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-white shadow rounded-lg">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h3 className="text-lg font-medium text-gray-900">{title}</h3>
-      </div>
-      <div>{children}</div>
-    </div>
-  );
-} 

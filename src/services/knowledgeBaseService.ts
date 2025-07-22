@@ -2,10 +2,11 @@ import api from '@/utils/api';
 
 export interface KnowledgeBaseFile {
   id: string;
-  name: string;
-  size: number;
-  url: string;
-  uploadedAt: string;
+  document_name: string;
+  document_size: number;
+  document_url: string;
+  upload_date: string;
+  module: string;
 }
 
 class KnowledgeBaseService {

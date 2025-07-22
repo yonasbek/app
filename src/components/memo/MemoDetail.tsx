@@ -12,18 +12,18 @@ interface MemoDetailProps {
 }
 
 const statusColors = {
-  [MemoStatus.DRAFT]: 'bg-gray-500',
-  [MemoStatus.PENDING_DESK_HEAD]: 'bg-yellow-500',
-  [MemoStatus.PENDING_LEO]: 'bg-blue-500',
+  [MemoStatus.DRAFT]: 'bg-neutral-500',
+  [MemoStatus.PENDING_DESK_HEAD]: 'bg-amber-500',
   [MemoStatus.APPROVED]: 'bg-green-500',
   [MemoStatus.RETURNED_TO_CREATOR]: 'bg-orange-500',
   [MemoStatus.REJECTED]: 'bg-red-500',
+  [MemoStatus.PENDING_LEO]: 'bg-blue-500',
 };
 
 const priorityColors = {
-  [PriorityLevel.NORMAL]: 'bg-blue-500',
+  [PriorityLevel.NORMAL]: 'bg-app-primary',
   [PriorityLevel.URGENT]: 'bg-orange-500',
-  [PriorityLevel.CONFIDENTIAL]: 'bg-purple-500',
+  [PriorityLevel.CONFIDENTIAL]: 'bg-app-primary-light',
 };
 
 export default function MemoDetail({ memoId, userRole = 'CREATOR' }: MemoDetailProps) {
@@ -57,7 +57,7 @@ export default function MemoDetail({ memoId, userRole = 'CREATOR' }: MemoDetailP
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this memo?')) return;
-    
+
     try {
       await memoService.delete(memoId);
       router.push('/memos');
@@ -79,7 +79,7 @@ export default function MemoDetail({ memoId, userRole = 'CREATOR' }: MemoDetailP
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl text-gray-900 font-bold">{memo.title}</h1>
+        <h1 className="text-2xl text-app-foreground font-bold">{memo.title}</h1>
         <div className="flex gap-2">
           {canEdit && (
             <button 
@@ -97,7 +97,7 @@ export default function MemoDetail({ memoId, userRole = 'CREATOR' }: MemoDetailP
               Delete
             </button>
           )}
-          <button 
+          <button
             onClick={() => router.push('/memos')}
             className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
           >

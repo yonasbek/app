@@ -21,11 +21,13 @@ import Link from 'next/link';
 
 const planTypes = [
   {
-    title: 'Strategic Plans',
-    description: 'Long-term strategic initiatives and organizational goals',
+    type: 'PFRD',
+    title: 'Pre-Facility & Referral Development Plan',
+    description: 'Strategic planning for pre-facility development and referral systems',
     icon: Target,
     color: 'from-app-primary to-app-primary-light',
     stats: { active: 3, total: 5 }
+    
   },
   {
     title: 'Operational Plans',
@@ -35,25 +37,36 @@ const planTypes = [
     stats: { active: 7, total: 12 }
   },
   {
-    title: 'Financial Plans',
-    description: 'Budget planning and financial resource allocation',
+    type: 'ECCD',
+    title: 'Emergency & Critical Care Development Plan',
+    description: 'Planning for emergency services and critical care development',
     icon: DollarSign,
     color: 'from-green-500 to-emerald-500',
     stats: { active: 2, total: 4 }
   },
   {
-    title: 'Human Resources',
-    description: 'Staff development, training, and organizational structure',
+    type: 'HDD',
+    title: 'Hospital Development Directorate Plan',
+    description: 'Comprehensive hospital development and management planning',
     icon: Users,
     color: 'from-app-primary-light to-app-primary',
     stats: { active: 4, total: 8 }
   },
   {
-    title: 'Technology Plans',
-    description: 'IT infrastructure, software development, and digital transformation',
+    type: 'SRD',
+    title: 'Specialty & Rehabilitative Services Plan',
+    description: 'Planning for specialty care and rehabilitation services',
     icon: Laptop,
     color: 'from-orange-500 to-red-500',
     stats: { active: 6, total: 10 }
+  },
+  {
+    type: 'LEO',
+    title: 'Lead Executive Officer Plan',
+    description: 'Strategic planning and management for lead executive officer initiatives',
+    icon: Users,
+    color: 'from-app-primary-light to-app-primary',
+    stats: { active: 4, total: 8 }
   }
 ];
 

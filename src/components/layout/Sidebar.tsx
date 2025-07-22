@@ -22,6 +22,7 @@ import {
 const menuItems = [
     { path: '/dashboard', name: 'Dashboard', icon: Home },
     { path: '/plans', name: 'Annual Plans', icon: Calendar },
+    { path: '/my-tasks', name: 'My Tasks', icon: Calendar },
     { path: '/knowledge-base', name: 'Knowledge Base', icon: BookOpen },
     { path: '/memos', name: 'Memos & Proposals', icon: FileText },
     { path: '/attendance', name: 'Attendance', icon: Clock },

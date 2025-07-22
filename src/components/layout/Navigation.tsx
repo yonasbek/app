@@ -7,6 +7,7 @@ import { useState } from 'react';
 const menuItems = [
   { path: '/dashboard', name: 'Dashboard' },
   { path: '/plans', name: 'Annual Plans' },
+  { path: '/my-tasks', name: 'My Tasks' },
   { path: '/indicators', name: 'Medical Indicators' },
   { path: '/knowledge-base', name: 'Knowledge Base' },
   { path: '/memos', name: 'Memos & Proposals' },

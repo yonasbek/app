@@ -1,5 +1,5 @@
 import axios from '@/utils/api';
-import { Memo, CreateMemoDto, UpdateMemoDto } from '@/types/memo';
+import { Memo, CreateMemoDto, UpdateMemoDto, WorkflowActionDto, WorkflowHistory, DocumentData } from '@/types/memo';
 
 class MemoService {
   private readonly baseUrl = '/memos';
@@ -77,6 +77,63 @@ class MemoService {
 
   async delete(id: string): Promise<void> {
     await axios.delete(`${this.baseUrl}/${id}`);
+  }
+
+  // Workflow methods
+  async submitToDeskHead(id: string): Promise<Memo> {
+    const response = await axios.post(`${this.baseUrl}/${id}/workflow/submit-to-desk-head`);
+    return response.data;
+  }
+
+  async deskHeadAction(id: string, action: WorkflowActionDto): Promise<Memo> {
+    const response = await axios.post(`${this.baseUrl}/${id}/workflow/desk-head-action`, action);
+    return response.data;
+  }
+
+  async leoAction(id: string, action: WorkflowActionDto): Promise<Memo> {
+    const response = await axios.post(`${this.baseUrl}/${id}/workflow/leo-action`, action);
+    return response.data;
+  }
+
+  async getWorkflowHistory(id: string): Promise<WorkflowHistory> {
+    const response = await axios.get(`${this.baseUrl}/${id}/workflow/history`);
+    return response.data;
+  }
+
+  async generateDocument(id: string): Promise<DocumentData> {
+    const response = await axios.get(`${this.baseUrl}/${id}/document`);
+    return response.data;
+  }
+
+  async generateHTMLDocument(id: string): Promise<string> {
+    const response = await axios.get(`${this.baseUrl}/${id}/document/html`, {
+      responseType: 'text'
+    });
+    return response.data;
+  }
+
+  async getMemosPendingDeskHead(): Promise<Memo[]> {
+    const response = await axios.get(`${this.baseUrl}/pending/desk-head`);
+    return response.data;
+  }
+
+  async getMemosPendingLEO(): Promise<Memo[]> {
+    const response = await axios.get(`${this.baseUrl}/pending/leo`);
+    return response.data;
+  }
+
+  // Helper method to open HTML document in new window for printing
+  async openDocumentForPrinting(id: string): Promise<void> {
+    const htmlContent = await this.generateHTMLDocument(id);
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+      newWindow.document.write(htmlContent);
+      newWindow.document.close();
+      // Auto-print after content loads
+      newWindow.onload = () => {
+        newWindow.print();
+      };
+    }
   }
 }
 

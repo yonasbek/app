@@ -82,11 +82,15 @@ export default function MemoList() {
                     ? 'bg-green-100 text-green-800'
                     : memo.status === MemoStatus.REJECTED
                     ? 'bg-red-100 text-red-800'
-                    : memo.status === MemoStatus.PENDING
+                    : memo.status === MemoStatus.PENDING_DESK_HEAD
                     ? 'bg-yellow-100 text-yellow-800'
+                    : memo.status === MemoStatus.PENDING_LEO
+                    ? 'bg-blue-100 text-blue-800'
+                    : memo.status === MemoStatus.RETURNED_TO_CREATOR
+                    ? 'bg-orange-100 text-orange-800'
                     : 'bg-gray-100 text-gray-800'
                 }`}>
-                  {memo.status}
+                  {memo.status.replace(/_/g, ' ')}
                 </span>
               </div>
             </div>

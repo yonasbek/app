@@ -20,6 +20,7 @@ import {
 import Link from 'next/link';
 
 const planTypes = [
+
   {
     type: 'PFRD',
     title: 'Pre-Facility & Referral Development Plan',
@@ -28,13 +29,6 @@ const planTypes = [
     color: 'from-app-primary to-app-primary-light',
     stats: { active: 3, total: 5 }
     
-  },
-  {
-    title: 'Operational Plans',
-    description: 'Day-to-day operations and process improvement plans',
-    icon: Cog,
-    color: 'from-red-500 to-pink-500',
-    stats: { active: 7, total: 12 }
   },
   {
     type: 'ECCD',
@@ -146,7 +140,7 @@ export default function PlanTypesPage() {
 
             return (
               <Card key={index} className="group card-hover cursor-pointer relative overflow-hidden">
-                <Link href="/plans/list">
+                <Link href={`/plans/list?type=${planType.type}`}>
                   <div className="space-y-4">
                     {/* Header with icon and stats */}
                     <div className="flex items-center justify-between">

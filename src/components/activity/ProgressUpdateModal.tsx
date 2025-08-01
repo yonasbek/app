@@ -52,23 +52,19 @@ export default function ProgressUpdateModal({ subActivity, onSubmit, onCancel }:
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+             <label className="block text-sm font-medium text-gray-700 mb-2"> 
               Progress ({progress}%)
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="100"
+             </label>
+             <select
               value={progress}
               onChange={(e) => setProgress(Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-            />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>0%</span>
-              <span>50%</span>
-              <span>100%</span>
-            </div>
+              className="block w-full rounded-md border-grey-300 shadow-sm focus:border-grey-500 focus:ring-blue-500 text-md">
+              <option value={0}>Draft</option>
+              <option value={50}>In Progress</option>
+              <option value={100}>Completed</option>
+            </select>
           </div>
+
 
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">

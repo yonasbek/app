@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { Plan } from '@/types/plan';
 import { PlanType } from '@/types/activity';
 import { planService } from '@/services/planService';
+import Card from '@/components/ui/Card';
 
 function PlansListContent() {
   const searchParams = useSearchParams();
@@ -112,10 +113,9 @@ function PlansListContent() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {plans.map((plan) => (
-          <div
+          <Card
             key={plan.id}
-            className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow"
-          >
+            className="bg-white p-6 rounded-lg shadow hover:shadow-lg transform transition duration-300 hover:-translate-y-1">
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-xl font-semibold text-gray-900">{plan.title}</h2>
               <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(plan.status)}`}>
@@ -168,7 +168,7 @@ function PlansListContent() {
                 </Link>
               </div>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
     </div>

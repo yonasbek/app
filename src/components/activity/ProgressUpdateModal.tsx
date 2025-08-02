@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { SubActivity } from '@/types/subactivity';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 // SVG Icon Components
 const XIcon = ({ className = "" }: { className?: string }) => (
@@ -52,19 +53,23 @@ export default function ProgressUpdateModal({ subActivity, onSubmit, onCancel }:
           </div>
 
           <div className="mb-4">
-             <label className="block text-sm font-medium text-gray-700 mb-2"> 
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Progress ({progress}%)
-             </label>
-             <select
-              value={progress}
-              onChange={(e) => setProgress(Number(e.target.value))}
-              className="block w-full rounded-md border-grey-300 shadow-sm focus:border-grey-500 focus:ring-blue-500 text-md">
-              <option value={0}>Draft</option>
-              <option value={50}>In Progress</option>
-              <option value={100}>Completed</option>
-            </select>
+            </label>
+            <Select
+              value={String(progress)}
+              onValueChange={val => setProgress(Number(val))}
+            >
+              <SelectTrigger className="w-full border-blue-500 focus:border-blue-600 focus:ring-blue-500">
+                <SelectValue placeholder="Select progress" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">Draft</SelectItem>
+                <SelectItem value="50">In Progress</SelectItem>
+                <SelectItem value="100">Completed</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-
 
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -98,4 +103,4 @@ export default function ProgressUpdateModal({ subActivity, onSubmit, onCancel }:
       </div>
     </div>
   );
-} 
+}

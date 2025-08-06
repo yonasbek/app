@@ -6,6 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import { Plan } from '@/types/plan';
 import { PlanType } from '@/types/activity';
 import { planService } from '@/services/planService';
+import Card from '@/components/ui/Card';
+import { Eye, Edit, List } from 'lucide-react';
 
 function PlansListContent() {
   const searchParams = useSearchParams();
@@ -15,22 +17,28 @@ function PlansListContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fiscalYear, setFiscalYear] = useState<string>('');
+  const [search, setSearch] = useState<string>('');
 
   useEffect(() => {
     if (planType) {
       fetchPlans();
     }
+    
   }, [fiscalYear, planType]);
 
   const fetchPlans = async () => {
     try {
       setLoading(true);
       const data = await planService.getAll();
-      // Filter plans by type and fiscal year
-      const filteredPlans = data.filter(plan => 
+      let filteredPlans = data.filter(plan => 
         plan.plan_type === planType && 
         (!fiscalYear || plan.fiscal_year === fiscalYear)
       );
+      if (search.trim()) {
+        filteredPlans = filteredPlans.filter(plan =>
+          plan.title.toLowerCase().includes(search.toLowerCase())
+        );
+      }
       setPlans(filteredPlans);
     } catch (err) {
       setError('Failed to fetch plans');
@@ -39,6 +47,12 @@ function PlansListContent() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (planType) {
+      fetchPlans();
+    }
+  }, [search]);
 
   const getStatusColor = (status: Plan['status']) => {
     switch (status) {
@@ -57,7 +71,13 @@ function PlansListContent() {
       case 'HDD': return 'Hospital Development Directorate Plan';
       case 'SRD': return 'Specialty & Rehabilitative Services Plan';
       case 'LEO': return 'Lead Executive Officer Plan';
+      default: return '';
     }
+  };
+
+  const getBudgetProgress = (plan: Plan) => {
+    if (!plan.budget_allocated || plan.budget_allocated === 0) return 0;
+    return Math.round((plan.budget_spent / plan.budget_allocated) * 100);
   };
 
   if (!planType) {
@@ -85,91 +105,104 @@ function PlansListContent() {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{getPlanTypeTitle(planType)}</h1>
-          <div className="mt-2">
-            <select
-              value={fiscalYear}
-              onChange={(e) => setFiscalYear(e.target.value)}
-              className="mt-1 block w-48 rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none"
-            >
-              <option value="">All Fiscal Years</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-              <option value="2022">2022</option>
-            </select>
-          </div>
+    <div className="space-y-8 animate-fadeIn">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <h1 className="text-2xl font-bold text-app-foreground">{getPlanTypeTitle(planType)}</h1>
+          <select
+            value={fiscalYear}
+            onChange={(e) => setFiscalYear(e.target.value)}
+            className="block w-48 rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none"
+          >
+            <option value="">All Fiscal Years</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Search plans..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="block w-64 rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none"
+          />
         </div>
         <Link
           href={`/plans/new?type=${planType}`}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
         >
-          Create New Plan
+          <span className="font-semibold">Create New Plan</span>
         </Link>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {plans.map((plan) => (
-          <div
-            key={plan.id}
-            className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">{plan.title}</h2>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(plan.status)}`}>
-                {plan.status?.charAt(0)?.toUpperCase() + plan.status?.slice(1)}
-              </span>
-            </div>
+        {plans.map((plan) => {
+          const budgetProgress = getBudgetProgress(plan);
+          return (
+            <Card
+              key={plan.id}
+              className="group card-hover cursor-pointer relative overflow-hidden border border-gray-200 bg-white p-6 rounded-xl shadow hover:shadow-lg transition"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-app-foreground group-hover:text-blue-700 transition-colors">
+                    {plan.title}
+                  </h2>
+                  <p className="text-xs text-neutral-500 mt-1">Fiscal Year: {plan.fiscal_year}</p>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(plan.status)}`}>
+                  {plan.status?.charAt(0)?.toUpperCase() + plan.status?.slice(1)}
+                </span>
+              </div>
 
-            <div className="space-y-3">
-              <p className="text-gray-600">
-                Fiscal Year: {plan.fiscal_year}
-              </p>
-
-              <div>
-                <div className="flex justify-between text-sm text-gray-600 mb-1">
-                  <span>Progress</span>
-                  <span>{plan.progress}%</span>
+              <div className="mb-4">
+                <div className="flex justify-between text-xs text-neutral-600 mb-1">
+                  <span>Budget Progress</span>
+                  <span>{budgetProgress}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-blue-600 h-2 rounded-full"
-                    style={{ width: `${plan.progress}%` }}
+                    className="h-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all"
+                    style={{ width: `${budgetProgress}%` }}
                   />
+                </div>
+                <div className="flex justify-between text-xs text-neutral-500 mt-1">
+                  <span>
+                    ${plan.budget_spent?.toLocaleString()} spent
+                  </span>
+                  <span>
+                    / ${plan.budget_allocated?.toLocaleString()} allocated
+                  </span>
                 </div>
               </div>
 
-              <div>
-                <p className="text-sm text-gray-600">
-                  Budget: ${plan.budget_spent?.toLocaleString()} / ${plan.budget_allocated?.toLocaleString()}
-                </p>
-              </div>
-
-              <div className="flex space-x-2 mt-4">
+              <div className="flex gap-2 mt-4">
                 <Link
                   href={`/plans/${plan.id}/activities`}
-                  className="px-3 py-1 text-sm text-blue-600 border border-blue-600 rounded hover:bg-blue-50"
+                  className="p-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-800 transition"
+                  title="Activities"
                 >
-                  Activities
+                  <List className="w-5 h-5" />
                 </Link>
                 <Link
                   href={`/plans/${plan.id}`}
-                  className="px-3 py-1 text-sm text-blue-600 border border-blue-600 rounded hover:bg-blue-50"
+                  className="p-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-800 transition"
+                  title="View Details"
                 >
-                  View Details
+                  <Eye className="w-5 h-5" />
                 </Link>
                 <Link
                   href={`/plans/${plan.id}/edit`}
-                  className="px-3 py-1 text-sm text-gray-600 border border-gray-600 rounded hover:bg-gray-50"
+                  className="p-2 rounded-full bg-gray-100 hover:bg-gray-300 text-gray-600 hover:text-gray-900 transition"
+                  title="Edit"
                 >
-                  Edit
+                  <Edit className="w-5 h-5" />
                 </Link>
               </div>
-            </div>
-          </div>
-        ))}
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
@@ -185,4 +218,4 @@ export default function PlansListPage() {
       <PlansListContent />
     </Suspense>
   );
-} 
+}

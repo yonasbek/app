@@ -3,16 +3,24 @@ import React, { useEffect, useState } from 'react';
 import { knowledgeBaseService, KnowledgeBaseFile } from '@/services/knowledgeBaseService';
 import KnowledgeBaseUpload from './KnowledgeBaseUpload';
 import KnowledgeBaseList from './KnowledgeBaseList';
-import { Loader2, FileText } from 'lucide-react';
+import { Loader2, FileText, Upload } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import KnowledgeBaseSummary from './KnowledgeBaseSummary';
 
 export default function KnowledgeBasePage() {
   const [files, setFiles] = useState<KnowledgeBaseFile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
   const loadFiles = async () => {
     setLoading(true);
     try {
       const data = await knowledgeBaseService.list();
+      data.sort((a: KnowledgeBaseFile, b: KnowledgeBaseFile) => {
+        const aDate = new Date(a.updated_at || a.upload_date);
+        const bDate = new Date(b.updated_at || b.upload_date);
+        return bDate.getTime() - aDate.getTime();
+      });
       setFiles(data);
     } finally {
       setLoading(false);
@@ -38,41 +46,48 @@ export default function KnowledgeBasePage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100">
-          <FileText className="w-7 h-7 text-blue-600" />
+      <div className="flex sm:flex-row flex-col items-center justify-between gap-3 mb-8">
+        <div className="flex items-center gap-3">
+
+          <div className="w-12 h-12 flex items-center justify-center rounded-full bg-app-foreground">
+            <FileText className="w-7 h-7 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-app-foreground mb-1">Knowledge Base</h1>
+            <p className="text-neutral-600 text-sm">
+              Upload, manage, and download your knowledge base documents.
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-3xl font-bold text-app-foreground mb-1">Knowledge Base</h1>
-          <p className="text-neutral-600 text-sm">
-            Upload, manage, and download your knowledge base documents.
-          </p>
-        </div>
+        <Button
+          onClick={() => setUploadModalOpen(true)}
+          className="gap-2 bg-app-foreground text-white "
+        >
+          <Upload className="h-4 w-4" />
+          Upload Document
+        </Button>
       </div>
 
-      <div className="bg-white rounded-xl shadow border border-app-secondary p-6 mb-8">
-        <KnowledgeBaseUpload onUpload={loadFiles} />
+      <KnowledgeBaseSummary
+        files={files}
+        onDownload={handleDownload}
+        isLoading={loading}
+      />
+
+      <div className="bg-white rounded-xl shadow border border-app-secondary p-6 mt-4">
+        <KnowledgeBaseList
+          files={files}
+          onDelete={handleDelete}
+          onDownload={handleDownload}
+          isLoading={loading}
+        />
       </div>
 
-      <div className="bg-white rounded-xl shadow border border-app-secondary p-6">
-        <h2 className="text-lg font-semibold text-app-foreground mb-4">Uploaded Documents</h2>
-        {loading ? (
-          <div className="flex items-center gap-2 text-blue-600 py-8 justify-center">
-            <Loader2 className="animate-spin w-5 h-5" />
-            <span>Loading documents...</span>
-          </div>
-        ) : files.length === 0 ? (
-          <div className="text-neutral-500 text-center py-8">
-            No documents found. Upload your first file above.
-          </div>
-        ) : (
-          <KnowledgeBaseList
-            files={files}
-            onDelete={handleDelete}
-            onDownload={handleDownload}
-          />
-        )}
-      </div>
+      <KnowledgeBaseUpload
+        open={uploadModalOpen}
+        onOpenChange={setUploadModalOpen}
+        onUpload={loadFiles}
+      />
     </div>
   );
 }

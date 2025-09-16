@@ -207,6 +207,8 @@ export default function EnhancedFileUpload({
 
     const getAcceptString = () => {
         const extensions = [];
+        if (acceptedFileTypes.includes("text/plain")) extensions.push(".txt");
+        if (acceptedFileTypes.includes("application/pdf")) extensions.push(".pdf");
         if (acceptedFileTypes.includes("text/csv")) extensions.push(".csv");
         if (acceptedFileTypes.includes("application/vnd.ms-excel")) extensions.push(".xls");
         if (acceptedFileTypes.includes("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) extensions.push(".xlsx");

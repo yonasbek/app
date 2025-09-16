@@ -6,7 +6,9 @@ export interface KnowledgeBaseFile {
   document_size: number;
   document_url: string;
   upload_date: string;
+  updated_at: string;
   module: string;
+  category: string;
 }
 
 class KnowledgeBaseService {
@@ -17,10 +19,11 @@ class KnowledgeBaseService {
     return res.data;
   }
 
-  async upload(file: File): Promise<KnowledgeBaseFile> {
+  async upload(file: File, category: string): Promise<KnowledgeBaseFile> {
     const formData = new FormData();
     formData.append('files', file);
-    formData.append('module', 'KNOWLEDGE_BASE');
+    formData.append('module', category);
+
     try {
       const res = await api.post(this.baseUrl, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },

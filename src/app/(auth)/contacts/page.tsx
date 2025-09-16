@@ -48,7 +48,10 @@ export default function ContactsPage() {
     totalPages: 0,
   });
   const [statistics, setStatistics] = useState<ContactStatistics | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState({
+    contacts: true,
+    statistics: true
+  });
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<ContactFilters>({
@@ -64,25 +67,31 @@ export default function ContactsPage() {
   }, [filters]);
 
   const loadData = async () => {
+    setLoading({ contacts: true, statistics: true });
     try {
-      setLoading(true);
+      const contactsPromise = isAdmin
+        ? contactService.getAllContacts(filters)
+        : contactService.getContactsForStaff(filters);
+
+      const statsPromise = contactService.getStatistics().catch(() => null);
+
       const [contactsResponse, statsResponse] = await Promise.all([
-        isAdmin
-          ? contactService.getAllContacts(filters)
-          : contactService.getContactsForStaff(filters),
-        contactService.getStatistics().catch(() => null)
+        contactsPromise,
+        statsPromise
       ]);
+
       setSearchResponse(contactsResponse);
       setStatistics(statsResponse);
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
-      setLoading(false);
+      setLoading({ contacts: false, statistics: false });
     }
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(prev => ({ ...prev, contacts: true }));
     setFilters(prev => ({ ...prev, page: 1 }));
   };
 
@@ -131,29 +140,42 @@ export default function ContactsPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-12 h-12 gradient-primary rounded-full animate-pulse"></div>
-          <p className="text-gray-600">Loading contacts...</p>
-        </div>
-      </div>
-    );
-  }
+  const StatisticsSkeleton = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {[1, 2, 3, 4].map((i) => (
+        <Card key={i} className="border border-gray-200 px-4">
+          <div className="flex flex-row items-center justify-start space-x-4">
+            <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse" />
+            <div className="flex flex-col items-start justify-center mt-2 space-y-2">
+              <div className="w-24 h-4 bg-gray-200 rounded animate-pulse" />
+              <div className="w-16 h-6 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+
+  const ContactsTableSkeleton = () => (
+    <div className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-20 bg-gray-100 rounded-lg animate-pulse" />
+      ))}
+    </div>
+  );
 
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Contact Directory</h1>
-          <p className="text-gray-600">Manage healthcare organization contacts</p>
+          <h1 className="text-3xl font-bold text-app-foreground mb-2">Contact Directory</h1>
+          <p className="text-app-foreground">Manage healthcare organization contacts</p>
         </div>
         <div className="flex flex-wrap gap-3 mt-4 sm:mt-0">
           <button
             onClick={() => router.push('/contacts/suggestions')}
-            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 flex items-center space-x-2"
+            className="px-4 py-2 bg-app-foreground text-white rounded-lg hover:bg-app-foreground-light transition-colors duration-200 flex items-center space-x-2"
           >
             <Eye className="w-4 h-4" />
             <span>View Suggestions</span>
@@ -161,7 +183,7 @@ export default function ContactsPage() {
           {!isAdmin && (
             <button
               onClick={() => router.push('/contacts/suggest-new')}
-              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200 flex items-center space-x-2"
+              className="px-4 py-2 bg-app-foreground text-white rounded-lg hover:bg-app-foreground-light transition-all duration-200 flex items-center space-x-2"
             >
               <Plus className="w-4 h-4" />
               <span>Suggest Contact</span>
@@ -171,14 +193,14 @@ export default function ContactsPage() {
             <>
               <button
                 onClick={() => handleExport('csv')}
-                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 flex items-center space-x-2"
+                className="px-4 py-2 bg-app-foreground text-white rounded-lg hover:bg-app-foreground-light transition-colors duration-200 flex items-center space-x-2"
               >
                 <Download className="w-4 h-4" />
                 <span>Export</span>
               </button>
               <button
                 onClick={() => router.push('/contacts/new')}
-                className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2"
+                className="px-4 py-2 bg-app-foreground text-white rounded-lg hover:bg-app-foreground-light transition-all duration-200 flex items-center space-x-2"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Contact</span>
@@ -189,52 +211,62 @@ export default function ContactsPage() {
       </div>
 
       {/* Statistics Cards */}
-      {statistics && (
+      {loading.statistics ? (
+        <StatisticsSkeleton />
+      ) : statistics && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="border border-gray-200">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-gray-600" />
+          <Card className="border border-app-foreground px-4">
+            <div className="flex flex-row items-center justify-start space-x-4">
+              <div className="w-12 h-12 bg-app-foreground rounded-full flex items-center justify-center">
+                <span className="flex items-center justify-center w-12 h-12 rounded-full bg-app-foreground">
+                  <Users className="w-6 h-6 text-white" />
+                </span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{statistics.totalContacts}</p>
-                <p className="text-sm text-gray-600">Total Contacts</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="border border-gray-200">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <UserCheck className="w-6 h-6 text-gray-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{statistics.activeContacts}</p>
-                <p className="text-sm text-gray-600">Active Contacts</p>
+              <div className="flex flex-col items-start justify-center mt-2">
+                <p className="text-sm font-medium text-app-foreground">Total Contacts</p>
+                <p className="text-2xl font-bold text-app-foreground">{statistics.totalContacts}</p>
               </div>
             </div>
           </Card>
 
-          <Card className="border border-gray-200">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <UserX className="w-6 h-6 text-gray-600" />
+          <Card className="border border-green-400 bg-green-50 px-4">
+            <div className="flex flex-row items-center justify-start space-x-4">
+              <div className="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center">
+                <span className="flex items-center justify-center w-12 h-12 rounded-full bg-green-100">
+                  <UserCheck className="w-6 h-6 text-green-700" />
+                </span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{statistics.inactiveContacts}</p>
-                <p className="text-sm text-gray-600">Inactive Contacts</p>
+              <div className="flex flex-col items-start justify-center mt-2">
+                <p className="text-sm font-medium text-green-700">Active Contacts</p>
+                <p className="text-2xl font-bold text-green-700">{statistics.activeContacts}</p>
               </div>
             </div>
           </Card>
 
-          <Card className="border border-gray-200">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <AlertCircle className="w-6 h-6 text-gray-600" />
+          <Card className="border border-red-400 bg-red-50 px-4">
+            <div className="flex flex-row items-center justify-start space-x-4">
+              <div className="w-12 h-12 bg-red-200 rounded-full flex items-center justify-center">
+                <span className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100">
+                  <UserX className="w-6 h-6 text-red-700" />
+                </span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{statistics.pendingSuggestions}</p>
-                <p className="text-sm text-gray-600">Pending Suggestions</p>
+              <div className="flex flex-col items-start justify-center mt-2">
+                <p className="text-sm font-medium text-red-700">Inactive Contacts</p>
+                <p className="text-2xl font-bold text-red-700">{statistics.inactiveContacts}</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="border border-yellow-400 bg-yellow-50 px-4">
+            <div className="flex flex-row items-center justify-start space-x-4">
+              <div className="w-12 h-12 bg-yellow-200 rounded-full flex items-center justify-center">
+                <span className="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-100">
+                  <AlertCircle className="w-6 h-6 text-yellow-700" />
+                </span>
+              </div>
+              <div className="flex flex-col items-start justify-center mt-2">
+                <p className="text-sm font-medium text-yellow-700">Pending Suggestions</p>
+                <p className="text-2xl font-bold text-yellow-700">{statistics.pendingSuggestions}</p>
               </div>
             </div>
           </Card>
@@ -260,7 +292,7 @@ export default function ContactsPage() {
             <button
               type="button"
               onClick={() => setShowFilters(!showFilters)}
-              className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 flex items-center space-x-2"
+              className="px-6 py-3 bg-app-foreground text-white rounded-lg hover:bg-app-foreground-light transition-colors duration-200 flex items-center space-x-2"
             >
               <Filter className="w-5 h-5" />
               <span>Filters</span>
@@ -268,7 +300,7 @@ export default function ContactsPage() {
             </button>
             <button
               type="submit"
-              className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200"
+              className="px-6 py-3 bg-app-foreground text-white rounded-lg hover:bg-app-foreground-light transition-all duration-200"
             >
               Search
             </button>
@@ -324,104 +356,110 @@ export default function ContactsPage() {
 
       {/* Contacts Grid - Mobile and Desktop Responsive */}
       <div className="space-y-6">
-        <div className="hidden lg:block">
-          <Card>
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead className="bg-gray-50">
-                  <tr className="border-b border-gray-100">
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Institution & Individual</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Organization & Position</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Contact Information</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Location</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 bg-white">
-                  {searchResponse.contacts.map((contact) => (
-                    <tr key={contact.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-gray-900">{contact.instituteName}</div>
-                        <div className="text-sm text-gray-500">{contact.individualName}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-gray-900">{CONTACT_TYPE_LABELS[contact.organizationType]}</div>
-                        <div className="text-sm text-gray-500">{CONTACT_POSITION_LABELS[contact.position]}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <Phone className="w-4 h-4 text-gray-400" />
-                            <span className="text-sm">{contact.phoneNumber}</span>
-                            <button
-                              onClick={() => handleCopy(contact.phoneNumber, `phone-${contact.id}`)}
-                              className="text-gray-500 hover:text-gray-700 transition-colors"
-                            >
-                              {copySuccess === `phone-${contact.id}` ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                            </button>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Mail className="w-4 h-4 text-gray-400" />
-                            <span className="text-sm">{contact.emailAddress}</span>
-                            <button
-                              onClick={() => handleCopy(contact.emailAddress, `email-${contact.id}`)}
-                              className="text-gray-500 hover:text-gray-700 transition-colors"
-                            >
-                              {copySuccess === `email-${contact.id}` ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                            </button>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-gray-900">{contact.region}</div>
-                        <div className="text-sm text-gray-500">{contact.location}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-3 py-1 text-xs font-medium rounded-full ${contact.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                          }`}>
-                          {contact.isActive ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-3">
-                          {isAdmin && (
-                            <>
+        {loading.contacts ? (
+          <ContactsTableSkeleton />
+        ) : (
+          <div className="hidden lg:block">
+            <Card>
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead className="bg-gray-50">
+                    <tr className="border-b border-gray-100">
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Institution & Individual</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Organization & Position</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Contact Information</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Location</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 bg-white">
+                    {searchResponse.contacts.map((contact) => (
+                      <tr key={contact.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-gray-900">{contact.instituteName}</div>
+                          <div className="text-sm text-gray-500">{contact.individualName}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-gray-900">{CONTACT_TYPE_LABELS[contact.organizationType]}</div>
+                          <div className="text-sm text-gray-500">{CONTACT_POSITION_LABELS[contact.position]}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-4 h-4 text-gray-400" />
+                              <span className="text-sm">{contact.phoneNumber}</span>
                               <button
-                                onClick={() => router.push(`/contacts/${contact.id}/edit`)}
+                                onClick={() => handleCopy(contact.phoneNumber, `phone-${contact.id}`)}
                                 className="text-gray-500 hover:text-gray-700 transition-colors"
                               >
-                                <Edit3 className="w-4 h-4" />
+                                {copySuccess === `phone-${contact.id}` ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                               </button>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Mail className="w-4 h-4 text-gray-400" />
+                              <span className="text-sm">{contact.emailAddress}</span>
                               <button
-                                onClick={() => handleDelete(contact.id)}
-                                className="text-gray-500 hover:text-red-600 transition-colors"
+                                onClick={() => handleCopy(contact.emailAddress, `email-${contact.id}`)}
+                                className="text-gray-500 hover:text-gray-700 transition-colors"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                {copySuccess === `email-${contact.id}` ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                               </button>
-                            </>
-                          )}
-                          <button
-                            onClick={() => router.push(`/contacts/${contact.id}/suggest`)}
-                            className="text-gray-500 hover:text-gray-700 transition-colors"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-        </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-gray-900">{contact.region}</div>
+                          <div className="text-sm text-gray-500">{contact.location}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-3 py-1 text-xs font-medium rounded-full ${contact.isActive
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                            }`}>
+                            {contact.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center space-x-3">
+                            {isAdmin && (
+                              <>
+                                <button
+                                  onClick={() => router.push(`/contacts/${contact.id}/edit`)}
+                                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(contact.id)}
+                                  className="text-gray-500 hover:text-red-600 transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                            <button
+                              onClick={() => router.push(`/contacts/${contact.id}/suggest`)}
+                              className="text-gray-500 hover:text-gray-700 transition-colors"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        )}
 
         {/* Mobile Card View */}
         <div className="lg:hidden space-y-4">
-          {searchResponse.contacts.map((contact) => (
+          {loading.contacts ? (
+            <ContactsTableSkeleton />
+          ) : searchResponse.contacts.map((contact) => (
             <Card key={contact.id}>
               <div className="space-y-4">
                 <div className="flex justify-between items-start">

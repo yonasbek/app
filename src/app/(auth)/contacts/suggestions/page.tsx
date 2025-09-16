@@ -3,12 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { contactService } from '@/services/contactService';
-import { 
-  ContactSuggestion, 
-  SuggestionStatus, 
-  SuggestionType, 
-  SUGGESTION_STATUS_LABELS, 
-  SUGGESTION_TYPE_LABELS 
+import {
+  ContactSuggestion,
+  SuggestionStatus,
+  SuggestionType,
+  SUGGESTION_STATUS_LABELS,
+  SUGGESTION_TYPE_LABELS
 } from '@/types/contact';
 
 // SVG Icons
@@ -276,7 +276,7 @@ export default function ContactSuggestionsPage() {
                 <div className="mt-4 flex gap-2">
                   <button
                     onClick={() => setSelectedSuggestion(suggestion)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                    className="px-4 py-2 bg-app-foreground text-white rounded-md text-sm"
                   >
                     Review
                   </button>
@@ -292,7 +292,7 @@ export default function ContactSuggestionsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
             <h2 className="text-xl font-bold mb-4">Review Suggestion</h2>
-            
+
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Comment (optional)

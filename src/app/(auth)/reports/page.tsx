@@ -25,17 +25,17 @@ function MetricCard({
   icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    <Card className="border border-app-secondary bg-gradient-to-br from-app-accent/80 to-white shadow-md hover:shadow-lg transition-shadow duration-200 rounded-xl p-0 max-w-[220px] w-full mx-auto">
-      <div className="flex items-center gap-3 px-3 py-3">
-        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-app-primary/10 shadow-inner">
-          <Icon className="w-5 h-5 text-app-primary" />
+    <div className="bg-white border border-app-secondary bg-gradient-to-br from-app-accent/80 to-white shadow-md hover:shadow-lg transition-shadow duration-200 rounded-xl px-2 py-4 max-w-[220px] w-full ">
+      <div className="flex items-center gap-2 w-full min-w-0 px-0 py-2">
+        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 shadow-inner" style={{ aspectRatio: '1 / 1' }}>
+          <Icon className="w-7 h-7 text-app-foreground" />
         </div>
-        <div className="min-w-0">
+        <div className="flex-1 min-w-0 ">
           <p className="text-sm font-medium text-app-foreground mb-0.5 ">{title}</p>
           <p className="text-xl font-extrabold text-app-foreground tracking-tight ">{value}</p>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
 

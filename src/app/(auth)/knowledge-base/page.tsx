@@ -61,7 +61,7 @@ export default function KnowledgeBasePage() {
         </div>
         <Button
           onClick={() => setUploadModalOpen(true)}
-          className="gap-2 bg-app-foreground text-white "
+          className="gap-2 bg-app-foreground text-white hover:text-app-foreground border border-app-foreground "
         >
           <Upload className="h-4 w-4" />
           Upload Document

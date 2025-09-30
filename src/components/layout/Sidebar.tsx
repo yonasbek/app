@@ -78,11 +78,11 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen }: Sidebar
                     <div className="flex items-center justify-between p-4 border-b border-app-secondary">
                         <div className="flex items-center space-x-3">
                             <div className={`bg-app-foreground rounded-lg flex items-center justify-center ${(showFullContent || isMobileOpen) ? 'w-8 h-8' : 'w-10 h-10'}`}>
-                                <span className={`text-white font-bold ${(showFullContent || isMobileOpen) ? 'text-sm' : 'text-base'}`}>ML</span>
+                                <span className={`text-white font-bold ${(showFullContent || isMobileOpen) ? 'text-sm' : 'text-base'}`}>OM</span>
                             </div>
                             {(showFullContent || isMobileOpen) && (
                                 <span className="font-semibold text-lg text-app-foreground">
-                                    MSLeo
+                                    Office Management
                                 </span>
                             )}
                         </div>

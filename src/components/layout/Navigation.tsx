@@ -36,7 +36,7 @@ export default function Navigation() {
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
               <Link href="/dashboard" className="text-xl font-bold text-gray-800">
-                MSLeo
+                OMs
               </Link>
             </div>
             <div className="hidden md:ml-6 md:flex md:space-x-4">
@@ -44,11 +44,10 @@ export default function Navigation() {
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`inline-flex items-center px-3 py-2 text-sm font-medium ${
-                    pathname === item.path
+                  className={`inline-flex items-center px-3 py-2 text-sm font-medium ${pathname === item.path
                       ? 'text-blue-600'
                       : 'text-gray-500 hover:text-gray-700'
-                  }`}
+                    }`}
                 >
                   {item.name}
                 </Link>
@@ -91,11 +90,10 @@ export default function Navigation() {
             <Link
               key={item.path}
               href={item.path}
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
-                pathname === item.path
+              className={`block px-3 py-2 rounded-md text-base font-medium ${pathname === item.path
                   ? 'text-blue-600 bg-blue-50'
                   : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-              }`}
+                }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {item.name}

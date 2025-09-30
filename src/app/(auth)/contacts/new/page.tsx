@@ -28,7 +28,7 @@ export default function CreateContactPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Create New Contact</h1>
-          <p className="text-gray-600 mt-1">Add a new contact to the MSLEO directory</p>
+          <p className="text-gray-600 mt-1">Add a new contact to the Office Management System directory</p>
         </div>
         <button
           onClick={() => router.push('/contacts')}

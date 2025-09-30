@@ -3,13 +3,13 @@
 import React, { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { contactService } from '@/services/contactService';
-import { 
-  ContactFormData, 
-  SuggestionType, 
-  ContactType, 
+import {
+  ContactFormData,
+  SuggestionType,
+  ContactType,
   ContactPosition,
   CONTACT_TYPE_LABELS,
-  CONTACT_POSITION_LABELS 
+  CONTACT_POSITION_LABELS
 } from '@/types/contact';
 
 // SVG Icons
@@ -25,11 +25,11 @@ const SaveIcon = () => (
   </svg>
 );
 interface SuggestNewContactPageProps {
-    params?: Promise<{ id?: string }>
-  }
+  params?: Promise<{ id?: string }>
+}
 export default function SuggestNewContactPage({ params }: SuggestNewContactPageProps) {
   const router = useRouter();
-  
+
   const [formData, setFormData] = useState<ContactFormData>({
     instituteName: '',
     individualName: '',
@@ -45,10 +45,10 @@ export default function SuggestNewContactPage({ params }: SuggestNewContactPageP
   const [reason, setReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
   let resolvedParams: { id?: string } = {};
-  if(params){
+  if (params) {
     resolvedParams = use(params);
   }
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!reason.trim()) {
@@ -64,7 +64,7 @@ export default function SuggestNewContactPage({ params }: SuggestNewContactPageP
         reason,
         contact_id: resolvedParams.id,
       });
-      
+
       router.push('/contacts/suggestions');
     } catch (error) {
       console.error('Failed to create suggestion:', error);
@@ -91,7 +91,7 @@ export default function SuggestNewContactPage({ params }: SuggestNewContactPageP
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Suggest New Contact</h1>
           <p className="text-gray-600 mt-1">
-            Suggest a new contact to be added to the MSLEO directory
+            Suggest a new contact to be added to the Office Management System directory
           </p>
         </div>
       </div>

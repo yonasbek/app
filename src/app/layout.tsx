@@ -6,8 +6,8 @@ import { Toaster } from "sonner";
 // const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "MSLeo App",
-  description: "MSLeo Application",
+  title: "Office Management System ",
+  description: "Office Management System Application",
 };
 
 export default function RootLayout({

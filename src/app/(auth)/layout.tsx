@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import TopBar from '@/components/layout/TopBar';
 import ResponsiveTest from '@/components/ui/ResponsiveTest';
+import Footer from '@/components/layout/Footer';
 
 export default function AuthLayout({
   children,
@@ -58,9 +59,10 @@ export default function AuthLayout({
         isMobileMenuOpen={isMobileMenuOpen}
       />
 
+
       {/* Main Content */}
       <main
-        className={`pt-16 transition-all duration-300 ease-in-out
+        className={`pt-16 pb-16 transition-all duration-300 ease-in-out
           ${/* Mobile: no left margin */ ''}
           ml-0
           ${/* Desktop: left margin based on sidebar state */ ''}
@@ -73,7 +75,8 @@ export default function AuthLayout({
           </div>
         </div>
       </main>
-
+      {/* Footer */}
+      <Footer sidebarCollapsed={sidebarCollapsed} />
       {/* Responsive Test Component - Only in development */}
       {process.env.NODE_ENV === 'development' && <ResponsiveTest />}
     </div>

@@ -58,7 +58,7 @@ export default function LoginPage() {
               </svg>
             </div>
             <div className="space-y-3">
-              <h1 className="text-2xl font-bold leading-tight">Office Manager</h1>
+              <h1 className="text-2xl font-bold leading-tight">Office Management System</h1>
               <p className="text-sm text-white opacity-90 leading-relaxed">
                 Streamline your office operations with our comprehensive management platform
               </p>
@@ -98,7 +98,7 @@ export default function LoginPage() {
               <Building className="w-6 h-6 text-white" />
             </div>
 
-            <h2 className="text-xl font-bold text-app-foreground">MSLeo</h2>
+            <h2 className="text-xl font-bold text-app-foreground">Office Management System</h2>
           </div>
 
           {/* Welcome Message */}

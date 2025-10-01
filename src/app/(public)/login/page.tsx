@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
 import { Building } from 'lucide-react';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -94,11 +95,18 @@ export default function LoginPage() {
 
           {/* Logo & Title */}
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto bg-app-primary rounded-full flex items-center justify-center mb-3">
-              <Building className="w-6 h-6 text-white" />
+            <div className="w-40 h-40 mx-auto rounded-full flex items-center justify-center mb-1">
+              {/* Logo */}
+              <Image
+                src="/om logo.png"
+                alt="Office Management System Logo"
+                className="rounded-full "
+                width={120}
+                height={120}
+
+              />
             </div>
 
-            <h2 className="text-xl font-bold text-app-foreground">Office Management System</h2>
           </div>
 
           {/* Welcome Message */}

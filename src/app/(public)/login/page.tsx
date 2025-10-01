@@ -100,7 +100,7 @@ export default function LoginPage() {
               <Image
                 src="/om logo.png"
                 alt="Office Management System Logo"
-                className="rounded-full "
+                className="rounded-full shadow-lg border border-app-secondary "
                 width={120}
                 height={120}
 

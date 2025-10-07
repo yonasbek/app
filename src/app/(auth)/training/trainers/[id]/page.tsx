@@ -21,9 +21,9 @@ import {
 } from 'lucide-react';
 
 interface TrainerDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function TrainerDetailPage({ params }: TrainerDetailPageProps) {
@@ -31,17 +31,23 @@ export default function TrainerDetailPage({ params }: TrainerDetailPageProps) {
   const [trainer, setTrainer] = useState<Trainer | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [trainerId, setTrainerId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (params.id) {
-      loadTrainer();
-    }
-  }, [params.id]);
+    const loadParams = async () => {
+      const resolvedParams = await params;
+      setTrainerId(resolvedParams.id);
+      if (resolvedParams.id) {
+        loadTrainer(resolvedParams.id);
+      }
+    };
+    loadParams();
+  }, [params]);
 
-  const loadTrainer = async () => {
+  const loadTrainer = async (id: string) => {
     try {
       setLoading(true);
-      const trainerData = await trainingService.getTrainerById(params.id);
+      const trainerData = await trainingService.getTrainerById(id);
       setTrainer(trainerData);
     } catch (error) {
       console.error('Failed to load trainer:', error);
@@ -54,7 +60,9 @@ export default function TrainerDetailPage({ params }: TrainerDetailPageProps) {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this trainer?')) {
       try {
-        await trainingService.deleteTrainer(params.id);
+        if (trainerId) {
+          await trainingService.deleteTrainer(trainerId);
+        }
         router.push('/training/trainers');
       } catch (error) {
         console.error('Failed to delete trainer:', error);
@@ -190,58 +198,10 @@ export default function TrainerDetailPage({ params }: TrainerDetailPageProps) {
                   </div>
                 </div>
 
-                <div className="flex items-center">
-                  <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Location</p>
-                    <p className="text-gray-900">{trainer.location || 'Not specified'}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <DollarSign className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Hourly Rate</p>
-                    <p className="text-gray-900">{formatCurrency(trainer.hourly_rate)}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <Award className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Experience (Years)</p>
-                    <p className="text-gray-900">{trainer.experience_years || 'Not specified'}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <Star className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Rating</p>
-                    <p className="text-gray-900">{trainer.rating || 'Not rated'}</p>
-                  </div>
-                </div>
               </div>
             </div>
           </Card>
 
-          {/* Specializations */}
-          {trainer.specializations && trainer.specializations.length > 0 && (
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Specializations</h2>
-              {getSpecializationBadges(trainer.specializations)}
-            </Card>
-          )}
-
-          {/* Bio */}
-          {trainer.bio && (
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Biography</h2>
-              <p className="text-gray-600 whitespace-pre-line">{trainer.bio}</p>
-            </Card>
-          )}
 
           {/* Assigned Courses */}
           {trainer.courses && trainer.courses.length > 0 && (

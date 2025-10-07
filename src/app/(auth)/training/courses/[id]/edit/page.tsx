@@ -88,22 +88,7 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
   const initialData: Partial<CourseFormData> = {
     title: course.title,
     description: course.description,
-    code: course.code,
-    status: course.status,
-    level: course.level,
-    duration_hours: course.duration_hours,
-    max_participants: course.max_participants,
-    price: course.price,
-    location: course.location,
-    start_date: course.start_date,
-    end_date: course.end_date,
-    registration_deadline: course.registration_deadline,
-    prerequisites: course.prerequisites,
-    learning_objectives: course.learning_objectives,
-    course_outline: course.course_outline,
-    materials: course.materials,
-    is_active: course.is_active,
-    created_by: course.created_by
+    is_active: course.is_active
   };
 
   return (
@@ -123,12 +108,14 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
       </div>
 
       {/* Course Form */}
-      <CourseForm
-        courseId={params.id}
-        initialData={initialData}
-        onSave={handleSave}
-        onCancel={handleCancel}
-      />
+      {courseId && (
+        <CourseForm
+          courseId={courseId}
+          initialData={initialData}
+          onSave={handleSave}
+          onCancel={handleCancel}
+        />
+      )}
     </div>
   );
 }

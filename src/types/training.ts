@@ -52,13 +52,17 @@ export interface CourseEnrollment {
   completed_at?: Date;
   progress_percentage?: number;
   final_grade?: number;
+  certificate_url?: string;
+  notes?: string;
+  feedback?: string;
   attendance_required: boolean;
+  attendance_count: number;
   total_sessions: number;
   payment_required: boolean;
   amount_paid?: number;
+  payment_date?: Date;
   payment_method?: string;
   payment_reference?: string;
-  notes?: string;
   createdAt: Date;
   updatedAt: Date;
   course?: Course;

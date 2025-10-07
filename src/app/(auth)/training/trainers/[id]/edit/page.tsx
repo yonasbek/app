@@ -8,9 +8,9 @@ import Card from '@/components/ui/Card';
 import { ArrowLeft, Save, X } from 'lucide-react';
 
 interface EditTrainerPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function EditTrainerPage({ params }: EditTrainerPageProps) {
@@ -20,43 +20,35 @@ export default function EditTrainerPage({ params }: EditTrainerPageProps) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [trainerId, setTrainerId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<TrainerFormData>({
-    first_name: '',
-    last_name: '',
+    name: '',
     email: '',
     phone: '',
-    location: '',
-    bio: '',
-    specializations: [],
-    experience_years: 0,
-    hourly_rate: undefined,
-    rating: undefined,
     is_active: true
   });
 
   useEffect(() => {
-    if (params.id) {
-      loadTrainer();
-    }
-  }, [params.id]);
+    const loadParams = async () => {
+      const resolvedParams = await params;
+      setTrainerId(resolvedParams.id);
+      if (resolvedParams.id) {
+        loadTrainer(resolvedParams.id);
+      }
+    };
+    loadParams();
+  }, [params]);
 
-  const loadTrainer = async () => {
+  const loadTrainer = async (id: string) => {
     try {
       setLoading(true);
-      const trainerData = await trainingService.getTrainerById(params.id);
+      const trainerData = await trainingService.getTrainerById(id);
       setTrainer(trainerData);
       setFormData({
-        first_name: trainerData.first_name,
-        last_name: trainerData.last_name,
+        name: trainerData.name,
         email: trainerData.email,
         phone: trainerData.phone || '',
-        location: trainerData.location || '',
-        bio: trainerData.bio || '',
-        specializations: trainerData.specializations || [],
-        experience_years: trainerData.experience_years || 0,
-        hourly_rate: trainerData.hourly_rate,
-        rating: trainerData.rating,
         is_active: trainerData.is_active
       });
     } catch (error) {
@@ -74,20 +66,12 @@ export default function EditTrainerPage({ params }: EditTrainerPageProps) {
     }
   };
 
-  const handleSpecializationChange = (value: string) => {
-    const specializations = value.split(',').map(s => s.trim()).filter(s => s.length > 0);
-    handleInputChange('specializations', specializations);
-  };
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.first_name.trim()) {
-      newErrors.first_name = 'First name is required';
-    }
-
-    if (!formData.last_name.trim()) {
-      newErrors.last_name = 'Last name is required';
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
     }
 
     if (!formData.email.trim()) {
@@ -96,17 +80,6 @@ export default function EditTrainerPage({ params }: EditTrainerPageProps) {
       newErrors.email = 'Email is invalid';
     }
 
-    if (formData.experience_years < 0) {
-      newErrors.experience_years = 'Experience years must be positive';
-    }
-
-    if (formData.hourly_rate && formData.hourly_rate < 0) {
-      newErrors.hourly_rate = 'Hourly rate must be positive';
-    }
-
-    if (formData.rating && (formData.rating < 0 || formData.rating > 5)) {
-      newErrors.rating = 'Rating must be between 0 and 5';
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -121,8 +94,10 @@ export default function EditTrainerPage({ params }: EditTrainerPageProps) {
 
     try {
       setSaving(true);
-      const updatedTrainer = await trainingService.updateTrainer(params.id, formData);
-      router.push(`/training/trainers/${updatedTrainer.id}`);
+      if (trainerId) {
+        const updatedTrainer = await trainingService.updateTrainer(trainerId, formData);
+        router.push(`/training/trainers/${updatedTrainer.id}`);
+      }
     } catch (error) {
       console.error('Failed to update trainer:', error);
       setErrors({ general: 'Failed to update trainer. Please try again.' });
@@ -167,7 +142,7 @@ export default function EditTrainerPage({ params }: EditTrainerPageProps) {
       {/* Header */}
       <div className="flex items-center space-x-4">
         <button
-          onClick={() => router.push(`/training/trainers/${params.id}`)}
+          onClick={() => trainerId && router.push(`/training/trainers/${trainerId}`)}
           className="p-2 hover:bg-gray-100 rounded-lg"
         >
           <ArrowLeft className="h-5 w-5 text-gray-600" />
@@ -191,34 +166,18 @@ export default function EditTrainerPage({ params }: EditTrainerPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                First Name *
+                Name *
               </label>
               <input
                 type="text"
-                value={formData.first_name}
-                onChange={(e) => handleInputChange('first_name', e.target.value)}
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                  errors.first_name ? 'border-red-300' : 'border-gray-300'
+                  errors.name ? 'border-red-300' : 'border-gray-300'
                 }`}
-                placeholder="Enter first name"
+                placeholder="Enter full name"
               />
-              {errors.first_name && <p className="text-red-500 text-sm mt-1">{errors.first_name}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Last Name *
-              </label>
-              <input
-                type="text"
-                value={formData.last_name}
-                onChange={(e) => handleInputChange('last_name', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                  errors.last_name ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Enter last name"
-              />
-              {errors.last_name && <p className="text-red-500 text-sm mt-1">{errors.last_name}</p>}
+              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
             </div>
 
             <div>
@@ -250,101 +209,11 @@ export default function EditTrainerPage({ params }: EditTrainerPageProps) {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Location
-              </label>
-              <input
-                type="text"
-                value={formData.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="Enter location"
-              />
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Experience (Years)
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={formData.experience_years}
-                onChange={(e) => handleInputChange('experience_years', parseInt(e.target.value) || 0)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                  errors.experience_years ? 'border-red-300' : 'border-gray-300'
-                }`}
-              />
-              {errors.experience_years && <p className="text-red-500 text-sm mt-1">{errors.experience_years}</p>}
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Hourly Rate
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.hourly_rate || ''}
-                onChange={(e) => handleInputChange('hourly_rate', e.target.value ? parseFloat(e.target.value) : undefined)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                  errors.hourly_rate ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Enter hourly rate"
-              />
-              {errors.hourly_rate && <p className="text-red-500 text-sm mt-1">{errors.hourly_rate}</p>}
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Rating (0-5)
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="5"
-                step="0.1"
-                value={formData.rating || ''}
-                onChange={(e) => handleInputChange('rating', e.target.value ? parseFloat(e.target.value) : undefined)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                  errors.rating ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Enter rating"
-              />
-              {errors.rating && <p className="text-red-500 text-sm mt-1">{errors.rating}</p>}
-            </div>
           </div>
 
-          <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Specializations
-            </label>
-            <input
-              type="text"
-              value={formData.specializations.join(', ')}
-              onChange={(e) => handleSpecializationChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              placeholder="Enter specializations separated by commas"
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              Separate multiple specializations with commas
-            </p>
-          </div>
-
-          <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Bio
-            </label>
-            <textarea
-              value={formData.bio}
-              onChange={(e) => handleInputChange('bio', e.target.value)}
-              rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              placeholder="Enter trainer biography"
-            />
-          </div>
 
           <div className="mt-6 flex items-center space-x-2">
             <input
@@ -364,7 +233,7 @@ export default function EditTrainerPage({ params }: EditTrainerPageProps) {
         <div className="flex items-center justify-end space-x-4">
           <button
             type="button"
-            onClick={() => router.push(`/training/trainers/${params.id}`)}
+            onClick={() => trainerId && router.push(`/training/trainers/${trainerId}`)}
             className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
           >
             <X className="h-4 w-4" />

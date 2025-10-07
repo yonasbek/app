@@ -153,7 +153,7 @@ export default function NewEnrollmentPage() {
                 <option value="">Select a course</option>
                 {courses.map((course) => (
                   <option key={course.id} value={course.id}>
-                    {course.title} ({course.code})
+                    {course.title}
                   </option>
                 ))}
               </select>
@@ -174,7 +174,7 @@ export default function NewEnrollmentPage() {
                 <option value="">Select a trainee</option>
                 {trainees.map((trainee) => (
                   <option key={trainee.id} value={trainee.id}>
-                    {trainee.first_name} {trainee.last_name} ({trainee.email})
+                    {trainee.name} ({trainee.email})
                   </option>
                 ))}
               </select>
@@ -192,12 +192,13 @@ export default function NewEnrollmentPage() {
                   <span>{selectedCourse.title}</span>
                 </div>
                 <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-2 text-blue-600" />
-                  <span>{selectedCourse.duration_hours} hours</span>
-                </div>
-                <div className="flex items-center">
-                  <DollarSign className="h-4 w-4 mr-2 text-blue-600" />
-                  <span>{selectedCourse.price ? `$${selectedCourse.price}` : 'Free'}</span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    selectedCourse.is_active 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {selectedCourse.is_active ? 'Active' : 'Inactive'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -209,7 +210,7 @@ export default function NewEnrollmentPage() {
               <h3 className="font-medium text-green-900 mb-2">Selected Trainee</h3>
               <div className="flex items-center text-sm">
                 <User className="h-4 w-4 mr-2 text-green-600" />
-                <span>{selectedTrainee.first_name} {selectedTrainee.last_name} - {selectedTrainee.email}</span>
+                <span>{selectedTrainee.name} - {selectedTrainee.email}</span>
               </div>
             </div>
           )}

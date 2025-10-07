@@ -22,9 +22,9 @@ import {
 } from 'lucide-react';
 
 interface TraineeDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function TraineeDetailPage({ params }: TraineeDetailPageProps) {
@@ -33,19 +33,25 @@ export default function TraineeDetailPage({ params }: TraineeDetailPageProps) {
   const [enrollments, setEnrollments] = useState<CourseEnrollment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [traineeId, setTraineeId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (params.id) {
-      loadTrainee();
-    }
-  }, [params.id]);
+    const loadParams = async () => {
+      const resolvedParams = await params;
+      setTraineeId(resolvedParams.id);
+      if (resolvedParams.id) {
+        loadTrainee(resolvedParams.id);
+      }
+    };
+    loadParams();
+  }, [params]);
 
-  const loadTrainee = async () => {
+  const loadTrainee = async (id: string) => {
     try {
       setLoading(true);
       const [traineeData, enrollmentsData] = await Promise.all([
-        trainingService.getTraineeById(params.id),
-        trainingService.getTraineeEnrollments(params.id).catch(() => [])
+        trainingService.getTraineeById(id),
+        trainingService.getAllEnrollments({ trainee_id: id }).catch(() => [])
       ]);
       setTrainee(traineeData);
       setEnrollments(enrollmentsData);
@@ -60,7 +66,9 @@ export default function TraineeDetailPage({ params }: TraineeDetailPageProps) {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this trainee?')) {
       try {
-        await trainingService.deleteTrainee(params.id);
+        if (traineeId) {
+          await trainingService.deleteTrainee(traineeId);
+        }
         router.push('/training/trainees');
       } catch (error) {
         console.error('Failed to delete trainee:', error);
@@ -156,7 +164,7 @@ export default function TraineeDetailPage({ params }: TraineeDetailPageProps) {
           </button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {trainee.first_name} {trainee.last_name}
+              {trainee.name}
             </h1>
             <p className="text-gray-600 mt-1">{trainee.email}</p>
           </div>
@@ -204,39 +212,6 @@ export default function TraineeDetailPage({ params }: TraineeDetailPageProps) {
                   </div>
                 </div>
 
-                <div className="flex items-center">
-                  <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Location</p>
-                    <p className="text-gray-900">{trainee.location || 'Not specified'}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <Calendar className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Date of Birth</p>
-                    <p className="text-gray-900">{formatDate(trainee.date_of_birth)}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <Award className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Education Level</p>
-                    <p className="text-gray-900">{trainee.education_level || 'Not specified'}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <Users className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Company</p>
-                    <p className="text-gray-900">{trainee.company || 'Not specified'}</p>
-                  </div>
-                </div>
               </div>
             </div>
           </Card>
@@ -256,7 +231,7 @@ export default function TraineeDetailPage({ params }: TraineeDetailPageProps) {
                             {enrollment.course?.title || 'Course Title'}
                           </h3>
                           <p className="text-sm text-gray-600">
-                            {enrollment.course?.code || 'Course Code'}
+                            {enrollment.course?.title || 'Course Title'}
                           </p>
                         </div>
                       </div>

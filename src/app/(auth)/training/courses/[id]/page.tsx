@@ -24,9 +24,9 @@ import {
 } from 'lucide-react';
 
 interface CourseDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function CourseDetailPage({ params }: CourseDetailPageProps) {
@@ -35,19 +35,25 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
   const [stats, setStats] = useState<CourseStatistics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [courseId, setCourseId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (params.id) {
-      loadCourse();
-    }
-  }, [params.id]);
+    const loadParams = async () => {
+      const resolvedParams = await params;
+      setCourseId(resolvedParams.id);
+      if (resolvedParams.id) {
+        loadCourse(resolvedParams.id);
+      }
+    };
+    loadParams();
+  }, [params]);
 
-  const loadCourse = async () => {
+  const loadCourse = async (id: string) => {
     try {
       setLoading(true);
       const [courseData, statsData] = await Promise.all([
-        trainingService.getCourseById(params.id),
-        trainingService.getCourseStats(params.id).catch(() => null)
+        trainingService.getCourseById(id),
+        trainingService.getCourseStats(id).catch(() => null)
       ]);
       setCourse(courseData);
       setStats(statsData);
@@ -62,7 +68,9 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this course?')) {
       try {
-        await trainingService.deleteCourse(params.id);
+        if (courseId) {
+          await trainingService.deleteCourse(courseId);
+        }
         router.push('/training/courses');
       } catch (error) {
         console.error('Failed to delete course:', error);
@@ -84,20 +92,14 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
     }).format(amount);
   };
 
-  const getStatusBadge = (status: string) => {
-    const statusColors = {
-      draft: 'bg-gray-100 text-gray-800',
-      published: 'bg-blue-100 text-blue-800',
-      in_progress: 'bg-yellow-100 text-yellow-800',
-      completed: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800'
-    };
-
-    const colorClass = statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800';
+  const getStatusBadge = (isActive: boolean) => {
+    const colorClass = isActive 
+      ? 'bg-green-100 text-green-800'
+      : 'bg-gray-100 text-gray-800';
     
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClass}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ')}
+        {isActive ? 'Active' : 'Inactive'}
       </span>
     );
   };
@@ -152,9 +154,11 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
           <div>
             <div className="flex items-center space-x-3">
               <h1 className="text-3xl font-bold text-gray-900">{course.title}</h1>
-              {getStatusBadge(course.status)}
+              {getStatusBadge(course.is_active)}
             </div>
-            <p className="text-gray-600 mt-1">{course.code}</p>
+            {course.description && (
+              <p className="text-gray-600 mt-1">{course.description}</p>
+            )}
           </div>
         </div>
         
@@ -187,115 +191,6 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
             </p>
           </Card>
 
-          {/* Course Details */}
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Course Details</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <Clock className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Duration</p>
-                    <p className="text-gray-900">{course.duration_hours} hours</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <Users className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Max Participants</p>
-                    <p className="text-gray-900">{course.max_participants}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <DollarSign className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Price</p>
-                    <p className="text-gray-900">{formatCurrency(course.price)}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Location</p>
-                    <p className="text-gray-900">{course.location || 'Not specified'}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <Calendar className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Start Date</p>
-                    <p className="text-gray-900">{formatDate(course.start_date)}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <Calendar className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">End Date</p>
-                    <p className="text-gray-900">{formatDate(course.end_date)}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <Calendar className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Registration Deadline</p>
-                    <p className="text-gray-900">{formatDate(course.registration_deadline)}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <Award className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Level</p>
-                    <p className="text-gray-900 capitalize">{course.level}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Course Content */}
-          {(course.prerequisites || course.learning_objectives || course.course_outline || course.materials) && (
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Course Content</h2>
-              <div className="space-y-6">
-                {course.prerequisites && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Prerequisites</h3>
-                    <p className="text-gray-900">{course.prerequisites}</p>
-                  </div>
-                )}
-
-                {course.learning_objectives && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Learning Objectives</h3>
-                    <p className="text-gray-900">{course.learning_objectives}</p>
-                  </div>
-                )}
-
-                {course.course_outline && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Course Outline</h3>
-                    <p className="text-gray-900 whitespace-pre-line">{course.course_outline}</p>
-                  </div>
-                )}
-
-                {course.materials && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Required Materials</h3>
-                    <p className="text-gray-900">{course.materials}</p>
-                  </div>
-                )}
-              </div>
-            </Card>
-          )}
 
           {/* Trainers */}
           {course.trainers && course.trainers.length > 0 && (
@@ -397,7 +292,7 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Status</span>
-                <span className="text-gray-900 capitalize">{course.status}</span>
+                <span className="text-gray-900 capitalize">{course.is_active ? 'Active' : 'Inactive'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Active</span>

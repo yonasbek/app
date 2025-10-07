@@ -68,16 +68,16 @@ export default function TrainingPage() {
       setStats({
         courses: {
           total: courses.length,
-          active: courses.filter(c => c.status === 'in_progress').length,
-          completed: courses.filter(c => c.status === 'completed').length
+          active: courses.filter(c => c.is_active).length,
+          completed: 0 // Simplified - no status tracking
         },
         trainers: {
           total: trainers.length,
-          active: trainers.filter(t => t.status === 'active').length
+          active: trainers.filter(t => t.is_active).length
         },
         trainees: {
           total: trainees.length,
-          active: trainees.filter(t => t.status === 'active').length
+          active: trainees.filter(t => t.is_active).length
         },
         enrollments: {
           total: enrollments.length,

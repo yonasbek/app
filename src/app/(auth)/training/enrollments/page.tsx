@@ -37,8 +37,8 @@ export default function EnrollmentsPage() {
   const [filters, setFilters] = useState<EnrollmentFilters>({
     search: '',
     status: undefined,
-    courseId: undefined,
-    traineeId: undefined
+    course_id: undefined,
+    trainee_id: undefined
   });
 
   useEffect(() => {
@@ -246,8 +246,8 @@ export default function EnrollmentsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Course ID</label>
                 <input
                   type="text"
-                  value={filters.courseId || ''}
-                  onChange={(e) => handleFilterChange('courseId', e.target.value)}
+                  value={filters.course_id || ''}
+                  onChange={(e) => handleFilterChange('course_id', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="Filter by course ID"
                 />
@@ -257,8 +257,8 @@ export default function EnrollmentsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Trainee ID</label>
                 <input
                   type="text"
-                  value={filters.traineeId || ''}
-                  onChange={(e) => handleFilterChange('traineeId', e.target.value)}
+                  value={filters.trainee_id || ''}
+                  onChange={(e) => handleFilterChange('trainee_id', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="Filter by trainee ID"
                 />
@@ -304,11 +304,11 @@ export default function EnrollmentsPage() {
                       <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                         <div className="flex items-center">
                           <User className="h-4 w-4 mr-1" />
-                          <span>{enrollment.trainee?.first_name} {enrollment.trainee?.last_name}</span>
+                          <span>{enrollment.trainee?.name}</span>
                         </div>
                         <div className="flex items-center">
                           <BookOpen className="h-4 w-4 mr-1" />
-                          <span>{enrollment.course?.code || 'N/A'}</span>
+                          <span>{enrollment.course?.title || 'N/A'}</span>
                         </div>
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-1" />
@@ -340,7 +340,7 @@ export default function EnrollmentsPage() {
                         <div>
                           <span className="text-gray-500">Attendance:</span>
                           <span className="ml-1 font-medium">
-                            {enrollment.attendance_count}/{enrollment.total_sessions}
+                            {enrollment.attendance_count || 0}/{enrollment.total_sessions}
                           </span>
                         </div>
 

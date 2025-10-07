@@ -129,7 +129,7 @@ export default function SubActivityList({ activityId, activityTitle, canEdit = t
 
   const handleUpdateSubActivity = async (data: any) => {
     if (!editingSubActivity) return;
-    
+
     try {
       await subActivityService.update(editingSubActivity.id, data);
       setEditingSubActivity(null);
@@ -143,8 +143,8 @@ export default function SubActivityList({ activityId, activityTitle, canEdit = t
 
   const handleUpdateProgress = async (subActivityId: string, data: any) => {
     try {
-      console.log(data,'data here');
-      await subActivityService.updateProgress(subActivityId, {progress: data.progress, notes: data.notes});
+      console.log(data, 'data here');
+      await subActivityService.updateProgress(subActivityId, { progress: data.progress, notes: data.notes });
       setProgressUpdateModal({ isOpen: false, subActivity: null });
       fetchSubActivities();
       fetchStats();
@@ -155,7 +155,7 @@ export default function SubActivityList({ activityId, activityTitle, canEdit = t
 
   const handleDeleteSubActivity = async (id: string) => {
     if (!confirm('Are you sure you want to delete this subactivity?')) return;
-    
+
     try {
       await subActivityService.delete(id);
       fetchSubActivities();
@@ -324,7 +324,7 @@ export default function SubActivityList({ activityId, activityTitle, canEdit = t
                       </p>
                     )}
                   </div>
-                  
+
                   {canEdit && (
                     <div className="flex items-center space-x-2 ml-4">
                       <button
@@ -377,6 +377,7 @@ export default function SubActivityList({ activityId, activityTitle, canEdit = t
       {/* Progress Update Modal */}
       {progressUpdateModal.isOpen && progressUpdateModal.subActivity && (
         <ProgressUpdateModal
+          open={progressUpdateModal.isOpen}
           subActivity={progressUpdateModal.subActivity}
           onSubmit={(data: any) => handleUpdateProgress(progressUpdateModal.subActivity!.id, data)}
           onCancel={() => setProgressUpdateModal({ isOpen: false, subActivity: null })}

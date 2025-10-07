@@ -129,7 +129,7 @@ export default function DashboardPage() {
       {/* Header Section */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-app-foreground mb-2">Dashboard</h1>
-        <p className="text-neutral-600">Welcome to MSLeo Management System</p>
+        <p className="text-neutral-600">Welcome to Office Management System</p>
       </div>
 
       {/* Stats Overview */}

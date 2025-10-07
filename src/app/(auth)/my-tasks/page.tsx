@@ -71,8 +71,8 @@ export default function MyTasksPage() {
 
   const handleUpdateProgress = async (subActivityId: string, data: any) => {
     try {
-      console.log(data,'data here');
-      await subActivityService.updateProgress(subActivityId, {progress: data.progress, notes: data.notes});
+      console.log(data, 'data here');
+      await subActivityService.updateProgress(subActivityId, { progress: data.progress, notes: data.notes });
       setProgressUpdateModal({ isOpen: false, subActivity: null });
       fetchMyTasks(); // Refresh the list
     } catch (err) {
@@ -119,7 +119,7 @@ export default function MyTasksPage() {
     const inProgress = myTasks.filter(task => task.status === 'IN_PROGRESS').length;
     const pending = myTasks.filter(task => task.status === 'NOT_STARTED').length;
     const delayed = myTasks.filter(task => task.status === 'DELAYED').length;
-    
+
     return { total, completed, inProgress, pending, delayed };
   };
 
@@ -216,11 +216,10 @@ export default function MyTasksPage() {
               <button
                 key={tab.key}
                 onClick={() => setFilter(tab.key as any)}
-                className={`py-3 px-1 border-b-2 font-medium text-sm ${
-                  filter === tab.key
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                className={`py-3 px-1 border-b-2 font-medium text-sm ${filter === tab.key
+                  ? 'border-app-foreground text-app-foreground'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
               >
                 {tab.label} ({tab.count})
               </button>
@@ -254,11 +253,11 @@ export default function MyTasksPage() {
                           </span>
                         )}
                       </div>
-                      
+
                       {task.description && (
                         <p className="text-gray-600 mb-3">{task.description}</p>
                       )}
-                      
+
                       <div className="flex items-center space-x-6 text-sm text-gray-500 mb-3">
                         <div className="flex items-center space-x-1">
                           <TargetIcon className="h-4 w-4" />
@@ -269,11 +268,11 @@ export default function MyTasksPage() {
                           <span>Due: {new Date(task.end_date).toLocaleDateString()}</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center space-x-2 mb-2">
                         <div className="flex-1 bg-gray-200 rounded-full h-2">
                           <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            className="bg-app-foreground h-2 rounded-full transition-all duration-300"
                             style={{ width: `${task.progress}%` }}
                           />
                         </div>
@@ -281,18 +280,18 @@ export default function MyTasksPage() {
                           {task.progress}%
                         </span>
                       </div>
-                      
+
                       {task.notes && (
                         <p className="text-sm text-gray-600">
                           <strong>Latest Notes:</strong> {task.notes}
                         </p>
                       )}
                     </div>
-                    
+
                     <div className="ml-4">
                       <button
                         onClick={() => setProgressUpdateModal({ isOpen: true, subActivity: task })}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                        className="bg-app-foreground text-white px-4 py-2 rounded-lg hover:bg-app-foreground/90 flex items-center space-x-2"
                       >
                         <TargetIcon className="h-4 w-4" />
                         <span>Update Progress</span>
@@ -310,11 +309,12 @@ export default function MyTasksPage() {
       {progressUpdateModal.isOpen && progressUpdateModal.subActivity && (
         <ProgressUpdateModal
           subActivity={progressUpdateModal.subActivity}
-          onSubmit={(data) =>{
-            console.log(data,'data here');
+          onSubmit={(data) => {
+            console.log(data, 'data here');
             handleUpdateProgress(progressUpdateModal.subActivity!.id, data)
           }}
           onCancel={() => setProgressUpdateModal({ isOpen: false, subActivity: null })}
+          open={progressUpdateModal.isOpen}
         />
       )}
     </div>

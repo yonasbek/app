@@ -123,8 +123,8 @@ export default function UsersListPage() {
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md mx-4">
-            <h3 className="text-lg font-semibold text-neutral-900 mb-4">Confirm Delete</h3>
-            <p className="text-neutral-600 mb-6">
+            <h3 className="text-lg font-semibold text-app-foreground mb-4">Confirm Delete</h3>
+            <p className="text-app-foreground mb-6">
               Are you sure you want to delete this user? This action cannot be undone.
             </p>
             <div className="flex gap-3 justify-end">
@@ -149,19 +149,19 @@ export default function UsersListPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-app-foreground mb-2">User Management</h1>
-          <p className="text-neutral-600">Manage system users and their permissions</p>
+          <p className="text-app-foreground">Manage system users and their permissions</p>
         </div>
         <div className="flex gap-3">
           <button
             onClick={loadUsers}
-            className="px-4 py-2.5 bg-white border border-neutral-300 text-sm text-neutral-700 rounded-lg hover:bg-neutral-50 transition-all duration-200 flex items-center space-x-2 shadow-sm"
+            className="px-4 py-2.5 bg-white border border-neutral-300 text-sm text-app-foreground rounded-lg hover:bg-app-foreground hover:text-white transition-all duration-200 flex items-center space-x-2 shadow-sm"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Refresh</span>
           </button>
           <Link
             href="/users/new"
-            className="px-6 py-2.5 bg-app-primary text-sm text-white rounded-lg hover:bg-app-primary-light transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md"
+            className="px-6 py-2.5 bg-app-foreground text-sm text-white rounded-lg hover:bg-transparent hover:text-app-foreground hover:border-app-foreground border border-app-foreground transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md"
           >
             <Plus className="w-4 h-4" />
             <span>Add User</span>
@@ -213,25 +213,25 @@ export default function UsersListPage() {
 
       {/* Results Summary */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-neutral-600">
-          Showing <span className="font-medium text-neutral-900">{showingCount}</span> of <span className="font-medium text-neutral-900">{users.length}</span> users
+        <p className="text-sm text-app-foreground">
+          Showing <span className="font-medium text-app-foreground">{showingCount}</span> of <span className="font-medium text-app-foreground">{users.length}</span> users
         </p>
         {/* <Card className="border border-neutral-200 bg-white shadow-sm p-0"> */}
 
         <div className="relative bg-[#fff] p-2 rounded-lg border border-neutral-200">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5 pointer-events-none" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-app-foreground w-5 h-5 pointer-events-none" />
           <input
             type="text"
             placeholder="Search users by name, email, username, role, or department..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-12 pr-10 bg-transparent border-none focus:outline-none focus:ring-0 text-sm text-neutral-900 placeholder-neutral-500"
+            className="w-full pl-12 pr-10 bg-transparent border-none focus:outline-none focus:ring-0 text-sm text-app-foreground placeholder-app-foreground"
           />
           {search && isClient && (
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600 focus:outline-none"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-app-foreground hover:text-app-foreground focus:outline-none"
               aria-label="Clear search"
               tabIndex={0}
             >
@@ -256,7 +256,7 @@ export default function UsersListPage() {
             <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <UserX className="w-10 h-10 text-red-500" />
             </div>
-            <h3 className="text-lg font-semibold text-neutral-900 mb-2">Something went wrong</h3>
+            <h3 className="text-lg font-semibold text-app-foreground mb-2">Something went wrong</h3>
             <p className="text-red-600 font-medium mb-6">{error}</p>
             <button
               onClick={loadUsers}
@@ -270,40 +270,40 @@ export default function UsersListPage() {
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead>
-                <tr className="bg-neutral-50 border-b border-neutral-200">
+                <tr className="bg-app-foreground border-b border-app-foreground">
                   <th className="px-6 py-4 text-left">
-                    <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-white uppercase tracking-wider">
                       User
                     </span>
                   </th>
                   <th className="px-6 py-4 text-left">
-                    <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-white uppercase tracking-wider">
                       Contact Info
                     </span>
                   </th>
                   <th className="px-6 py-4 text-left">
-                    <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-white uppercase tracking-wider">
                       Role
                     </span>
                   </th>
                   <th className="px-6 py-4 text-left">
-                    <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-white uppercase tracking-wider">
                       Department
                     </span>
                   </th>
                   <th className="px-6 py-4 text-left">
-                    <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-white uppercase tracking-wider">
                       Status
                     </span>
                   </th>
                   <th className="px-6 py-4 text-left">
-                    <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-white uppercase tracking-wider">
                       Actions
                     </span>
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-neutral-100">
+              <tbody className="bg-white divide-y divide-app-foreground">
                 {(isClient ? filteredUsers : users).map((user, index) => (
                   <tr
                     key={user.id}
@@ -312,21 +312,21 @@ export default function UsersListPage() {
                   >
                     <td className="px-6 py-5">
                       <div className="flex items-center space-x-4">
-                        <div className="w-11 h-11 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center shadow-sm">
-                          <Users className="w-5 h-5 text-primary-600" />
+                        <div className="w-11 h-11 rounded-xl border border-app-foreground flex items-center justify-center shadow-sm">
+                          <Users className="w-5 h-5 text-app-foreground" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold text-neutral-900 truncate">
+                          <p className="text-sm font-semibold text-app-foreground truncate">
                             {user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'No Name'}
                           </p>
-                          <p className="text-xs text-neutral-500 mt-0.5 truncate">
+                          <p className="text-xs text-app-foreground mt-0.5 truncate">
                             @{user.username || 'no-username'}
                           </p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <div className="text-sm text-neutral-900 font-medium">
+                      <div className="text-sm text-app-foreground font-medium">
                         {user.email || '-'}
                       </div>
                     </td>

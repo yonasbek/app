@@ -18,6 +18,7 @@ import {
     ChevronLeft,
     ChevronRight
 } from 'lucide-react';
+import Image from 'next/image';
 
 const menuItems = [
     { path: '/dashboard', name: 'Dashboard', icon: Home },
@@ -78,12 +79,19 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen }: Sidebar
                     {/* Header */}
                     <div className="flex items-center justify-between p-4 border-b border-app-secondary">
                         <div className="flex items-center space-x-3">
-                            <div className={`bg-app-foreground rounded-lg flex items-center justify-center ${(showFullContent || isMobileOpen) ? 'w-8 h-8' : 'w-10 h-10'}`}>
-                                <span className={`text-white font-bold ${(showFullContent || isMobileOpen) ? 'text-sm' : 'text-base'}`}>ML</span>
+                            <div className={`flex items-center justify-center ${(showFullContent || isMobileOpen) ? 'w-8 h-8' : 'w-10 h-10'}`}>
+                                <Image
+                                    src="/logo.png"
+                                    alt="Office Management System Logo"
+                                    className="rounded-md bg-white"
+                                    width={showFullContent || isMobileOpen ? 36 : 40}
+                                    height={showFullContent || isMobileOpen ? 36 : 40}
+                                    priority
+                                />
                             </div>
                             {(showFullContent || isMobileOpen) && (
                                 <span className="font-semibold text-lg text-app-foreground">
-                                    MSLeo
+                                    Office Management
                                 </span>
                             )}
                         </div>

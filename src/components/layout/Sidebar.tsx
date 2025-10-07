@@ -28,6 +28,7 @@ const menuItems = [
     { path: '/attendance', name: 'Attendance', icon: Clock },
     { path: '/rooms', name: 'Meeting Rooms', icon: MapPin },
     { path: '/contacts', name: 'Contacts', icon: Phone },
+    { path: '/training', name: 'Training', icon: BookOpen },
     { path: '/users', name: 'Users', icon: Users },
     { path: '/reports', name: 'Reports', icon: BarChart3 },
 ];

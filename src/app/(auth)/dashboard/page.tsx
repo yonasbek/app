@@ -17,7 +17,8 @@ import {
   ArrowRight,
   Activity,
   Building,
-  Book
+  Book,
+  GraduationCap
 } from 'lucide-react';
 import Card from '@/components/ui/Card';
 
@@ -69,6 +70,14 @@ const modules = [
     href: '/knowledge-base',
     color: 'from-app-accent to-app-secondary',
     stats: { value: '156', label: 'Documents' }
+  },
+  {
+    title: 'Training Management',
+    description: 'Manage courses, trainers, trainees, and enrollments',
+    icon: GraduationCap,
+    href: '/training',
+    color: 'from-purple-500 to-purple-600',
+    stats: { value: '24', label: 'Active Courses' }
   }
 ];
 

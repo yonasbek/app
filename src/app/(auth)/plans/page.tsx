@@ -27,7 +27,7 @@ const planTypes = [
     description: 'Strategic planning for pre-facility development and referral systems',
     icon: Target,
     color: 'from-app-primary to-app-primary-light',
-    stats: { active: 3, total: 5 }
+    stats: { active: 0, total: 0 }
     
   },
   {
@@ -36,7 +36,7 @@ const planTypes = [
     description: 'Planning for emergency services and critical care development',
     icon: DollarSign,
     color: 'from-green-500 to-emerald-500',
-    stats: { active: 2, total: 4 }
+    stats: { active: 0, total: 0 }
   },
   {
     type: 'HDD',
@@ -44,7 +44,7 @@ const planTypes = [
     description: 'Comprehensive hospital development and management planning',
     icon: Users,
     color: 'from-app-primary-light to-app-primary',
-    stats: { active: 4, total: 8 }
+    stats: { active: 0, total: 0 }
   },
   {
     type: 'SRD',
@@ -52,7 +52,7 @@ const planTypes = [
     description: 'Planning for specialty care and rehabilitation services',
     icon: Laptop,
     color: 'from-orange-500 to-red-500',
-    stats: { active: 6, total: 10 }
+    stats: { active: 0, total: 0 }
   },
   {
     type: 'LEO',
@@ -60,7 +60,7 @@ const planTypes = [
     description: 'Strategic planning and management for lead executive officer initiatives',
     icon: Users,
     color: 'from-app-primary-light to-app-primary',
-    stats: { active: 4, total: 8 }
+    stats: { active: 0, total: 0 }
   }
 ];
 
@@ -121,7 +121,7 @@ export default function PlanTypesPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-app-foreground">
-                {Math.round((totalActive / totalPlans) * 100)}%
+                {Math.round((totalActive / totalPlans == 0? 1 : totalActive / totalPlans) * 100)}%
               </p>
               <p className="text-sm text-neutral-600">Completion Rate</p>
             </div>

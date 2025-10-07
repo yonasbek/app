@@ -14,6 +14,7 @@ const menuItems = [
   { path: '/attendance', name: 'Attendance' },
   { path: '/rooms', name: 'Meeting Rooms' },
   { path: '/contacts', name: 'Contacts' },
+  { path: '/training', name: 'Training' },
   { path: '/users', name: 'Users' },
   { path: '/reports', name: 'Reports' },
 ];

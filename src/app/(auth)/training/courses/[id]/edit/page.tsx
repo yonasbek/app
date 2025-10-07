@@ -8,9 +8,9 @@ import CourseForm from '@/components/training/CourseForm';
 import { ArrowLeft } from 'lucide-react';
 
 interface EditCoursePageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function EditCoursePage({ params }: EditCoursePageProps) {
@@ -18,17 +18,23 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [courseId, setCourseId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (params.id) {
-      loadCourse();
-    }
-  }, [params.id]);
+    const loadParams = async () => {
+      const resolvedParams = await params;
+      setCourseId(resolvedParams.id);
+      if (resolvedParams.id) {
+        loadCourse(resolvedParams.id);
+      }
+    };
+    loadParams();
+  }, [params]);
 
-  const loadCourse = async () => {
+  const loadCourse = async (id: string) => {
     try {
       setLoading(true);
-      const courseData = await trainingService.getCourseById(params.id);
+      const courseData = await trainingService.getCourseById(id);
       setCourse(courseData);
     } catch (error) {
       console.error('Failed to load course:', error);
@@ -43,7 +49,9 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
   };
 
   const handleCancel = () => {
-    router.push(`/training/courses/${params.id}`);
+    if (courseId) {
+      router.push(`/training/courses/${courseId}`);
+    }
   };
 
   if (loading) {
@@ -103,7 +111,7 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
       {/* Header */}
       <div className="flex items-center space-x-4">
         <button
-          onClick={() => router.push(`/training/courses/${params.id}`)}
+          onClick={() => courseId && router.push(`/training/courses/${courseId}`)}
           className="p-2 hover:bg-gray-100 rounded-lg"
         >
           <ArrowLeft className="h-5 w-5 text-gray-600" />

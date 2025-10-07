@@ -360,3 +360,4 @@ export default function TraineeDetailPage({ params }: TraineeDetailPageProps) {
   );
 }
 
+

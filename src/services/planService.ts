@@ -31,5 +31,58 @@ export const planService = {
 
   delete: async (id: string): Promise<void> => {
     await api.delete(`${PLANS_API}/${id}`);
+  },
+
+  getOverallStatistics: async (): Promise<{
+    total_plans: number;
+    total_activities: number;
+    active_plans: number;
+    completed_plans: number;
+    by_plan_type: Array<{
+      plan_type: string;
+      total_plans: number;
+      total_activities: number;
+      average_progress: number;
+    }>;
+  }> => {
+    const response = await api.get(`${PLANS_API}/statistics/overall`);
+    return response.data;
+  },
+
+  getPlanTypeStatistics: async (planType: string): Promise<{
+    plan_type: string;
+    total_plans: number;
+    total_activities: number;
+    active_plans: number;
+    completed_plans: number;
+    average_progress: number;
+    plans: Array<{
+      plan_id: string;
+      plan_title: string;
+      fiscal_year: string;
+      status: string;
+      progress: number;
+      activities_count: number;
+    }>;
+  }> => {
+    const response = await api.get(`${PLANS_API}/statistics/type/${planType}`);
+    return response.data;
+  },
+
+  getPlanProgressSummary: async (planId: string): Promise<{
+    plan_id: string;
+    plan_title: string;
+    overall_progress: number;
+    total_activities: number;
+    activities_breakdown: Array<{
+      activity_id: string;
+      activity_title: string;
+      activity_progress: number;
+      total_subactivities: number;
+      completed_subactivities: number;
+    }>;
+  }> => {
+    const response = await api.get(`${PLANS_API}/${planId}/progress-summary`);
+    return response.data;
   }
 }; 

@@ -238,10 +238,10 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
                   <span className="text-sm text-gray-600">Pending</span>
                   <span className="font-semibold text-yellow-600">{stats.pending_enrollments}</span>
                 </div>
-                <div className="flex items-center justify-between">
+                {/* <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Completion Rate</span>
                   <span className="font-semibold text-gray-900">{stats.completion_rate.toFixed(1)}%</span>
-                </div>
+                </div> */}
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Avg Progress</span>
                   <span className="font-semibold text-gray-900">{stats.average_progress.toFixed(1)}%</span>
@@ -308,3 +308,4 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
   );
 }
 
+ 

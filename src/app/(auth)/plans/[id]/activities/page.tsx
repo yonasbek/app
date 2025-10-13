@@ -64,20 +64,34 @@ export default function PlanActivitiesPage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="max-w-7xl mx-auto">
+      <div className='mb-5'>
+        <Link href={`/plans`} 
+        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-blue-700 mb- 5">
+          {/* <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"> */}
+            Back to Annual Plan
+          {/* </button> */}
+        </Link>
+      </div>
       <div className="flex justify-between items-center mb-6">
         <div>
+        <h1 className="text-2xl  mb-8 text-white">
+            <label className='bg-blue-600 font-bold  hover:bg-blue-700 p-2'>Main Activity</label>
+          </h1>
           <h1 className="text-2xl font-bold text-gray-900">
             Activities for {plan?.title}
           </h1>
           <p className="text-gray-600 mt-1">
             Fiscal Year: {plan?.fiscal_year}
           </p>
+          <p className="text-sm text-blue-600 mt-1 italic">
+            Note: Activity progress is automatically calculated from subactivities
+          </p>
         </div>
         <Link
           href={`/plans/${resolvedParams.id}/activities/new`}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          Add Activity
+          Add Main Activity
         </Link>
       </div>
 

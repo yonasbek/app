@@ -122,6 +122,7 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
             required
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
           >
+            <option value="2025">2025</option>
             <option value="2024">2024</option>
             <option value="2023">2023</option>
             <option value="2022">2022</option>

@@ -7,10 +7,13 @@ export interface Plan {
   plan_type: PlanType;
   status: 'draft' | 'active' | 'completed' | 'cancelled';
   progress: number;
+  calculated_progress?: number; // Calculated from activities' progress
   budget_allocated: number;
   budget_spent: number;
+  owner: string;
   created_at?: string;
   updated_at?: string;
+  activities?: any[]; // Activities array when included in response
 }
 
 export interface CreatePlanDto {

@@ -80,6 +80,16 @@ function PlansListContent() {
     return Math.round((plan.budget_spent / plan.budget_allocated) * 100);
   };
 
+  const getPlanProgress = (plan: Plan) => {
+    // Backend now calculates progress from activities (which are calculated from subactivities)
+    // Use calculated_progress if available, otherwise fall back to progress
+    return plan.calculated_progress !== undefined ? plan.calculated_progress : plan.progress || 0;
+  };
+
+  const getActivityCount = (plan: Plan) => {
+    return plan.activities?.length || 0;
+  };
+
   if (!planType) {
     return (
       <div className="bg-yellow-50 p-4 rounded-md">
@@ -122,7 +132,7 @@ function PlansListContent() {
           </select>
           <input
             type="text"
-            placeholder="Search plans..."
+            placeholder="Search SI..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="block w-64 rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none"
@@ -132,13 +142,14 @@ function PlansListContent() {
           href={`/plans/new?type=${planType}`}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
         >
-          <span className="font-semibold">Create New Plan</span>
+          <span className="font-semibold">Create Strategic Initiative</span>
         </Link>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {plans.map((plan) => {
           const budgetProgress = getBudgetProgress(plan);
+          const planProgress = getPlanProgress(plan);
           return (
             <Card
               key={plan.id}
@@ -156,24 +167,44 @@ function PlansListContent() {
                 </span>
               </div>
 
-              <div className="mb-4">
-                <div className="flex justify-between text-xs text-neutral-600 mb-1">
-                  <span>Budget Progress</span>
-                  <span>{budgetProgress}%</span>
+              <div className="mb-4 space-y-3">
+                {/* Plan Progress (calculated from activities) */}
+                <div>
+                  <div className="flex justify-between text-xs text-neutral-600 mb-1">
+                    <span>Plan Progress (from activities)</span>
+                    <span className="font-semibold text-green-700">{planProgress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full bg-gradient-to-r from-green-600 to-green-400 transition-all"
+                      style={{ width: `${planProgress}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-neutral-500 mt-1">
+                    {getActivityCount(plan)} {getActivityCount(plan) === 1 ? 'activity' : 'activities'}
+                  </p>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="h-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all"
-                    style={{ width: `${budgetProgress}%` }}
-                  />
-                </div>
-                <div className="flex justify-between text-xs text-neutral-500 mt-1">
-                  <span>
-                    ${plan.budget_spent?.toLocaleString()} spent
-                  </span>
-                  <span>
-                    / ${plan.budget_allocated?.toLocaleString()} allocated
-                  </span>
+
+                {/* Budget Progress */}
+                <div>
+                  <div className="flex justify-between text-xs text-neutral-600 mb-1">
+                    <span>Budget Progress</span>
+                    <span className="font-semibold text-blue-700">{budgetProgress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all"
+                      style={{ width: `${budgetProgress}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs text-neutral-500 mt-1">
+                    <span>
+                      ${plan.budget_spent?.toLocaleString()} spent
+                    </span>
+                    <span>
+                      / ${plan.budget_allocated?.toLocaleString()} allocated
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -186,7 +217,7 @@ function PlansListContent() {
                   <List className="w-5 h-5" />
                 </Link>
                 <Link
-                  href={`/plans/${plan.id}`}
+                  href={`/plans/${plan.id}/activities`}
                   className="p-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-800 transition"
                   title="View Details"
                 >

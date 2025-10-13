@@ -125,7 +125,7 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ id: s
           className="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200 mb-4"
         >
           <ArrowLeftIcon className="mr-2" />
-          Back to Activities
+          Back to Main Activities
         </button>
         
         <div className="flex justify-between items-start">
@@ -133,12 +133,12 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ id: s
             <h1 className="text-3xl font-bold text-gray-900 mb-2">{activity?.title}</h1>
             <p className="text-gray-600 mb-4">{activity?.description}</p>
             <div className="text-sm text-gray-500 mb-4">
-              Plan: {plan?.title}
+              Strategic Initiative: {plan?.title}
             </div>
           </div>
           <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
             <EditIcon className="mr-2" />
-            Edit Activity
+            Edit Main Activity
           </button>
         </div>
       </div>

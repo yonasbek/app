@@ -4,10 +4,7 @@ import { useState, useEffect } from 'react';
 import Card from '@/components/ui/Card';
 import {
   Calendar,
-  AlertTriangle,
   Building,
-  Heart,
-  User2Icon,
   ArrowRight,
   Plus,
   BarChart3,
@@ -15,7 +12,8 @@ import {
   Cog,
   DollarSign,
   Users,
-  Laptop
+  Laptop,
+  CheckCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { planService } from '@/services/planService';
@@ -104,8 +102,8 @@ export default function PlanTypesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className="border border-app-secondary">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-app-primary bg-opacity-10 rounded-xl flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-app-primary" />
+              <div className="w-12 h-12 bg-app-primary rounded-xl flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-white" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-app-foreground">{totalActive}</p>
@@ -116,8 +114,8 @@ export default function PlanTypesPage() {
 
           <Card className="border border-green-200">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-app-primary rounded-xl flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-white" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-app-foreground">{totalPlans}</p>
@@ -128,8 +126,8 @@ export default function PlanTypesPage() {
 
           <Card className="border border-app-secondary">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-app-accent rounded-xl flex items-center justify-center">
-                <Building className="w-6 h-6 text-app-primary" />
+              <div className="w-12 h-12 bg-app-primary rounded-xl flex items-center justify-center">
+                <Building className="w-6 h-6 text-white" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-app-foreground">{totalActivities}</p>
@@ -140,8 +138,8 @@ export default function PlanTypesPage() {
 
           <Card className="border border-amber-200">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-amber-600" />
+              <div className="w-12 h-12 bg-green-200 rounded-xl flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-app-foreground">

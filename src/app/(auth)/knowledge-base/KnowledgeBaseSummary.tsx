@@ -21,7 +21,7 @@ interface SummaryCard {
 export default function KnowledgeBaseSummary({ files, onDownload, isLoading = false }: KnowledgeBaseSummaryProps) {
     if (isLoading) {
         return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                 {Array.from({ length: 4 }).map((_, index) => (
                     <SummaryCardSkeleton key={index} />
                 ))}
@@ -43,41 +43,41 @@ export default function KnowledgeBaseSummary({ files, onDownload, isLoading = fa
         {
             title: 'Total Documents',
             value: totalFiles,
-            icon: <FileText className="w-6 h-6" />,
+            icon: <FileText className="w-4 h-4" />,
             color: 'bg-app-secondary text-app-foreground',
         },
         {
             title: 'Total Size',
             value: `${(totalSize / (1024 * 1024)).toFixed(2)} MB`,
-            icon: <Download className="w-6 h-6" />,
+            icon: <Download className="w-4 h-4" />,
             color: 'bg-app-secondary text-app-foreground',
         },
         {
             title: 'Categories',
             value: categories,
-            icon: <FolderOpen className="w-6 h-6" />,
+            icon: <FolderOpen className="w-4 h-4" />,
             color: 'bg-app-secondary text-app-foreground',
         },
         {
             title: 'Recent Uploads',
             value: recentUploads,
-            icon: <Calendar className="w-6 h-6" />,
+            icon: <Calendar className="w-4 h-4" />,
             color: 'bg-app-secondary text-app-foreground',
         },
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
             {summaryCards.map((card, index) => (
                 <div
                     key={index}
-                    className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 cursor-pointer"
+                    className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 cursor-pointer"
                 >
-                    <div className={`rounded-full w-12 h-12 flex items-center justify-center ${card.color} mb-4`}>
+                    <div className={`rounded-full w-8 h-8 flex items-center justify-center ${card.color} mb-2`}>
                         {card.icon}
                     </div>
-                    <h3 className="text-sm font-medium text-gray-600 mb-1">{card.title}</h3>
-                    <p className="text-lg font-semibold text-app-foreground">{card.value}</p>
+                    <h3 className="text-xs font-medium text-gray-600 mb-0.5">{card.title}</h3>
+                    <p className="text-base font-semibold text-app-foreground">{card.value}</p>
                 </div>
             ))}
 

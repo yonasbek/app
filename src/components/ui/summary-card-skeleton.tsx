@@ -2,10 +2,10 @@
 
 export function SummaryCardSkeleton() {
     return (
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div className="rounded-full w-12 h-12 bg-gray-200 animate-pulse mb-4"></div>
-            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mb-2"></div>
-            <div className="h-6 w-16 bg-gray-200 rounded animate-pulse"></div>
+        <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
+            <div className="rounded-full w-8 h-8 bg-gray-200 animate-pulse mb-2"></div>
+            <div className="h-3 w-20 bg-gray-200 rounded animate-pulse mb-1"></div>
+            <div className="h-4 w-12 bg-gray-200 rounded animate-pulse"></div>
         </div>
     )
 }

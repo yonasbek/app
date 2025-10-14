@@ -45,7 +45,7 @@ export default function KnowledgeBasePage() {
   }, []);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
+    <div className="max-w-5xl mx-auto px-4 py-2">
       <div className="flex sm:flex-row flex-col items-center justify-between gap-3 mb-8">
         <div className="flex items-center gap-3">
 

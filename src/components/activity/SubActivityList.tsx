@@ -4,64 +4,31 @@ import React, { useState, useEffect } from 'react';
 import { SubActivity, SubActivityStats } from '@/types/subactivity';
 import { subActivityService } from '@/services/subactivityService';
 import { userService } from '@/services/userService';
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  User,
+  Clock,
+  Target,
+  CheckCircle2,
+  AlertCircle,
+  Calendar,
+  TrendingUp,
+  FileText,
+  Pause,
+  BarChart3
+} from 'lucide-react';
 
 import SubActivityForm from '@/components/activity/SubActivityForm';
 import ProgressUpdateModal from '@/components/activity/ProgressUpdateModal';
+import Card from '@/components/ui/Card';
 
 interface SubActivityListProps {
   activityId: string;
   activityTitle: string;
   canEdit?: boolean;
 }
-
-// SVG Icon Components
-const PlusIcon = ({ className = "" }: { className?: string }) => (
-  <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-  </svg>
-);
-
-const EditIcon = ({ className = "" }: { className?: string }) => (
-  <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-  </svg>
-);
-
-const TrashIcon = ({ className = "" }: { className?: string }) => (
-  <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-  </svg>
-);
-
-const UserIcon = ({ className = "" }: { className?: string }) => (
-  <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-  </svg>
-);
-
-const ClockIcon = ({ className = "" }: { className?: string }) => (
-  <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
-const TargetIcon = ({ className = "" }: { className?: string }) => (
-  <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
-const CheckCircleIcon = ({ className = "" }: { className?: string }) => (
-  <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
-const AlertCircleIcon = ({ className = "" }: { className?: string }) => (
-  <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.081 16.5c-.77.833.192 2.5 1.732 2.5z" />
-  </svg>
-);
 
 export default function SubActivityList({ activityId, activityTitle, canEdit = true }: SubActivityListProps) {
   const [subActivities, setSubActivities] = useState<SubActivity[]>([]);
@@ -167,189 +134,269 @@ export default function SubActivityList({ activityId, activityTitle, canEdit = t
 
   const getStatusColor = (status: SubActivity['status']) => {
     switch (status) {
-      case 'NOT_STARTED': return 'bg-gray-100 text-gray-800';
-      case 'IN_PROGRESS': return 'bg-blue-100 text-blue-800';
-      case 'COMPLETED': return 'bg-green-100 text-green-800';
-      case 'DELAYED': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'NOT_STARTED': return 'bg-neutral-100 text-neutral-700 border-neutral-200';
+      case 'IN_PROGRESS': return 'bg-blue-50 text-app-primary border-blue-200';
+      case 'COMPLETED': return 'bg-green-50 text-green-700 border-green-200';
+      case 'DELAYED': return 'bg-red-50 text-red-700 border-red-200';
+      default: return 'bg-neutral-100 text-neutral-700 border-neutral-200';
+    }
+  };
+
+  const getStatusIcon = (status: SubActivity['status']) => {
+    switch (status) {
+      case 'NOT_STARTED': return <Pause className="w-3 h-3" />;
+      case 'IN_PROGRESS': return <Clock className="w-3 h-3" />;
+      case 'COMPLETED': return <CheckCircle2 className="w-3 h-3" />;
+      case 'DELAYED': return <AlertCircle className="w-3 h-3" />;
+      default: return <Target className="w-3 h-3" />;
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority.toLowerCase()) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'high': return 'bg-red-50 text-red-700 border-red-200';
+      case 'medium': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      case 'low': return 'bg-green-50 text-green-700 border-green-200';
+      default: return 'bg-neutral-100 text-neutral-700 border-neutral-200';
     }
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+      <div className="flex justify-center items-center min-h-[40vh]">
+        <div className="text-center space-y-4">
+          <div className="animate-spin h-12 w-12 border-4 border-app-primary rounded-full border-t-transparent mx-auto"></div>
+          <p className="text-app-foreground text-sm">Loading sub-activities...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 p-4 rounded-md">
-        <p className="text-red-800">{error}</p>
-      </div>
+      <Card className="max-w-2xl mx-auto">
+        <div className="flex items-center space-x-3 text-red-600">
+          <AlertCircle className="w-6 h-6" />
+          <div>
+            <h3 className="font-semibold">Error Loading Sub-Activities</h3>
+            <p className="text-sm text-neutral-600 mt-1">{error}</p>
+          </div>
+        </div>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header with Stats */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Subactivities for {activityTitle}
-          </h2>
+    <div className="space-y-8">
+      {/* Summary Stats Section */}
+      <div className="bg-gradient-to-br from-white to-app-accent rounded-xl border border-neutral-200 p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-app-foreground mb-1">Sub-Activities Summary</h2>
+            <p className="text-sm text-neutral-600">{activityTitle}</p>
+          </div>
           {canEdit && (
             <button
               onClick={() => setShowForm(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+              className="flex items-center gap-2 px-5 py-2.5 bg-app-primary text-white rounded-lg hover:bg-app-primary-light transition-all duration-200 shadow-sm hover:shadow-md"
             >
-              <PlusIcon className="h-4 w-4" />
-              <span>Add Subactivity</span>
+              <Plus className="w-4 h-4" />
+              <span className="font-medium">Add New</span>
             </button>
           )}
         </div>
 
         {/* Stats Cards */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <div className="bg-white p-4 rounded-lg border border-neutral-200 hover:shadow-md transition-shadow">
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className="w-12 h-12 bg-app-accent rounded-full flex items-center justify-center">
+                  <Target className="w-6 h-6 text-app-primary" />
                 </div>
-                <TargetIcon className="w-8 h-8 text-gray-400" />
+                <div>
+                  <p className="text-3xl font-bold text-app-foreground">{stats.total}</p>
+                  <p className="text-xs text-neutral-600 mt-1">Total</p>
+                </div>
               </div>
             </div>
-            <div className="bg-green-50 p-4 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-green-600">Completed</p>
-                  <p className="text-2xl font-bold text-green-900">{stats.completed}</p>
+            <div className="bg-white p-4 rounded-lg border border-green-200 hover:shadow-md transition-shadow">
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-green-600" />
                 </div>
-                <CheckCircleIcon className="w-8 h-8 text-green-400" />
+                <div>
+                  <p className="text-3xl font-bold text-green-700">{stats.completed}</p>
+                  <p className="text-xs text-neutral-600 mt-1">Completed</p>
+                </div>
               </div>
             </div>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-blue-600">In Progress</p>
-                  <p className="text-2xl font-bold text-blue-900">{stats.in_progress}</p>
+            <div className="bg-white p-4 rounded-lg border border-blue-200 hover:shadow-md transition-shadow">
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-blue-600" />
                 </div>
-                <ClockIcon className="w-8 h-8 text-blue-400" />
+                <div>
+                  <p className="text-3xl font-bold text-blue-700">{stats.in_progress}</p>
+                  <p className="text-xs text-neutral-600 mt-1">In Progress</p>
+                </div>
               </div>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Not Started</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.not_started}</p>
+            <div className="bg-white p-4 rounded-lg border border-neutral-200 hover:shadow-md transition-shadow">
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className="w-12 h-12 bg-neutral-50 rounded-full flex items-center justify-center">
+                  <Pause className="w-6 h-6 text-neutral-600" />
                 </div>
-                <AlertCircleIcon className="w-8 h-8 text-gray-400" />
+                <div>
+                  <p className="text-3xl font-bold text-neutral-700">{stats.not_started}</p>
+                  <p className="text-xs text-neutral-600 mt-1">Not Started</p>
+                </div>
               </div>
             </div>
-            <div className="bg-purple-50 p-4 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-purple-600">Avg Progress</p>
-                  <p className="text-2xl font-bold text-purple-900">{stats.average_progress}%</p>
+            <div className="bg-white p-4 rounded-lg border border-purple-200 hover:shadow-md transition-shadow">
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-purple-600" />
                 </div>
-                <TargetIcon className="w-8 h-8 text-purple-400" />
+                <div>
+                  <p className="text-3xl font-bold text-purple-700">{stats.average_progress}%</p>
+                  <p className="text-xs text-neutral-600 mt-1">Avg Progress</p>
+                </div>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Subactivities List */}
-      <div className="bg-white rounded-lg shadow-sm border">
+      {/* Visual Separator */}
+      <div className="relative py-4">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t-2 border-neutral-200"></div>
+        </div>
+        <div className="relative flex justify-center">
+          <span className="bg-app-bg px-4 text-sm font-medium text-neutral-500 flex items-center gap-2">
+            <FileText className="w-4 h-4" />
+            Sub-Activities List
+          </span>
+        </div>
+      </div>
+
+      {/* Sub-Activities List Section */}
+      <div className="bg-white rounded-xl border border-neutral-200 shadow-sm">
         {subActivities.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
-            No subactivities yet. Click "Add Subactivity" to create one.
+          <div className="text-center py-16 px-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-app-primary to-app-primary-light rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+              <FileText className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-app-foreground mb-2">No Sub-Activities Yet</h3>
+            <p className="text-neutral-500 mb-6 max-w-md mx-auto">Create your first sub-activity to start tracking progress and manage tasks effectively.</p>
+            {canEdit && (
+              <button
+                onClick={() => setShowForm(true)}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-app-primary text-white rounded-lg hover:bg-app-primary-light transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <Plus className="w-5 h-5" />
+                <span className="font-medium">Create Sub-Activity</span>
+              </button>
+            )}
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-neutral-100">
             {subActivities.map((subActivity) => (
-              <div key={subActivity.id} className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-medium text-gray-900">{subActivity.title}</h3>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(subActivity.status)}`}>
-                        {subActivity.status.replace('_', ' ')}
-                      </span>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getPriorityColor(subActivity.priority)}`}>
-                        {subActivity.priority} Priority
-                      </span>
-                    </div>
-                    {subActivity.description && (
-                      <p className="text-gray-600 mb-3">{subActivity.description}</p>
-                    )}
-                    <div className="flex items-center space-x-6 text-sm text-gray-500">
-                      <div className="flex items-center space-x-1">
-                        <UserIcon className="h-4 w-4" />
-                        <span>{subActivity.user ? (subActivity.user.fullName || subActivity.user.firstName || subActivity.user.email) : 'Unknown User'}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <ClockIcon className="h-4 w-4" />
-                        <span>{new Date(subActivity.start_date).toLocaleDateString()} - {new Date(subActivity.end_date).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                    <div className="mt-3">
-                      <div className="flex items-center space-x-2">
-                        <div className="flex-1 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${subActivity.progress}%` }}
-                          />
+              <div key={subActivity.id} className="p-6 hover:bg-app-accent/30 transition-colors group">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                  <div className="flex-1 space-y-4">
+                    {/* Title and Badges */}
+                    <div className="flex flex-wrap items-start gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold text-app-foreground mb-2">{subActivity.title}</h3>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(subActivity.status)}`}>
+                            {getStatusIcon(subActivity.status)}
+                            {subActivity.status.replace('_', ' ')}
+                          </span>
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full border ${getPriorityColor(subActivity.priority)}`}>
+                            {subActivity.priority}
+                          </span>
                         </div>
-                        <span className="text-sm text-gray-600 font-medium">
-                          {subActivity.progress}%
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    {subActivity.description && (
+                      <p className="text-neutral-600 text-sm leading-relaxed">{subActivity.description}</p>
+                    )}
+
+                    {/* Meta Info Row */}
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-neutral-600">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-app-accent rounded-full flex items-center justify-center">
+                          <User className="w-4 h-4 text-app-primary" />
+                        </div>
+                        <span className="font-medium">
+                          {subActivity.user ? (subActivity.user.fullName || subActivity.user.firstName || subActivity.user.email) : 'Unassigned'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-app-accent rounded-full flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-app-primary" />
+                        </div>
+                        <span>
+                          {new Date(subActivity.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(subActivity.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
                       </div>
                     </div>
+
+                    {/* Progress Bar */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-neutral-600">Progress</span>
+                        <span className="text-sm font-bold text-app-foreground">{subActivity.progress}%</span>
+                      </div>
+                      <div className="w-full bg-neutral-100 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="bg-gradient-to-r from-app-primary to-app-primary-light h-full rounded-full transition-all duration-500"
+                          style={{ width: `${subActivity.progress}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Notes */}
                     {subActivity.notes && (
-                      <p className="text-sm text-gray-600 mt-2">
-                        <strong>Notes:</strong> {subActivity.notes}
-                      </p>
+                      <div className="bg-app-accent/50 p-3 rounded-lg">
+                        <p className="text-sm text-neutral-700">
+                          <span className="font-semibold text-app-foreground">Notes:</span> {subActivity.notes}
+                        </p>
+                      </div>
                     )}
                   </div>
 
+                  {/* Action Buttons */}
                   {canEdit && (
-                    <div className="flex items-center space-x-2 ml-4">
+                    <div className="flex lg:flex-col items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => setProgressUpdateModal({ isOpen: true, subActivity })}
-                        className="text-blue-600 hover:text-blue-800"
+                        className="p-2.5 text-app-primary hover:bg-app-primary/10 rounded-lg transition-colors"
                         title="Update Progress"
                       >
-                        <TargetIcon className="h-4 w-4" />
+                        <Target className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => {
                           setEditingSubActivity(subActivity);
                           setShowForm(true);
                         }}
-                        className="text-gray-600 hover:text-gray-800"
+                        className="p-2.5 text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
                         title="Edit"
                       >
-                        <EditIcon className="h-4 w-4" />
+                        <Edit2 className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDeleteSubActivity(subActivity.id)}
-                        className="text-red-600 hover:text-red-800"
+                        className="p-2.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="Delete"
                       >
-                        <TrashIcon className="h-4 w-4" />
+                        <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
                   )}

@@ -3,6 +3,19 @@
 import { useState, useEffect } from 'react';
 import { Memo, MemoStatus, WorkflowAction, WorkflowActionDto, WorkflowHistory } from '@/types/memo';
 import { memoService } from '@/services/memoService';
+import {
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
+  Send,
+  FileCheck,
+  Printer,
+  MessageSquare,
+  Clock,
+  User2,
+  ArrowRight,
+  AlertCircle
+} from 'lucide-react';
 
 interface MemoWorkflowProps {
   memo: Memo;
@@ -41,16 +54,16 @@ export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkf
       };
 
       let updatedMemo: Memo;
-      if(actionDto.action === WorkflowAction.APPROVE) {
+      if (actionDto.action === WorkflowAction.APPROVE) {
         updatedMemo = await memoService.leoAction(memo.id, actionDto);
-      } else if(actionDto.action === WorkflowAction.REJECT) {
+      } else if (actionDto.action === WorkflowAction.REJECT) {
         updatedMemo = await memoService.leoAction(memo.id, actionDto);
-      } else if(actionDto.action === WorkflowAction.RETURN_TO_CREATOR) {
+      } else if (actionDto.action === WorkflowAction.RETURN_TO_CREATOR) {
         updatedMemo = await memoService.leoAction(memo.id, actionDto);
       } else {
-        if(actionDto.action === WorkflowAction.SUBMIT_TO_LEO) {
+        if (actionDto.action === WorkflowAction.SUBMIT_TO_LEO) {
           updatedMemo = await memoService.deskHeadAction(memo.id, actionDto);
-        } else if(actionDto.action === WorkflowAction.SUBMIT_TO_DESK_HEAD) {
+        } else if (actionDto.action === WorkflowAction.SUBMIT_TO_DESK_HEAD) {
           updatedMemo = await memoService.deskHeadAction(memo.id, actionDto);
         } else {
           throw new Error('Unauthorized action');
@@ -106,22 +119,57 @@ export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkf
     setComment('');
   };
 
-  const getStatusColor = (status: MemoStatus) => {
+  const getStatusInfo = (status: MemoStatus) => {
     switch (status) {
       case MemoStatus.DRAFT:
-        return 'bg-gray-100 text-gray-800';
+        return {
+          color: 'bg-slate-500',
+          label: 'Draft',
+          icon: FileCheck,
+          description: 'Document in draft stage'
+        };
       case MemoStatus.PENDING_DESK_HEAD:
-        return 'bg-yellow-100 text-yellow-800';
+        return {
+          color: 'bg-amber-500',
+          label: 'Pending Desk Head',
+          icon: Clock,
+          description: 'Awaiting desk head review'
+        };
       case MemoStatus.PENDING_LEO:
-        return 'bg-blue-100 text-blue-800';
+        return {
+          color: 'bg-blue-500',
+          label: 'Pending LEO',
+          icon: Clock,
+          description: 'Awaiting LEO approval'
+        };
       case MemoStatus.APPROVED:
-        return 'bg-green-100 text-green-800';
+        return {
+          color: 'bg-emerald-500',
+          label: 'Approved',
+          icon: CheckCircle2,
+          description: 'Document approved'
+        };
       case MemoStatus.RETURNED_TO_CREATOR:
-        return 'bg-orange-100 text-orange-800';
+        return {
+          color: 'bg-orange-500',
+          label: 'Returned',
+          icon: RotateCcw,
+          description: 'Returned for revisions'
+        };
       case MemoStatus.REJECTED:
-        return 'bg-red-100 text-red-800';
+        return {
+          color: 'bg-rose-500',
+          label: 'Rejected',
+          icon: XCircle,
+          description: 'Document rejected'
+        };
       default:
-        return 'bg-gray-100 text-gray-800';
+        return {
+          color: 'bg-slate-500',
+          label: 'Unknown',
+          icon: AlertCircle,
+          description: 'Status unknown'
+        };
     }
   };
 
@@ -130,187 +178,308 @@ export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkf
   const canPerformLeoAction = memo.status === MemoStatus.PENDING_LEO && userRole === 'LEO';
   const canGenerateDocument = memo.status === MemoStatus.APPROVED;
 
+  const statusInfo = getStatusInfo(memo.status);
+  const StatusIcon = statusInfo.icon;
+
   return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <h2 className="text-lg font-medium text-gray-900 mb-4">Memo Workflow</h2>
-      
-      {/* Current Status */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Current Status</label>
-        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(memo.status)}`}>
-          {memo.status.replace(/_/g, ' ')}
-        </span>
+    <div className="space-y-6">
+      {/* Current Status Card */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-gradient-to-r from-app-accent to-app-accent px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Workflow Status</h2>
+        </div>
+
+        <div className="p-6">
+          <div className="flex items-center space-x-4">
+            <div className={`w-14 h-14 ${statusInfo.color} rounded-xl flex items-center justify-center shadow-lg`}>
+              <StatusIcon className="w-7 h-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-gray-900">{statusInfo.label}</h3>
+              <p className="text-sm text-gray-600">{statusInfo.description}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="mb-6 space-y-2">
-        {canSubmitToDeskHead && (
-          <button
-            onClick={handleSubmitToDeskHead}
-            disabled={loading}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-          >
-            Submit to Desk Head
-          </button>
-        )}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-gradient-to-r from-app-accent to-app-accent px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900">Actions</h3>
+        </div>
 
-        {/* {canPerformDeskHeadAction && ( */}
-          <div className="space-y-2">
+        <div className="p-6 space-y-3">
+          {canSubmitToDeskHead && (
+            <button
+              onClick={handleSubmitToDeskHead}
+              disabled={loading}
+              className="w-full flex items-center justify-center space-x-2 bg-app-foreground text-white px-4 py-3 rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+            >
+              <Send className="w-5 h-5" />
+              <span>Submit to Desk Head</span>
+            </button>
+          )}
+
+          {/* {canPerformDeskHeadAction && ( */}
+          <>
             <button
               onClick={() => openActionModal(WorkflowAction.SUBMIT_TO_LEO)}
               disabled={loading}
-              className="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 py-3 rounded-lg hover:from-emerald-700 hover:to-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
             >
-              Forward to LEO
+              <ArrowRight className="w-5 h-5" />
+              <span>Forward to LEO</span>
             </button>
             <button
               onClick={() => openActionModal(WorkflowAction.RETURN_TO_CREATOR)}
               disabled={loading}
-              className="w-full bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 disabled:opacity-50"
+              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-3 rounded-lg hover:from-orange-700 hover:to-orange-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
             >
-              Return to Creator
+              <RotateCcw className="w-5 h-5" />
+              <span>Return to Creator</span>
             </button>
             <button
               onClick={() => openActionModal(WorkflowAction.REJECT)}
               disabled={loading}
-              className="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
+              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-rose-600 to-rose-700 text-white px-4 py-3 rounded-lg hover:from-rose-700 hover:to-rose-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
             >
-              Reject
+              <XCircle className="w-5 h-5" />
+              <span>Reject</span>
             </button>
-          </div>
-        {/* )} */}
+          </>
+          {/* )} */}
 
-        {/* {canPerformLeoAction && ( */}
-          <div className="space-y-2">
+          {/* {canPerformLeoAction && ( */}
+          <>
             <button
               onClick={() => openActionModal(WorkflowAction.APPROVE)}
               disabled={loading}
-              className="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 py-3 rounded-lg hover:from-emerald-700 hover:to-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
             >
-              Approve
+              <CheckCircle2 className="w-5 h-5" />
+              <span>Approve</span>
             </button>
-            <button
-              onClick={() => openActionModal(WorkflowAction.RETURN_TO_CREATOR)}
-              disabled={loading}
-              className="w-full bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 disabled:opacity-50"
-            >
-              Return to Creator
-            </button>
-            <button
-              onClick={() => openActionModal(WorkflowAction.REJECT)}
-              disabled={loading}
-              className="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
-            >
-              Reject
-            </button>
-          </div>
-        {/* )} */}
+          </>
+          {/* )} */}
 
-        {/* {canGenerateDocument && ( */}
+          {/* {canGenerateDocument && ( */}
           <button
             onClick={handleGenerateDocument}
-            className="w-full bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+            className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-3 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-sm hover:shadow-md font-medium"
           >
-            Generate & Print Document
+            <Printer className="w-5 h-5" />
+            <span>Generate & Print Document</span>
           </button>
-        {/* )} */}
+          {/* )} */}
+        </div>
       </div>
 
       {/* Workflow History */}
       {workflowHistory && (
-        <div>
-          <h3 className="text-md font-medium text-gray-900 mb-3">Workflow History</h3>
-          <div className="space-y-3">
-            <div className="text-sm">
-              <span className="font-medium">Created:</span> {new Date(workflowHistory.createdAt).toLocaleString()}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-gradient-to-r from-app-accent to-app-accent px-6 py-4 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900">Workflow Timeline</h3>
+          </div>
+
+          <div className="p-6">
+            <div className="relative space-y-6">
+              {/* Timeline line */}
+              <div className="absolute left-6 top-3 bottom-3 w-0.5 bg-gradient-to-b from-blue-200 to-gray-200"></div>
+
+              {/* Created */}
+              <div className="relative flex items-start space-x-4">
+                <div className="relative z-10 w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                  <FileCheck className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1 bg-blue-50 rounded-lg p-4 border border-blue-100">
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className="font-semibold text-gray-900">Created</h4>
+                    <span className="text-xs text-gray-500">
+                      {new Date(workflowHistory.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    {new Date(workflowHistory.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Submitted to Desk Head */}
+              {workflowHistory.submittedToDeskHeadAt && (
+                <div className="relative flex items-start space-x-4">
+                  <div className="relative z-10 w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center shadow-lg">
+                    <Send className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1 bg-amber-50 rounded-lg p-4 border border-amber-100">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="font-semibold text-gray-900">Submitted to Desk Head</h4>
+                      <span className="text-xs text-gray-500">
+                        {new Date(workflowHistory.submittedToDeskHeadAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {new Date(workflowHistory.submittedToDeskHeadAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Desk Head Review */}
+              {workflowHistory.deskHeadReview && (
+                <div className="relative flex items-start space-x-4">
+                  <div className="relative z-10 w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                    <User2 className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1 bg-purple-50 rounded-lg p-4 border border-purple-100">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900">Desk Head Review</h4>
+                      <span className="text-xs text-gray-500">
+                        {new Date(workflowHistory.deskHeadReview.reviewedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center text-sm text-gray-700">
+                        <User2 className="w-4 h-4 mr-2" />
+                        <span className="font-medium">
+                          {workflowHistory.deskHeadReview.reviewerName || 'Unknown'}
+                        </span>
+                      </div>
+                      <div className="flex items-start space-x-2 bg-white rounded-lg p-3">
+                        <MessageSquare className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                        <p className="text-sm text-gray-700">{workflowHistory.deskHeadReview.comment}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Submitted to LEO */}
+              {workflowHistory.submittedToLeoAt && (
+                <div className="relative flex items-start space-x-4">
+                  <div className="relative z-10 w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                    <ArrowRight className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1 bg-blue-50 rounded-lg p-4 border border-blue-100">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="font-semibold text-gray-900">Submitted to LEO</h4>
+                      <span className="text-xs text-gray-500">
+                        {new Date(workflowHistory.submittedToLeoAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {new Date(workflowHistory.submittedToLeoAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* LEO Review */}
+              {workflowHistory.leoReview && (
+                <div className="relative flex items-start space-x-4">
+                  <div className="relative z-10 w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center shadow-lg">
+                    <User2 className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1 bg-indigo-50 rounded-lg p-4 border border-indigo-100">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900">LEO Review</h4>
+                      <span className="text-xs text-gray-500">
+                        {new Date(workflowHistory.leoReview.reviewedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center text-sm text-gray-700">
+                        <User2 className="w-4 h-4 mr-2" />
+                        <span className="font-medium">
+                          {workflowHistory.leoReview.reviewerName || 'Unknown'}
+                        </span>
+                      </div>
+                      <div className="flex items-start space-x-2 bg-white rounded-lg p-3">
+                        <MessageSquare className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                        <p className="text-sm text-gray-700">{workflowHistory.leoReview.comment}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Approved */}
+              {workflowHistory.approvedAt && (
+                <div className="relative flex items-start space-x-4">
+                  <div className="relative z-10 w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                    <CheckCircle2 className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1 bg-emerald-50 rounded-lg p-4 border border-emerald-100">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="font-semibold text-gray-900">Approved</h4>
+                      <span className="text-xs text-gray-500">
+                        {new Date(workflowHistory.approvedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {new Date(workflowHistory.approvedAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-            
-            {workflowHistory.submittedToDeskHeadAt && (
-              <div className="text-sm">
-                <span className="font-medium">Submitted to Desk Head:</span> {new Date(workflowHistory.submittedToDeskHeadAt).toLocaleString()}
-              </div>
-            )}
-            
-            {workflowHistory.deskHeadReview && (
-              <div className="bg-gray-50 p-3 rounded">
-                <div className="text-sm font-medium">Desk Head Review</div>
-                <div className="text-sm text-gray-600">
-                  Reviewed by: {workflowHistory.deskHeadReview.reviewerName || 'Unknown'}
-                </div>
-                <div className="text-sm text-gray-600">
-                  Date: {new Date(workflowHistory.deskHeadReview.reviewedAt).toLocaleString()}
-                </div>
-                <div className="text-sm mt-1">
-                  Comment: {workflowHistory.deskHeadReview.comment}
-                </div>
-              </div>
-            )}
-            
-            {workflowHistory.submittedToLeoAt && (
-              <div className="text-sm">
-                <span className="font-medium">Submitted to LEO:</span> {new Date(workflowHistory.submittedToLeoAt).toLocaleString()}
-              </div>
-            )}
-            
-            {workflowHistory.leoReview && (
-              <div className="bg-gray-50 p-3 rounded">
-                <div className="text-sm font-medium">LEO Review</div>
-                <div className="text-sm text-gray-600">
-                  Reviewed by: {workflowHistory.leoReview.reviewerName || 'Unknown'}
-                </div>
-                <div className="text-sm text-gray-600">
-                  Date: {new Date(workflowHistory.leoReview.reviewedAt).toLocaleString()}
-                </div>
-                <div className="text-sm mt-1">
-                  Comment: {workflowHistory.leoReview.comment}
-                </div>
-              </div>
-            )}
-            
-            {workflowHistory.approvedAt && (
-              <div className="text-sm">
-                <span className="font-medium">Approved:</span> {new Date(workflowHistory.approvedAt).toLocaleString()}
-              </div>
-            )}
           </div>
         </div>
       )}
 
       {/* Action Modal */}
       {showActionModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
-              {selectedAction?.replace(/_/g, ' ')}
-            </h3>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Comment *
-              </label>
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                rows={4}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your comment..."
-                required
-              />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full animate-fadeIn">
+            <div className="bg-gradient-to-r from-app-foreground to-app-primary px-6 py-5 rounded-t-2xl">
+              <h3 className="text-xl font-bold text-white">
+                {selectedAction?.replace(/_/g, ' ')}
+              </h3>
             </div>
-            <div className="flex gap-3">
-              <button
-                onClick={handleWorkflowAction}
-                disabled={loading || !comment.trim()}
-                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-              >
-                {loading ? 'Processing...' : 'Confirm'}
-              </button>
-              <button
-                onClick={() => setShowActionModal(false)}
-                disabled={loading}
-                className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 disabled:opacity-50"
-              >
-                Cancel
-              </button>
+
+            <div className="p-6">
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                  Comment *
+                </label>
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  rows={4}
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-app-foreground focus:border-transparent transition-all resize-none"
+                  placeholder="Enter your comment here..."
+                  required
+                />
+                <p className="mt-2 text-xs text-gray-500">
+                  Please provide a detailed comment for this action.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowActionModal(false)}
+                  disabled={loading}
+                  className="flex-1 px-6 py-3 border-2 border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleWorkflowAction}
+                  disabled={loading || !comment.trim()}
+                  className="flex-1 px-6 py-3 bg-app-foreground text-white rounded-xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium shadow-lg"
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center">
+                      <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Processing...
+                    </span>
+                  ) : (
+                    'Confirm'
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

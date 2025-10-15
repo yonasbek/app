@@ -121,10 +121,10 @@ export default function AttendancePage() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Attendance Management</h1>
-          <p className="text-gray-600">Comprehensive attendance tracking and management system</p>
+          <h1 className="text-3xl font-bold text-app-foreground mb-2">Attendance Management</h1>
+          <p className="text-app-foreground">Comprehensive attendance tracking and management system</p>
         </div>
-        {currentUser && (
+        {/* {currentUser && (
           <Card padding="sm" className="mt-4 lg:mt-0">
             <div className="flex items-center space-x-4">
               <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
@@ -133,8 +133,8 @@ export default function AttendancePage() {
                 </span>
               </div>
               <div>
-                <p className="font-medium text-gray-900">{currentUser.name}</p>
-                <p className="text-sm text-gray-500">{currentUser.position}</p>
+                <p className="font-medium text-app-foreground">{currentUser.name}</p>
+                <p className="text-sm text-app-foreground">{currentUser.position}</p>
               </div>
               <div className="flex flex-col space-y-1">
                 {isAdmin && (
@@ -146,55 +146,55 @@ export default function AttendancePage() {
               </div>
             </div>
           </Card>
-        )}
+        )} */}
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="border border-gray-200">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-              <Users className="w-6 h-6 text-gray-600" />
+            <div className="w-12 h-12 bg-app-foreground rounded-xl flex items-center justify-center">
+              <Users className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{statistics.totalEmployees}</p>
-              <p className="text-sm text-gray-600">Total Employees</p>
+              <p className="text-2xl font-bold text-app-foreground">{statistics.totalEmployees}</p>
+              <p className="text-sm text-app-foreground">Total Employees</p>
             </div>
           </div>
         </Card>
 
         <Card className="border border-gray-200">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-gray-600" />
+            <div className="w-12 h-12 bg-app-foreground rounded-xl flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{statistics.presentToday}</p>
-              <p className="text-sm text-gray-600">Present Today</p>
+              <p className="text-2xl font-bold text-app-foreground">{statistics.presentToday}</p>
+              <p className="text-sm text-app-foreground">Present Today</p>
             </div>
           </div>
         </Card>
 
         <Card className="border border-gray-200">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-gray-600" />
+            <div className="w-12 h-12 bg-app-foreground rounded-xl flex items-center justify-center">
+              <Calendar className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{statistics.onLeave}</p>
-              <p className="text-sm text-gray-600">On Leave</p>
+              <p className="text-2xl font-bold text-app-foreground">{statistics.onLeave}</p>
+              <p className="text-sm text-app-foreground">On Leave</p>
             </div>
           </div>
         </Card>
 
         <Card className="border border-gray-200">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-              <Clock className="w-6 h-6 text-gray-600" />
+            <div className="w-12 h-12 bg-app-foreground rounded-xl flex items-center justify-center">
+              <Clock className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{statistics.lateArrivals}</p>
-              <p className="text-sm text-gray-600">Late Arrivals</p>
+              <p className="text-2xl font-bold text-app-foreground">{statistics.lateArrivals}</p>
+              <p className="text-sm text-app-foreground">Late Arrivals</p>
             </div>
           </div>
         </Card>
@@ -202,7 +202,7 @@ export default function AttendancePage() {
 
       {/* Navigation Tabs */}
       <Card>
-        <div className="border-b border-gray-200 -mb-px">
+        <div className="border-b border-app-foreground -mb-px">
           <nav className="flex space-x-8 overflow-x-auto">
             {getVisibleTabs().map((tab) => {
               const Icon = tab.icon;
@@ -211,15 +211,15 @@ export default function AttendancePage() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as 'checkin' | 'records' | 'leaves' | 'reports')}
                   className={`group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors duration-200 ${activeTab === tab.id
-                    ? 'border-gray-600 text-gray-800'
+                    ? 'border-app-foreground text-app-foreground'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                 >
-                  <Icon className={`mr-3 h-5 w-5 transition-colors duration-200 ${activeTab === tab.id ? 'text-gray-600' : 'text-gray-400 group-hover:text-gray-500'
+                  <Icon className={`mr-3 h-5 w-5 transition-colors duration-200 ${activeTab === tab.id ? 'text-app-foreground' : 'text-app-foreground group-hover:text-app-foreground'
                     }`} />
                   <div className="text-left">
                     <div className="font-medium">{tab.label}</div>
-                    <div className="text-xs text-gray-400">{tab.description}</div>
+                    <div className="text-xs text-app-foreground">{tab.description}</div>
                   </div>
                 </button>
               );

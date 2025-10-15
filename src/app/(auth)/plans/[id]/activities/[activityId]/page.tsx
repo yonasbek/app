@@ -1,13 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { Activity } from '@/types/activity';
 import { Plan } from '@/types/plan';
-import { SubActivity, SubActivityStats } from '@/types/subactivity';
 import { activityService } from '@/services/activityService';
 import { planService } from '@/services/planService';
-import { subActivityService } from '@/services/subactivityService';
 import { use } from 'react';
 import {
   ArrowLeft,
@@ -22,12 +19,9 @@ import {
   TrendingUp,
   AlertCircle,
   CheckCircle2,
-  Pause,
-  Plus,
-  Trash2
+  Pause
 } from 'lucide-react';
-
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Card from '@/components/ui/Card';
 import SubActivityList from '@/components/activity/SubActivityList';
 
@@ -35,8 +29,6 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ id: s
   const resolvedParams = use(params);
   const [activity, setActivity] = useState<any | null>(null);
   const [plan, setPlan] = useState<Plan | null>(null);
-  const [subActivities, setSubActivities] = useState<SubActivity[]>([]);
-  const [stats, setStats] = useState<SubActivityStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -48,16 +40,12 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ id: s
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [planData, activityData, subActivitiesData, statsData] = await Promise.all([
+      const [planData, activityData] = await Promise.all([
         planService.getById(resolvedParams.id),
-        activityService.getById(resolvedParams.activityId),
-        subActivityService.getByActivityId(resolvedParams.activityId),
-        subActivityService.getSubActivityStats(resolvedParams.activityId)
+        activityService.getById(resolvedParams.activityId)
       ]);
       setPlan(planData);
       setActivity(activityData);
-      setSubActivities(subActivitiesData);
-      setStats(statsData);
     } catch (err) {
       setError('Failed to fetch activity');
       console.error(err);
@@ -149,15 +137,15 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ id: s
       {/* Main Layout: Sub-Activities List + Sidebar */}
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Main Content Area - Sub-Activities List */}
-        {/* Summary Section - Full Width */}
-        <SubActivityList
-          activityId={activity.id}
-          activityTitle={activity.title}
-        />
-
+        <div className="flex-1 min-w-0">
+          <SubActivityList
+            activityId={activity.id}
+            activityTitle={activity.title}
+          />
+        </div>
 
         {/* Sidebar with Activity Details */}
-        <div className="lg:w-80 space-y-4 lg:sticky lg:top-6 lg:self-start">
+        <div className="w-full lg:w-96 lg:flex-shrink-0 space-y-4 lg:sticky lg:top-6 lg:self-start">
           {/* Status Card */}
           <Card className="space-y-4">
             {/* Status */}

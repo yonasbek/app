@@ -227,8 +227,38 @@ export default function LoginPage() {
           {/* Help Text */}
           <div className="text-center mt-4">
             <p className="text-sm text-neutral-600">
-              Need help? <span className="font-semibold text-app-primary">Contact your system administrator</span>
+              Need help?{' '}
+              <a
+                href="mailto:support@jlinkdigital.com"
+                className="font-semibold text-app-primary underline hover:text-app-primary-light transition-colors"
+              >
+                Contact support
+              </a>
             </p>
+          </div>
+
+
+          {/* Footer */}
+
+          <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-center flex-col pt-4 border-t border-gray-200 ">
+            <div className="flex items-center">
+              <p className="text-xs text-neutral-400">
+                Powered by{" "}
+                <a
+                  href="https://jlinkdigital.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-app-primary font-medium hover:underline"
+                >
+                  Jlink Digital Solutions
+                </a>
+              </p>
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-xs text-neutral-400">
+                &copy; {new Date().getFullYear()} Office Management System
+              </p>
+            </div>
           </div>
         </div>
       </div>

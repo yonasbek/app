@@ -163,10 +163,91 @@ export default function SubActivityList({ activityId, activityTitle, canEdit = t
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[40vh]">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-12 w-12 border-4 border-app-primary rounded-full border-t-transparent mx-auto"></div>
-          <p className="text-app-foreground text-sm">Loading sub-activities...</p>
+      <div className="space-y-8">
+        {/* Summary Stats Skeleton */}
+        <div className="bg-gradient-to-br from-white to-app-accent rounded-xl border border-neutral-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div className="space-y-2">
+              <div className="h-8 w-64 bg-neutral-200 rounded animate-pulse"></div>
+              <div className="h-4 w-48 bg-neutral-100 rounded animate-pulse"></div>
+            </div>
+            <div className="h-10 w-32 bg-neutral-200 rounded-lg animate-pulse"></div>
+          </div>
+
+          {/* Stats Cards Skeleton */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="bg-white p-4 rounded-lg border border-neutral-200">
+                <div className="flex flex-col items-center text-center gap-2">
+                  <div className="w-12 h-12 bg-neutral-200 rounded-full animate-pulse"></div>
+                  <div className="w-full space-y-2">
+                    <div className="h-10 w-16 mx-auto bg-neutral-200 rounded animate-pulse"></div>
+                    <div className="h-3 w-20 mx-auto bg-neutral-100 rounded animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Visual Separator */}
+        <div className="relative py-4">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t-2 border-neutral-200"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-app-bg px-4 text-sm font-medium text-neutral-500 flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Sub-Activities List
+            </span>
+          </div>
+        </div>
+
+        {/* Sub-Activities List Skeleton */}
+        <div className="bg-white rounded-xl border border-neutral-200 shadow-sm">
+          <div className="divide-y divide-neutral-100">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="p-6">
+                <div className="space-y-4">
+                  {/* Title and Badges Skeleton */}
+                  <div className="space-y-2">
+                    <div className="h-6 w-3/4 bg-neutral-200 rounded animate-pulse"></div>
+                    <div className="flex gap-2">
+                      <div className="h-6 w-24 bg-neutral-100 rounded-full animate-pulse"></div>
+                      <div className="h-6 w-20 bg-neutral-100 rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+
+                  {/* Description Skeleton */}
+                  <div className="space-y-2">
+                    <div className="h-4 w-full bg-neutral-100 rounded animate-pulse"></div>
+                    <div className="h-4 w-5/6 bg-neutral-100 rounded animate-pulse"></div>
+                  </div>
+
+                  {/* Meta Info Skeleton */}
+                  <div className="flex gap-6">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-neutral-200 rounded-full animate-pulse"></div>
+                      <div className="h-4 w-24 bg-neutral-100 rounded animate-pulse"></div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-neutral-200 rounded-full animate-pulse"></div>
+                      <div className="h-4 w-32 bg-neutral-100 rounded animate-pulse"></div>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar Skeleton */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <div className="h-3 w-16 bg-neutral-100 rounded animate-pulse"></div>
+                      <div className="h-3 w-12 bg-neutral-100 rounded animate-pulse"></div>
+                    </div>
+                    <div className="w-full h-2 bg-neutral-100 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

@@ -20,7 +20,7 @@ const Footer = ({ sidebarCollapsed }: { sidebarCollapsed: boolean }) => {
                             rel="noopener noreferrer"
                             className="text-app-primary font-medium hover:underline"
                         >
-                            Jlink Digital
+                            Jlink Digital Solutions
                         </a>
                     </p>
                 </div>

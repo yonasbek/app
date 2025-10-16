@@ -114,7 +114,7 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen }: Sidebar
                     <nav className={`flex-1 ${isCollapsed ? 'px-2' : 'px-4'} py-6 space-y-1`}>
                         {menuItems.map((item) => {
                             const Icon = item.icon;
-                            const isActive = pathname === item.path;
+                            const isActive = pathname === item.path || pathname.startsWith(item.path + '/');
 
                             return (
                                 <Link
@@ -144,7 +144,30 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen }: Sidebar
                             );
                         })}
                     </nav>
+                    {/* Modern Support Contact Card */}
+                    {(showFullContent || isMobileOpen) && (
+                        <div className="pt-3 px-3 my-1">
+                            <div className="flex items-center gap-3 rounded-lg bg-app-accent px-3 py-2 shadow-sm border border-app-foreground">
+                                <span className="inline-flex items-center justify-center w-6 h-6 bg-app-accent rounded-full">
+                                    <svg className="w-4 h-4 text-app-foreground" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16 12v4a4 4 0 01-8 0v-4m8 0V6a4 4 0 00-8 0v6m8 0H8"></path></svg>
+                                </span>
+                                <div className="flex flex-col">
+                                    <span className="text-sm text-app-foreground font-medium leading-tight">
 
+                                        <a
+                                            href="mailto:support@jlinkdigital.com"
+                                            className="underline hover:text-app-foreground font-semibold transition-colors"
+                                        >
+                                            Contact support
+                                        </a>
+                                    </span>
+                                    <span className="text-xs text-app-foreground font-mono opacity-80 ml-0.5 select-all">
+                                        support@jlinkdigital.com
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {/* Footer */}
                     <div className="border-t border-app-secondary p-3 space-y-1">
                         <button className="flex items-center w-full px-3 py-2.5 rounded-lg text-neutral-600 hover:bg-app-accent hover:text-app-foreground transition-colors duration-200">
@@ -167,6 +190,8 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen }: Sidebar
                                 <span className="font-medium text-sm">Logout</span>
                             )}
                         </button>
+
+
                     </div>
                 </div>
             </div>

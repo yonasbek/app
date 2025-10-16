@@ -31,22 +31,22 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
     };
 
     loadDepartments();
-    
+
     // Set default date range to current month
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    
+
     const startDateStr = firstDay.toISOString().split('T')[0];
     const endDateStr = lastDay.toISOString().split('T')[0];
-    
+
     setStartDate(startDateStr);
     setEndDate(endDateStr);
   }, [users]);
 
   const handleApplyFilters = () => {
     const filters: IAttendanceFilters = {};
-    
+
     if (selectedUser) filters.userId = selectedUser;
     if (startDate) filters.startDate = startDate;
     if (endDate) filters.endDate = endDate;
@@ -93,18 +93,18 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
 
   return (
     <div className="bg-white rounded-lg shadow p-6 mb-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter Attendance Records</h3>
-      
+      <h3 className="text-lg font-semibold text-app-foreground mb-4">Filter Attendance Records</h3>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-4">
         {/* Employee Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-app-foreground mb-1">
             Employee
           </label>
           <select
             value={selectedUser}
             onChange={(e) => setSelectedUser(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-app-foreground"
           >
             <option value="">All Employees</option>
             {users.map((user) => (
@@ -117,7 +117,7 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
 
         {/* Start Date */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-app-foreground mb-1">
             Start Date <span className="text-red-500">*</span>
           </label>
           <input
@@ -125,13 +125,13 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-app-foreground"
           />
         </div>
 
         {/* End Date */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-app-foreground mb-1">
             End Date <span className="text-red-500">*</span>
           </label>
           <input
@@ -139,19 +139,19 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-app-foreground"
           />
         </div>
 
         {/* Status Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-app-foreground mb-1">
             Status
           </label>
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-app-foreground"
           >
             <option value="">All Status</option>
             <option value="present">Present</option>
@@ -164,13 +164,13 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
 
         {/* Department Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-app-foreground mb-1">
             Department
           </label>
           <select
             value={selectedDepartment}
             onChange={(e) => setSelectedDepartment(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-app-foreground"
           >
             <option value="">All Departments</option>
             {departments.map((dept) => (
@@ -185,22 +185,22 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
       <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
         {/* Quick Date Range Buttons */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-medium text-gray-700 mr-2">Quick ranges:</span>
+          <span className="text-sm font-medium text-app-foreground mr-2">Quick ranges:</span>
           <button
             onClick={() => setQuickDateRange('today')}
-            className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+            className="px-3 py-1 text-xs bg-gray-100 text-app-foreground rounded hover:bg-gray-200"
           >
             Today
           </button>
           <button
             onClick={() => setQuickDateRange('week')}
-            className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+            className="px-3 py-1 text-xs bg-gray-100 text-app-foreground rounded hover:bg-gray-200"
           >
             Last 7 Days
           </button>
           <button
             onClick={() => setQuickDateRange('month')}
-            className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+            className="px-3 py-1 text-xs bg-gray-100 text-app-foreground rounded hover:bg-gray-200"
           >
             This Month
           </button>
@@ -210,13 +210,13 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
         <div className="flex items-center gap-4">
           <button
             onClick={clearFilters}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded hover:bg-gray-50"
+            className="px-4 py-2 text-sm text-app-foreground hover:text-app-foreground border border-gray-300 rounded hover:bg-gray-50"
           >
             Clear Filters
           </button>
           <button
             onClick={handleApplyFilters}
-            className="px-6 py-2 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center gap-2"
+            className="px-6 py-2 text-sm font-semibold text-white bg-app-foreground rounded-md hover:bg-app-foreground focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-app-foreground flex items-center gap-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -225,9 +225,9 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
           </button>
         </div>
       </div>
-      
+
       {/* Note about required fields */}
-      
+
     </div>
   );
 } 

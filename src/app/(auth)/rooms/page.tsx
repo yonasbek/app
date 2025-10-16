@@ -87,8 +87,8 @@ export default function RoomListPage() {
     return (
       <Card className="text-center py-12">
         <AlertTriangle className="w-16 h-16 text-red-300 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Error loading rooms</h3>
-        <p className="text-gray-600 mb-6">{error}</p>
+        <h3 className="text-lg font-medium text-app-foreground mb-2">Error loading rooms</h3>
+        <p className="text-app-foreground mb-6">{error}</p>
         <button
           onClick={loadRooms}
           className="px-6 py-3 gradient-primary text-white rounded-lg hover:shadow-lg transition-all duration-200"
@@ -104,8 +104,8 @@ export default function RoomListPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Meeting Rooms</h1>
-          <p className="text-gray-600">Manage and book meeting rooms</p>
+          <h1 className="text-3xl font-bold text-app-foreground mb-2">Meeting Rooms</h1>
+          <p className="text-app-foreground">Manage and book meeting rooms</p>
         </div>
         <Link
           href="/rooms/new"
@@ -118,50 +118,50 @@ export default function RoomListPage() {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="border border-blue-200">
+        <Card className="border border-app-foreground">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-              <MapPin className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-app-foreground rounded-xl flex items-center justify-center">
+              <MapPin className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{statistics.total}</p>
-              <p className="text-sm text-gray-600">Total Rooms</p>
+              <p className="text-2xl font-bold text-app-foreground">{statistics.total}</p>
+              <p className="text-sm text-app-foreground">Total Rooms</p>
             </div>
           </div>
         </Card>
 
-        <Card className="border border-green-200">
+        <Card className="border border-app-foreground">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-app-foreground rounded-xl flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{statistics.available}</p>
-              <p className="text-sm text-gray-600">Available</p>
+              <p className="text-2xl font-bold text-app-foreground">{statistics.available}</p>
+              <p className="text-sm text-app-foreground">Available</p>
             </div>
           </div>
         </Card>
 
-        <Card className="border border-red-200">
+        <Card className="border border-app-foreground">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-              <AlertTriangle className="w-6 h-6 text-red-600" />
+            <div className="w-12 h-12 bg-app-foreground rounded-xl flex items-center justify-center">
+              <AlertTriangle className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{statistics.occupied}</p>
-              <p className="text-sm text-gray-600">Occupied</p>
+              <p className="text-2xl font-bold text-app-foreground">{statistics.occupied}</p>
+              <p className="text-sm text-app-foreground">Occupied</p>
             </div>
           </div>
         </Card>
 
-        <Card className="border border-amber-200">
+        <Card className="border border-app-foreground">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-              <Clock className="w-6 h-6 text-amber-600" />
+            <div className="w-12 h-12 bg-app-foreground rounded-xl flex items-center justify-center">
+              <Clock className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{statistics.maintenance}</p>
-              <p className="text-sm text-gray-600">Maintenance</p>
+              <p className="text-2xl font-bold text-app-foreground">{statistics.maintenance}</p>
+              <p className="text-sm text-app-foreground">Maintenance</p>
             </div>
           </div>
         </Card>

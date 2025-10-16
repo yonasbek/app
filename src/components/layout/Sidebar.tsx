@@ -16,7 +16,8 @@ import {
     Settings,
     LogOut,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    Upload
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -31,6 +32,7 @@ const menuItems = [
     { path: '/contacts', name: 'Contacts', icon: Phone },
     { path: '/training', name: 'Training', icon: BookOpen },
     { path: '/users', name: 'Users', icon: Users },
+    { path: '/import', name: 'Data Import', icon: Upload },
     { path: '/reports', name: 'Reports', icon: BarChart3 },
 ];
 

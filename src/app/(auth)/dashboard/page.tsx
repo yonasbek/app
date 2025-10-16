@@ -18,7 +18,8 @@ import {
   Activity,
   Building,
   Book,
-  GraduationCap
+  GraduationCap,
+  Upload
 } from 'lucide-react';
 import Card from '@/components/ui/Card';
 
@@ -78,6 +79,14 @@ const modules = [
     href: '/training',
     color: 'from-purple-500 to-purple-600',
     stats: { value: '24', label: 'Active Courses' }
+  },
+  {
+    title: 'Data Import',
+    description: 'Import CSV files and manage imported data',
+    icon: Upload,
+    href: '/import',
+    color: 'from-indigo-500 to-indigo-600',
+    stats: { value: '12', label: 'Import Reports' }
   }
 ];
 

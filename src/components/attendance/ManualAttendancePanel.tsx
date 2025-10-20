@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { attendanceService } from '@/services/attendanceService';
 import { AttendanceRecord, User } from '@/types/attendance';
 import { Edit, Clock, Calendar, AlertCircle, CheckCircle } from 'lucide-react';
+import { EthiopianDatePicker } from '../ui/ethiopian-date-picker';
 
 interface ManualAttendancePanelProps {
   users: User[];
@@ -33,17 +34,17 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
 
     try {
       setIsFetchingAttendance(true);
-      
+
       // Get attendance records for the selected user and date
       const records = await attendanceService.getAttendanceRecords({
         userId: selectedUser,
         startDate: selectedDate,
         endDate: selectedDate
       });
-      
+
       const attendance = records.length > 0 ? records[0] : null;
       setUserDateAttendance(attendance);
-      
+
       // Pre-populate times if attendance exists
       if (attendance) {
         setCheckInTime(attendance.checkInTime ? new Date(attendance.checkInTime).toTimeString().substring(0, 5) : '');
@@ -71,7 +72,7 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
       alert('Please select a user and enter a check-in time.');
       return;
     }
-    
+
     setIsProcessing(true);
     try {
       const checkInDateTime = `${selectedDate}T${checkInTime}:00`;
@@ -105,7 +106,7 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
       setIsProcessing(false);
     }
   };
-  
+
   const handleLeaveSubmit = async () => {
     if (!selectedUser) {
       alert('Please select a user.');
@@ -154,12 +155,12 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
   // Helper function to get attendance status info
   const getAttendanceStatusInfo = () => {
     if (!userDateAttendance) return null;
-    
+
     const isOnLeave = userDateAttendance.status === 'on_leave' || userDateAttendance.status === 'leave' || userDateAttendance.status === 'holiday';
     const isPresent = userDateAttendance.status === 'present';
     const hasCheckedIn = userDateAttendance.checkInTime;
     const hasCheckedOut = userDateAttendance.checkOutTime;
-    
+
     return {
       isOnLeave,
       isPresent,
@@ -210,12 +211,15 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
         <label htmlFor="attendance-date" className="block text-sm font-medium text-gray-700 mb-1">
           Select Date
         </label>
-        <input
-          type="date"
-          id="attendance-date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+        <EthiopianDatePicker
+          label=""
+          value={selectedDate ? new Date(selectedDate) : null}
+          onChange={(selectedDate: Date) => {
+            // Adjust for timezone offset to ensure correct local date
+            const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+            setSelectedDate(localDate.toISOString().split('T')[0]);
+          }}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
         />
       </div>
 
@@ -244,67 +248,67 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
                     All attendance actions are disabled for this date.
                   </p>
                 </div>
-                             ) : statusInfo.isPresent ? (
-                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                   <div className="flex items-center">
-                     <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                     <h3 className="text-lg font-medium text-green-800">User is Present</h3>
-                   </div>
-                   <p className="text-green-700 mt-2">
-                     <strong>{selectedUserName}</strong> is marked as <span className="font-semibold">Present</span> on {new Date(selectedDate).toLocaleDateString()}.
-                   </p>
-                   {statusInfo.hasCheckedIn && (
-                     <p className="text-green-700 mt-1">
-                       Checked in at{' '}
-                       <span className="font-semibold">
-                         {userDateAttendance?.checkInTime && new Date(userDateAttendance.checkInTime).toLocaleTimeString()}
-                       </span>
-                     </p>
-                   )}
-                   {statusInfo.hasCheckedOut ? (
-                     <p className="text-green-700 mt-1">
-                       Checked out at{' '}
-                       <span className="font-semibold">
-                         {userDateAttendance?.checkOutTime && new Date(userDateAttendance.checkOutTime).toLocaleTimeString()}
-                       </span>
-                     </p>
-                   ) : statusInfo.hasCheckedIn ? (
-                     <p className="text-sm text-green-600 mt-1">
-                       You can still process check-out for this user.
-                     </p>
-                   ) : (
-                     <p className="text-sm text-green-600 mt-1">
-                       You can still process check-in/check-out for this user.
-                     </p>
-                   )}
-                 </div>
-               ) : statusInfo ? (
-                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                   <div className="flex items-center">
-                     <AlertCircle className="h-5 w-5 text-blue-600 mr-2" />
-                     <h3 className="text-lg font-medium text-blue-800">User Status: {statusInfo.status}</h3>
-                   </div>
-                   <p className="text-blue-700 mt-2">
-                     <strong>{selectedUserName}</strong> is marked as <span className="font-semibold">{statusInfo.status}</span> on {new Date(selectedDate).toLocaleDateString()}.
-                   </p>
-                   {statusInfo.hasCheckedIn && (
-                     <p className="text-blue-700 mt-1">
-                       Checked in at{' '}
-                       <span className="font-semibold">
-                         {userDateAttendance?.checkInTime && new Date(userDateAttendance.checkInTime).toLocaleTimeString()}
-                       </span>
-                     </p>
-                   )}
-                   {statusInfo.hasCheckedOut && (
-                     <p className="text-blue-700 mt-1">
-                       Checked out at{' '}
-                       <span className="font-semibold">
-                         {userDateAttendance?.checkOutTime && new Date(userDateAttendance.checkOutTime).toLocaleTimeString()}
-                       </span>
-                     </p>
-                   )}
-                 </div>
-               ) : null}
+              ) : statusInfo.isPresent ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+                    <h3 className="text-lg font-medium text-green-800">User is Present</h3>
+                  </div>
+                  <p className="text-green-700 mt-2">
+                    <strong>{selectedUserName}</strong> is marked as <span className="font-semibold">Present</span> on {new Date(selectedDate).toLocaleDateString()}.
+                  </p>
+                  {statusInfo.hasCheckedIn && (
+                    <p className="text-green-700 mt-1">
+                      Checked in at{' '}
+                      <span className="font-semibold">
+                        {userDateAttendance?.checkInTime && new Date(userDateAttendance.checkInTime).toLocaleTimeString()}
+                      </span>
+                    </p>
+                  )}
+                  {statusInfo.hasCheckedOut ? (
+                    <p className="text-green-700 mt-1">
+                      Checked out at{' '}
+                      <span className="font-semibold">
+                        {userDateAttendance?.checkOutTime && new Date(userDateAttendance.checkOutTime).toLocaleTimeString()}
+                      </span>
+                    </p>
+                  ) : statusInfo.hasCheckedIn ? (
+                    <p className="text-sm text-green-600 mt-1">
+                      You can still process check-out for this user.
+                    </p>
+                  ) : (
+                    <p className="text-sm text-green-600 mt-1">
+                      You can still process check-in/check-out for this user.
+                    </p>
+                  )}
+                </div>
+              ) : statusInfo ? (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <AlertCircle className="h-5 w-5 text-blue-600 mr-2" />
+                    <h3 className="text-lg font-medium text-blue-800">User Status: {statusInfo.status}</h3>
+                  </div>
+                  <p className="text-blue-700 mt-2">
+                    <strong>{selectedUserName}</strong> is marked as <span className="font-semibold">{statusInfo.status}</span> on {new Date(selectedDate).toLocaleDateString()}.
+                  </p>
+                  {statusInfo.hasCheckedIn && (
+                    <p className="text-blue-700 mt-1">
+                      Checked in at{' '}
+                      <span className="font-semibold">
+                        {userDateAttendance?.checkInTime && new Date(userDateAttendance.checkInTime).toLocaleTimeString()}
+                      </span>
+                    </p>
+                  )}
+                  {statusInfo.hasCheckedOut && (
+                    <p className="text-blue-700 mt-1">
+                      Checked out at{' '}
+                      <span className="font-semibold">
+                        {userDateAttendance?.checkOutTime && new Date(userDateAttendance.checkOutTime).toLocaleTimeString()}
+                      </span>
+                    </p>
+                  )}
+                </div>
+              ) : null}
             </div>
           )}
 
@@ -314,15 +318,15 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
               <label htmlFor="checkin-time" className="block text-sm font-medium text-gray-700">
                 Check-in Time
               </label>
-              <input 
-                type="time" 
+              <input
+                type="time"
                 id="checkin-time"
                 value={checkInTime}
                 onChange={(e) => setCheckInTime(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-md mt-1 bg-white text-gray-900 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 disabled={!canCheckIn}
               />
-              <button 
+              <button
                 onClick={handleManualCheckIn}
                 disabled={isProcessing || !canCheckIn || !checkInTime}
                 className="mt-2 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
@@ -339,15 +343,15 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
               <label htmlFor="checkout-time" className="block text-sm font-medium text-gray-700">
                 Check-out Time
               </label>
-              <input 
-                type="time" 
+              <input
+                type="time"
                 id="checkout-time"
                 value={checkOutTime}
                 onChange={(e) => setCheckOutTime(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-md mt-1 bg-white text-gray-900 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 disabled={!canCheckOut}
               />
-              <button 
+              <button
                 onClick={handleManualCheckOut}
                 disabled={isProcessing || !canCheckOut || !checkOutTime}
                 className="mt-2 w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
@@ -361,7 +365,7 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
               </button>
             </div>
           </div>
-          
+
           {/* On Leave Section */}
           <div className="space-y-2">
             <label htmlFor="leave-type" className="block text-sm font-medium text-gray-700">
@@ -378,8 +382,8 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
                 <option key={type} value={type}>{type}</option>
               ))}
             </select>
-            <input 
-              type="text" 
+            <input
+              type="text"
               id="leave-reason"
               value={leaveReason}
               onChange={(e) => setLeaveReason(e.target.value)}
@@ -387,7 +391,7 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
               className="w-full p-2 border border-gray-300 rounded-md mt-1 bg-white text-gray-900 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               disabled={!canSubmitLeave}
             />
-            <button 
+            <button
               onClick={handleLeaveSubmit}
               disabled={isProcessing || !canSubmitLeave}
               className="mt-2 w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"

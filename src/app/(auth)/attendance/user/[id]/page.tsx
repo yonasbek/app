@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { attendanceService } from '@/services/attendanceService';
 import { User, AttendanceRecord, AttendanceStats } from '@/types/attendance';
+import EthiopianDatePicker from '@/components/ui/ethiopian-date-picker';
 
 export default function UserAttendancePage() {
   const params = useParams();
@@ -75,12 +76,12 @@ export default function UserAttendancePage() {
 
   const calculateWorkHours = (checkIn: string, checkOut?: string) => {
     if (!checkOut) return 'N/A';
-    
+
     const checkInTime = new Date(checkIn);
     const checkOutTime = new Date(checkOut);
     const diffMs = checkOutTime.getTime() - checkInTime.getTime();
     const hours = diffMs / (1000 * 60 * 60);
-    
+
     return `${hours.toFixed(1)}h`;
   };
 
@@ -131,20 +132,37 @@ export default function UserAttendancePage() {
         <div className="flex items-center gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-            <input
-              type="date"
-              value={dateRange.startDate}
-              onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-              className="px-3 py-2 border border-gray-300 rounded-md"
+            <EthiopianDatePicker
+              label=""
+              value={dateRange.startDate ? new Date(dateRange.startDate) : null}
+              onChange={(selectedDate: Date) => {
+                // Adjust for timezone offset to ensure correct local date
+                const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+                setDateRange(prev => ({
+                  ...prev,
+                  startDate: localDate.toISOString().split('T')[0],
+                }));
+              }}
+              disableFuture
+              required
+              className="w-full"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-            <input
-              type="date"
-              value={dateRange.endDate}
-              onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-              className="px-3 py-2 border border-gray-300 rounded-md"
+            <EthiopianDatePicker
+              label=""
+              value={dateRange.endDate ? new Date(dateRange.endDate) : null}
+              onChange={(selectedDate: Date) => {
+                // Adjust for timezone offset to ensure correct local date
+                const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+                setDateRange(prev => ({
+                  ...prev,
+                  endDate: localDate.toISOString().split('T')[0],
+                }));
+              }}
+              required
+              className="w-full"
             />
           </div>
         </div>
@@ -225,13 +243,12 @@ export default function UserAttendancePage() {
                       {calculateWorkHours(record.checkInTime, record.checkOutTime)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        record.status === 'present' ? 'bg-green-100 text-green-800' :
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${record.status === 'present' ? 'bg-green-100 text-green-800' :
                         record.status === 'absent' ? 'bg-red-100 text-red-800' :
-                        record.status === 'late' ? 'bg-yellow-100 text-yellow-800' :
-                        (record.status === 'on_leave' || record.status === 'leave' || record.status === 'holiday') ? 'bg-purple-100 text-purple-800' :
-                        'bg-orange-100 text-orange-800'
-                      }`}>
+                          record.status === 'late' ? 'bg-yellow-100 text-yellow-800' :
+                            (record.status === 'on_leave' || record.status === 'leave' || record.status === 'holiday') ? 'bg-purple-100 text-purple-800' :
+                              'bg-orange-100 text-orange-800'
+                        }`}>
                         {(record.status === 'on_leave' || record.status === 'leave' || record.status === 'holiday') && record.leaveType ? record.leaveType : record.status.replace('_', ' ').toUpperCase()}
                       </span>
                     </td>

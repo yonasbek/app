@@ -17,7 +17,7 @@ import {
   AlertCircle,
   Paperclip
 } from 'lucide-react';
-
+import { EthiopianDatePicker } from '../ui/ethiopian-date-picker';
 interface MemoFormProps {
   initialData?: Memo;
   mode: 'create' | 'edit';
@@ -201,12 +201,19 @@ export default function MemoForm({ initialData, mode }: MemoFormProps) {
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <Calendar className="h-5 w-5 text-gray-400" />
                   </div>
-                  <input
-                    type="date"
-                    name="date_of_issue"
-                    value={formData.date_of_issue}
-                    onChange={handleChange}
-                    required
+                  <EthiopianDatePicker
+                    label=""
+                    value={formData.date_of_issue ? new Date(formData.date_of_issue) : null}
+                    onChange={(selectedDate: Date) => {
+                      // Adjust for timezone offset to ensure correct local date
+                      const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+                      handleChange({
+                        target: {
+                          name: "date_of_issue",
+                          value: localDate.toISOString().split('T')[0],
+                        }
+                      } as React.ChangeEvent<HTMLInputElement>);
+                    }}
                     className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-app-foreground focus:border-transparent transition-all"
                   />
                 </div>

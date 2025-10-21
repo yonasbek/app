@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Memo, MemoStatus, WorkflowAction, WorkflowActionDto, WorkflowHistory } from '@/types/memo';
 import { memoService } from '@/services/memoService';
+import { formatToEthiopianDate, formatToEthiopianDateTime } from '@/utils/ethiopianDateUtils';
 import {
   CheckCircle2,
   XCircle,
@@ -295,11 +296,11 @@ export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkf
                   <div className="flex items-center justify-between mb-1">
                     <h4 className="font-semibold text-gray-900">Created</h4>
                     <span className="text-xs text-gray-500">
-                      {new Date(workflowHistory.createdAt).toLocaleDateString()}
+                      {formatToEthiopianDate(workflowHistory.createdAt, 'short')}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600">
-                    {new Date(workflowHistory.createdAt).toLocaleString()}
+                    {formatToEthiopianDateTime(workflowHistory.createdAt, true)}
                   </p>
                 </div>
               </div>
@@ -314,11 +315,11 @@ export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkf
                     <div className="flex items-center justify-between mb-1">
                       <h4 className="font-semibold text-gray-900">Submitted to Desk Head</h4>
                       <span className="text-xs text-gray-500">
-                        {new Date(workflowHistory.submittedToDeskHeadAt).toLocaleDateString()}
+                        {formatToEthiopianDate(workflowHistory.submittedToDeskHeadAt, 'short')}
                       </span>
                     </div>
                     <p className="text-sm text-gray-600">
-                      {new Date(workflowHistory.submittedToDeskHeadAt).toLocaleString()}
+                      {formatToEthiopianDateTime(workflowHistory.submittedToDeskHeadAt, true)}
                     </p>
                   </div>
                 </div>
@@ -334,7 +335,7 @@ export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkf
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-semibold text-gray-900">Desk Head Review</h4>
                       <span className="text-xs text-gray-500">
-                        {new Date(workflowHistory.deskHeadReview.reviewedAt).toLocaleDateString()}
+                        {formatToEthiopianDate(workflowHistory.deskHeadReview.reviewedAt, 'short')}
                       </span>
                     </div>
                     <div className="space-y-2">
@@ -363,11 +364,11 @@ export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkf
                     <div className="flex items-center justify-between mb-1">
                       <h4 className="font-semibold text-gray-900">Submitted to LEO</h4>
                       <span className="text-xs text-gray-500">
-                        {new Date(workflowHistory.submittedToLeoAt).toLocaleDateString()}
+                        {formatToEthiopianDate(workflowHistory.submittedToLeoAt, 'short')}
                       </span>
                     </div>
                     <p className="text-sm text-gray-600">
-                      {new Date(workflowHistory.submittedToLeoAt).toLocaleString()}
+                      {formatToEthiopianDateTime(workflowHistory.submittedToLeoAt, true)}
                     </p>
                   </div>
                 </div>
@@ -383,7 +384,7 @@ export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkf
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-semibold text-gray-900">LEO Review</h4>
                       <span className="text-xs text-gray-500">
-                        {new Date(workflowHistory.leoReview.reviewedAt).toLocaleDateString()}
+                        {formatToEthiopianDate(workflowHistory.leoReview.reviewedAt, 'short')}
                       </span>
                     </div>
                     <div className="space-y-2">
@@ -412,11 +413,11 @@ export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkf
                     <div className="flex items-center justify-between mb-1">
                       <h4 className="font-semibold text-gray-900">Approved</h4>
                       <span className="text-xs text-gray-500">
-                        {new Date(workflowHistory.approvedAt).toLocaleDateString()}
+                        {formatToEthiopianDate(workflowHistory.approvedAt, 'short')}
                       </span>
                     </div>
                     <p className="text-sm text-gray-600">
-                      {new Date(workflowHistory.approvedAt).toLocaleString()}
+                      {formatToEthiopianDateTime(workflowHistory.approvedAt, true)}
                     </p>
                   </div>
                 </div>

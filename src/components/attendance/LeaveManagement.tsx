@@ -3,13 +3,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { attendanceService } from '@/services/attendanceService';
 import { User, AttendanceRecord } from '@/types/attendance';
-import { 
-  Calendar, 
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
+import {
+  Calendar,
   User as UserIcon,
   FileText,
   CalendarDays,
   Clock
 } from 'lucide-react';
+import { EthiopianDatePicker } from '../ui/ethiopian-date-picker';
 
 interface LeaveManagementProps {
   currentUser?: User;
@@ -55,20 +57,20 @@ export default function LeaveManagement({ currentUser, isManager = false }: Leav
 
     // Filter by leave type if selected
     if (filters.leaveType) {
-      filtered = filtered.filter(record => 
+      filtered = filtered.filter(record =>
         record.leaveType === filters.leaveType
       );
     }
 
     // Additional date filtering if needed (in case API doesn't handle it perfectly)
     if (filters.startDate) {
-      filtered = filtered.filter(record => 
+      filtered = filtered.filter(record =>
         new Date(record.date) >= new Date(filters.startDate)
       );
     }
 
     if (filters.endDate) {
-      filtered = filtered.filter(record => 
+      filtered = filtered.filter(record =>
         new Date(record.date) <= new Date(filters.endDate)
       );
     }
@@ -78,7 +80,7 @@ export default function LeaveManagement({ currentUser, isManager = false }: Leav
 
   const fetchUsers = useCallback(async () => {
     if (!isManager) return;
-    
+
     try {
       const userList = await attendanceService.getAllUsers();
       setUsers(userList);
@@ -105,11 +107,7 @@ export default function LeaveManagement({ currentUser, isManager = false }: Leav
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    return formatToEthiopianDate(dateString, 'long');
   };
 
   const formatTime = (dateString: string) => {
@@ -177,20 +175,28 @@ export default function LeaveManagement({ currentUser, isManager = false }: Leav
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-            <input
-              type="date"
-              value={filters.startDate}
-              onChange={(e) => handleFilterChange('startDate', e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-blue-500 focus:border-blue-500"
+            <EthiopianDatePicker
+              label=""
+              value={filters.startDate ? new Date(filters.startDate) : null}
+              onChange={(selectedDate: Date) => {
+                // Adjust for timezone offset to ensure correct local date
+                const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+                handleFilterChange('startDate', localDate.toISOString().split('T')[0]);
+              }}
+              className="w-full"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-            <input
-              type="date"
-              value={filters.endDate}
-              onChange={(e) => handleFilterChange('endDate', e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-blue-500 focus:border-blue-500"
+            <EthiopianDatePicker
+              label=""
+              value={filters.endDate ? new Date(filters.endDate) : null}
+              onChange={(selectedDate: Date) => {
+                // Adjust for timezone offset to ensure correct local date
+                const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+                handleFilterChange('endDate', localDate.toISOString().split('T')[0]);
+              }}
+              className="w-full"
             />
           </div>
         </div>
@@ -208,7 +214,7 @@ export default function LeaveManagement({ currentUser, isManager = false }: Leav
             <CalendarDays className="h-16 w-16 mx-auto mb-4 text-gray-300" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No leave records found</h3>
             <p className="text-gray-500">
-              {allLeaveRecords.length === 0 
+              {allLeaveRecords.length === 0
                 ? 'No attendance records with leave status match your criteria.'
                 : 'No leave records match your current filters. Try adjusting your search criteria.'
               }
@@ -246,7 +252,7 @@ export default function LeaveManagement({ currentUser, isManager = false }: Leav
                           {formatDate(record.date)}
                         </span>
                       </div>
-                      
+
                       {(record.checkInTime || record.checkOutTime) && (
                         <div className="flex items-center space-x-4 text-sm text-gray-600">
                           <Clock className="h-4 w-4 text-gray-400" />

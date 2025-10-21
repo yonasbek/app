@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { trainingService } from '@/services/trainingService';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import { Trainee, CourseEnrollment } from '@/types/training';
 import Card from '@/components/ui/Card';
 import {
@@ -79,7 +80,7 @@ export default function TraineeDetailPage({ params }: TraineeDetailPageProps) {
 
   const formatDate = (date: Date | string | undefined) => {
     if (!date) return 'Not set';
-    return new Date(date).toLocaleDateString();
+    return formatToEthiopianDate(date, 'medium');
   };
 
   const getStatusBadge = (status: string) => {
@@ -93,7 +94,7 @@ export default function TraineeDetailPage({ params }: TraineeDetailPageProps) {
     };
 
     const colorClass = statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800';
-    
+
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClass}`}>
         {status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ')}
@@ -169,7 +170,7 @@ export default function TraineeDetailPage({ params }: TraineeDetailPageProps) {
             <p className="text-gray-600 mt-1">{trainee.email}</p>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <button
             onClick={() => router.push(`/training/trainees/${trainee.id}/edit`)}
@@ -240,7 +241,7 @@ export default function TraineeDetailPage({ params }: TraineeDetailPageProps) {
                         {getStatusBadge(enrollment.status)}
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       <div>
                         <span className="text-gray-500">Enrolled:</span>

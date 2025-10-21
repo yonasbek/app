@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { SubActivity, SubActivityStats } from '@/types/subactivity';
 import { subActivityService } from '@/services/subactivityService';
 import { userService } from '@/services/userService';
+import { formatToEthiopianDate, formatEthiopianDateRange } from '@/utils/ethiopianDateUtils';
 import {
   Plus,
   Edit2,
@@ -423,7 +424,7 @@ export default function SubActivityList({ activityId, activityTitle, canEdit = t
                           <Calendar className="w-4 h-4 text-app-primary" />
                         </div>
                         <span>
-                          {new Date(subActivity.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(subActivity.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {formatEthiopianDateRange(subActivity.start_date, subActivity.end_date)}
                         </span>
                       </div>
                     </div>

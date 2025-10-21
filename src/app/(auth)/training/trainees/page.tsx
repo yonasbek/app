@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { trainingService } from '@/services/trainingService';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import {
   Trainee,
   TraineeFilters
@@ -70,10 +71,10 @@ export default function TraineesPage() {
   };
 
   const getStatusBadge = (isActive: boolean) => {
-    const colorClass = isActive 
+    const colorClass = isActive
       ? 'bg-green-100 text-green-800'
       : 'bg-gray-100 text-gray-800';
-    
+
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClass}`}>
         {isActive ? 'Active' : 'Inactive'}
@@ -83,7 +84,7 @@ export default function TraineesPage() {
 
   const formatDate = (date: Date | string | undefined) => {
     if (!date) return 'Not provided';
-    return new Date(date).toLocaleDateString();
+    return formatToEthiopianDate(date, 'medium');
   };
 
   if (loading) {
@@ -135,7 +136,7 @@ export default function TraineesPage() {
               />
             </div>
           </form>
-          
+
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -164,7 +165,7 @@ export default function TraineesPage() {
                   <option value="inactive">Inactive</option>
                 </select>
               </div>
-              
+
             </div>
           </div>
         )}
@@ -241,7 +242,7 @@ export default function TraineesPage() {
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
-                
+
                 <div className="text-sm text-gray-500">
                   {trainee.enrollments?.length || 0} enrollments
                 </div>

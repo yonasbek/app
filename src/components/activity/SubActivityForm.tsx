@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { SubActivity } from '@/types/subactivity';
+import EthiopianDatePicker from '../ui/ethiopian-date-picker';
 
 // SVG Icon Components
 const XIcon = ({ className = "" }: { className?: string }) => (
@@ -86,7 +87,7 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -144,9 +145,8 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.title ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.title ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="Enter sub-activity title"
             />
             {errors.title && (
@@ -163,9 +163,8 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.description ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.description ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="Enter sub-activity description"
             />
             {errors.description && (
@@ -181,9 +180,8 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
               name="user_id"
               value={formData.user_id}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.user_id ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.user_id ? 'border-red-500' : 'border-gray-300'
+                }`}
             >
               <option value="">Select a user</option>
               {users.map((user) => (
@@ -202,14 +200,20 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Start Date *
               </label>
-              <input
-                type="date"
-                name="start_date"
-                value={formData.start_date}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.start_date ? 'border-red-500' : 'border-gray-300'
-                }`}
+              <EthiopianDatePicker
+                label=""
+                value={formData.start_date ? new Date(formData.start_date) : null}
+                onChange={(selectedDate: Date) => {
+                  // Adjust for timezone offset to ensure correct local date
+                  const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+                  handleChange({
+                    target: {
+                      name: "start_date",
+                      value: localDate.toISOString().split('T')[0],
+                    }
+                  } as React.ChangeEvent<HTMLInputElement>);
+                }}
+                className="w-full"
               />
               {errors.start_date && (
                 <p className="text-red-500 text-sm mt-1">{errors.start_date}</p>
@@ -220,14 +224,20 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 End Date *
               </label>
-              <input
-                type="date"
-                name="end_date"
-                value={formData.end_date}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.end_date ? 'border-red-500' : 'border-gray-300'
-                }`}
+              <EthiopianDatePicker
+                label=""
+                value={formData.end_date ? new Date(formData.end_date) : null}
+                onChange={(selectedDate: Date) => {
+                  // Adjust for timezone offset to ensure correct local date
+                  const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+                  handleChange({
+                    target: {
+                      name: "end_date",
+                      value: localDate.toISOString().split('T')[0],
+                    }
+                  } as React.ChangeEvent<HTMLInputElement>);
+                }}
+                className="w-full"
               />
               {errors.end_date && (
                 <p className="text-red-500 text-sm mt-1">{errors.end_date}</p>

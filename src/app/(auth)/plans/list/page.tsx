@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { Plan } from '@/types/plan';
 import { PlanType } from '@/types/activity';
 import { planService } from '@/services/planService';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import Card from '@/components/ui/Card';
 import { Eye, Edit, List, Plus, LayoutGrid, Table } from 'lucide-react';
 import {

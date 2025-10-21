@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { trainingService } from '@/services/trainingService';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import {
   CourseEnrollment,
   EnrollmentFilters,
@@ -148,7 +149,7 @@ export default function EnrollmentsPage() {
 
   const formatDate = (date: Date | string | undefined) => {
     if (!date) return 'Not set';
-    return new Date(date).toLocaleDateString();
+    return formatToEthiopianDate(date, 'medium');
   };
 
   const formatCurrency = (amount: number | undefined) => {
@@ -208,7 +209,7 @@ export default function EnrollmentsPage() {
               />
             </div>
           </form>
-          
+
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -241,7 +242,7 @@ export default function EnrollmentsPage() {
                   <option value="failed">Failed</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Course ID</label>
                 <input
@@ -292,7 +293,7 @@ export default function EnrollmentsPage() {
                     <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
                       <GraduationCap className="h-6 w-6 text-orange-600" />
                     </div>
-                    
+
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
                         <h3 className="text-lg font-semibold text-gray-900">
@@ -300,7 +301,7 @@ export default function EnrollmentsPage() {
                         </h3>
                         {getStatusBadge(enrollment.status)}
                       </div>
-                      
+
                       <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                         <div className="flex items-center">
                           <User className="h-4 w-4 mr-1" />
@@ -321,8 +322,8 @@ export default function EnrollmentsPage() {
                           <span className="text-gray-500">Progress:</span>
                           <div className="flex items-center space-x-2">
                             <div className="flex-1 bg-gray-200 rounded-full h-2">
-                              <div 
-                                className="bg-orange-500 h-2 rounded-full" 
+                              <div
+                                className="bg-orange-500 h-2 rounded-full"
                                 style={{ width: `${enrollment.progress_percentage}%` }}
                               ></div>
                             </div>
@@ -365,7 +366,7 @@ export default function EnrollmentsPage() {
                       <CheckCircle className="h-4 w-4" />
                     </button>
                   )}
-                  
+
                   {enrollment.status !== 'completed' && enrollment.status !== 'cancelled' && (
                     <button
                       onClick={() => handleCancel(enrollment.id)}
@@ -383,7 +384,7 @@ export default function EnrollmentsPage() {
                   >
                     <Eye className="h-4 w-4" />
                   </button>
-                  
+
                   <button
                     onClick={() => router.push(`/training/enrollments/${enrollment.id}/edit`)}
                     className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
@@ -391,7 +392,7 @@ export default function EnrollmentsPage() {
                   >
                     <Edit3 className="h-4 w-4" />
                   </button>
-                  
+
                   <button
                     onClick={() => handleDelete(enrollment.id)}
                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"

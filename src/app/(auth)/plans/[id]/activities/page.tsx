@@ -6,6 +6,7 @@ import { Activity } from '@/types/activity';
 import { Plan } from '@/types/plan';
 import { activityService } from '@/services/activityService';
 import { planService } from '@/services/planService';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import { use } from 'react';
 import Card from '@/components/ui/Card';
 import {
@@ -329,7 +330,7 @@ export default function PlanActivitiesPage({ params }: { params: Promise<{ id: s
                             </div>
                           </td>
                           <td className="px-6 py-4 text-sm text-neutral-600">
-                            {new Date(activity.start_date).toLocaleDateString()}
+                            {formatToEthiopianDate(activity.start_date, 'medium')}
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">

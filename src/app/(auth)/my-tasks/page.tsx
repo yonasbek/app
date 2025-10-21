@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { SubActivity } from '@/types/subactivity';
 import { subActivityService } from '@/services/subactivityService';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import ProgressUpdateModal from '@/components/activity/ProgressUpdateModal';
 
 // SVG Icon Components
@@ -265,7 +266,7 @@ export default function MyTasksPage() {
                         </div>
                         <div className="flex items-center space-x-1">
                           <CalendarIcon className="h-4 w-4" />
-                          <span>Due: {new Date(task.end_date).toLocaleDateString()}</span>
+                          <span>Due: {formatToEthiopianDate(task.end_date, 'medium')}</span>
                         </div>
                       </div>
 

@@ -3,12 +3,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { attendanceService } from '@/services/attendanceService';
 import { AttendanceRecord, User } from '@/types/attendance';
-import { 
-  Calendar, 
-  Download, 
-  FileText, 
-  Users, 
-  Clock, 
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
+import {
+  Calendar,
+  Download,
+  FileText,
+  Users,
+  Clock,
   TrendingUp,
   AlertCircle,
   CheckCircle,
@@ -56,17 +57,17 @@ export default function MonthlyReports() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const [year, month] = monthYear.split('-').map(Number);
       const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
       ];
-      
+
       // Get start and end dates for the month
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0);
-      
+
       // Fetch all attendance records for the month
       const attendanceRecords = await attendanceService.getAttendanceRecords({
         startDate: startDate.toISOString().split('T')[0],
@@ -75,7 +76,7 @@ export default function MonthlyReports() {
 
       // Calculate working days (excluding weekends)
       const workingDays = getWorkingDaysInMonth(year, month - 1);
-      
+
       // Calculate summary statistics
       const summary = {
         totalPresent: attendanceRecords.filter(r => r.status === 'present').length,
@@ -87,12 +88,12 @@ export default function MonthlyReports() {
         averageWorkHours: 0
       };
 
-      summary.attendanceRate = attendanceRecords.length > 0 
-        ? (summary.totalPresent / attendanceRecords.length) * 100 
+      summary.attendanceRate = attendanceRecords.length > 0
+        ? (summary.totalPresent / attendanceRecords.length) * 100
         : 0;
-      
-      summary.averageWorkHours = summary.totalPresent > 0 
-        ? summary.totalWorkHours / summary.totalPresent 
+
+      summary.averageWorkHours = summary.totalPresent > 0
+        ? summary.totalWorkHours / summary.totalPresent
         : 0;
 
       const data: MonthlyReportData = {
@@ -141,11 +142,7 @@ export default function MonthlyReports() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return formatToEthiopianDate(dateString, 'medium');
   };
 
   const formatTime = (dateString: string) => {
@@ -161,7 +158,7 @@ export default function MonthlyReports() {
 
     try {
       setLoading(true);
-      
+
       // Create a new workbook
       const wb = XLSX.utils.book_new();
 
@@ -184,7 +181,7 @@ export default function MonthlyReports() {
         ['Total Work Hours', reportData.summary.totalWorkHours.toFixed(2)],
         ['Average Work Hours', reportData.summary.averageWorkHours.toFixed(2)],
         [''],
-        ['Generated on', new Date().toLocaleDateString()]
+        ['Generated on', formatToEthiopianDate(new Date(), 'medium')]
       ];
 
       const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
@@ -234,7 +231,7 @@ export default function MonthlyReports() {
       }
 
       const attendanceWs = XLSX.utils.aoa_to_sheet(attendanceData);
-      
+
       // Auto-size columns
       const attendanceColWidths = [
         { wch: 12 }, // Date
@@ -355,7 +352,7 @@ export default function MonthlyReports() {
       for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
         const dateString = date.toISOString().split('T')[0];
         const dayRecords = reportData.attendanceRecords.filter(r => r.date === dateString);
-        
+
         const present = dayRecords.filter(r => r.status === 'present').length;
         const absent = dayRecords.filter(r => r.status === 'absent').length;
         const leave = dayRecords.filter(r => r.status === 'leave').length;
@@ -380,7 +377,7 @@ export default function MonthlyReports() {
 
       // Generate filename
       const filename = `Attendance_Report_${reportData.monthName}_${reportData.year}.xlsx`;
-      
+
       // Save file
       XLSX.writeFile(wb, filename);
 
@@ -411,15 +408,15 @@ export default function MonthlyReports() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Select Month
             </label>
-            <input 
-              type="month" 
+            <input
+              type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div className="flex space-x-3">
-            <button 
+            <button
               onClick={() => fetchMonthlyData(selectedMonth)}
               disabled={loading}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
@@ -431,7 +428,7 @@ export default function MonthlyReports() {
               )}
               <span>Generate Report</span>
             </button>
-            <button 
+            <button
               onClick={exportToExcel}
               disabled={loading || !reportData}
               className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"

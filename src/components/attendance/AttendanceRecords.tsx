@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { AttendanceRecord, AttendanceFilters as AttendanceFiltersType, User } from '@/types/attendance';
 import { attendanceService } from '@/services/attendanceService';
+import { formatToEthiopianDate, formatToEthiopianDateTime } from '@/utils/ethiopianDateUtils';
 
 interface AttendanceRecordsProps {
   onRecordUpdate: () => void;
@@ -30,11 +31,7 @@ export default function AttendanceRecords({ onRecordUpdate, filters }: Attendanc
   }, [filters]);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return formatToEthiopianDate(dateString, 'medium');
   };
 
   const formatTime = (timeString: string) => {
@@ -47,12 +44,12 @@ export default function AttendanceRecords({ onRecordUpdate, filters }: Attendanc
 
   const calculateWorkHours = (checkIn: string, checkOut?: string) => {
     if (!checkOut) return 'N/A';
-    
+
     const checkInTime = new Date(checkIn);
     const checkOutTime = new Date(checkOut);
     const diffMs = checkOutTime.getTime() - checkInTime.getTime();
     const hours = diffMs / (1000 * 60 * 60);
-    
+
     return `${hours.toFixed(1)}h`;
   };
 
@@ -76,8 +73,8 @@ export default function AttendanceRecords({ onRecordUpdate, filters }: Attendanc
       holiday: { color: 'bg-purple-100 text-purple-800', label: 'Holiday' }
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || 
-                  { color: 'bg-gray-100 text-gray-800', label: status };
+    const config = statusConfig[status as keyof typeof statusConfig] ||
+      { color: 'bg-gray-100 text-gray-800', label: status };
 
     return (
       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${config.color}`}>
@@ -88,11 +85,11 @@ export default function AttendanceRecords({ onRecordUpdate, filters }: Attendanc
 
   const getUserInitials = (user: User | undefined) => {
     if (!user) return 'U';
-    
+
     if (!user.name || user.name.trim() === '') {
       return user.email ? user.email.charAt(0).toUpperCase() : 'U';
     }
-    
+
     return user.name
       .split(' ')
       .filter((n: string) => n.length > 0)
@@ -193,7 +190,7 @@ export default function AttendanceRecords({ onRecordUpdate, filters }: Attendanc
                     </div>
                     <div className="ml-3">
                       <div className="text-sm font-medium text-gray-900">
-                        <Link 
+                        <Link
                           href={`/attendance/user/${record.userId}`}
                           className="text-blue-600 hover:text-blue-800 hover:underline"
                         >

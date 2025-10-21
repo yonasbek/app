@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { attendanceService } from '@/services/attendanceService';
 import { User, AttendanceRecord } from '@/types/attendance';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import {
   Calendar,
   User as UserIcon,
@@ -106,11 +107,7 @@ export default function LeaveManagement({ currentUser, isManager = false }: Leav
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    return formatToEthiopianDate(dateString, 'long');
   };
 
   const formatTime = (dateString: string) => {

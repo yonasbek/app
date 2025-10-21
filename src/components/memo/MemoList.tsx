@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Memo, MemoStatus, PriorityLevel } from '@/types/memo';
 import { memoService } from '@/services/memoService';
 import Card from '@/components/ui/Card';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import Link from 'next/link';
 import {
   Search,
@@ -359,11 +360,7 @@ export default function MemoList() {
                           </div>
                           <div className="flex items-center space-x-1.5">
                             <Calendar className="w-4 h-4 text-gray-400" />
-                            <span>{new Date(memo.date_of_issue).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric'
-                            })}</span>
+                            <span>{formatToEthiopianDate(memo.date_of_issue, 'medium')}</span>
                           </div>
                           <div className={`flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium border ${statusBadge.color}`}>
                             <div className={`w-1.5 h-1.5 rounded-full ${statusBadge.dotColor} animate-pulse`}></div>
@@ -376,7 +373,7 @@ export default function MemoList() {
 
                     <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                       <div className="text-xs text-gray-500">
-                        Updated {new Date(memo.date_of_issue).toLocaleDateString()}
+                        Updated {formatToEthiopianDate(memo.date_of_issue, 'short')}
                       </div>
                       <div className="flex items-center space-x-2">
                         <Link

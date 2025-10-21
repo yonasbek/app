@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { attendanceService } from '@/services/attendanceService';
 import { User, AttendanceRecord, AttendanceStats } from '@/types/attendance';
 import EthiopianDatePicker from '@/components/ui/ethiopian-date-picker';
+import { formatToEthiopianDate, formatToEthiopianDateTime } from '@/utils/ethiopianDateUtils';
 
 export default function UserAttendancePage() {
   const params = useParams();
@@ -59,11 +60,7 @@ export default function UserAttendancePage() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return formatToEthiopianDate(dateString, 'medium');
   };
 
   const formatTime = (timeString: string) => {

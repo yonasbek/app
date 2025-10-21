@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { trainingService } from '@/services/trainingService';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import { Course, CourseStatistics } from '@/types/training';
 import Card from '@/components/ui/Card';
 import {
@@ -81,7 +82,7 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
 
   const formatDate = (date: Date | string | undefined) => {
     if (!date) return 'Not set';
-    return new Date(date).toLocaleDateString();
+    return formatToEthiopianDate(date, 'medium');
   };
 
   const formatCurrency = (amount: number | undefined) => {
@@ -93,10 +94,10 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
   };
 
   const getStatusBadge = (isActive: boolean) => {
-    const colorClass = isActive 
+    const colorClass = isActive
       ? 'bg-green-100 text-green-800'
       : 'bg-gray-100 text-gray-800';
-    
+
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClass}`}>
         {isActive ? 'Active' : 'Inactive'}
@@ -161,7 +162,7 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
             )}
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <button
             onClick={() => router.push(`/training/courses/${course.id}/edit`)}
@@ -308,4 +309,4 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
   );
 }
 
- 
+

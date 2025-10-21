@@ -1,4 +1,5 @@
 import api from '@/utils/api';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import {
   Course,
   CourseFormData,
@@ -37,7 +38,7 @@ class TrainingService {
 
       const queryString = params.toString();
       const url = queryString ? `/courses?${queryString}` : `/courses`;
-      
+
       const response = await api.get(url);
       return response.data;
     } catch (error) {
@@ -131,7 +132,7 @@ class TrainingService {
 
       const queryString = params.toString();
       const url = queryString ? `${this.baseUrl}/trainers?${queryString}` : `${this.baseUrl}/trainers`;
-      
+
       const response = await api.get(url);
       return response.data;
     } catch (error) {
@@ -211,7 +212,7 @@ class TrainingService {
 
       const queryString = params.toString();
       const url = queryString ? `${this.baseUrl}/trainees?${queryString}` : `${this.baseUrl}/trainees`;
-      
+
       const response = await api.get(url);
       return response.data;
     } catch (error) {
@@ -281,7 +282,7 @@ class TrainingService {
 
       const queryString = params.toString();
       const url = queryString ? `${this.baseUrl}/enrollments?${queryString}` : `${this.baseUrl}/enrollments`;
-      
+
       const response = await api.get(url);
       return response.data;
     } catch (error) {
@@ -481,7 +482,7 @@ class TrainingService {
   // Format date for display
   formatDateForDisplay(date: Date | string | undefined): string {
     if (!date) return '';
-    return new Date(date).toLocaleDateString();
+    return formatToEthiopianDate(date, 'medium');
   }
 
   // Format currency

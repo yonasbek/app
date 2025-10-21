@@ -5,6 +5,7 @@ import { attendanceService } from '@/services/attendanceService';
 import { AttendanceRecord, User } from '@/types/attendance';
 import { Edit, Clock, Calendar, AlertCircle, CheckCircle } from 'lucide-react';
 import { EthiopianDatePicker } from '../ui/ethiopian-date-picker';
+import { formatToEthiopianDate, formatToEthiopianDateTime } from '@/utils/ethiopianDateUtils';
 
 interface ManualAttendancePanelProps {
   users: User[];
@@ -242,7 +243,7 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
                   <p className="text-yellow-700 mt-2">
                     <strong>{selectedUserName}</strong> is marked as{' '}
                     <span className="font-semibold">On Leave</span>{' '}
-                    on {new Date(selectedDate).toLocaleDateString()}.
+                    on {formatToEthiopianDate(selectedDate, 'medium')}.
                   </p>
                   <p className="text-sm text-yellow-600 mt-1">
                     All attendance actions are disabled for this date.
@@ -255,13 +256,17 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
                     <h3 className="text-lg font-medium text-green-800">User is Present</h3>
                   </div>
                   <p className="text-green-700 mt-2">
-                    <strong>{selectedUserName}</strong> is marked as <span className="font-semibold">Present</span> on {new Date(selectedDate).toLocaleDateString()}.
+                    <strong>{selectedUserName}</strong> is marked as <span className="font-semibold">Present</span> on {formatToEthiopianDate(selectedDate, 'medium')}.
                   </p>
                   {statusInfo.hasCheckedIn && (
                     <p className="text-green-700 mt-1">
                       Checked in at{' '}
                       <span className="font-semibold">
-                        {userDateAttendance?.checkInTime && new Date(userDateAttendance.checkInTime).toLocaleTimeString()}
+                        {userDateAttendance?.checkInTime && new Date(userDateAttendance.checkInTime).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true
+                        })}
                       </span>
                     </p>
                   )}
@@ -269,7 +274,11 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
                     <p className="text-green-700 mt-1">
                       Checked out at{' '}
                       <span className="font-semibold">
-                        {userDateAttendance?.checkOutTime && new Date(userDateAttendance.checkOutTime).toLocaleTimeString()}
+                        {userDateAttendance?.checkOutTime && new Date(userDateAttendance.checkOutTime).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true
+                        })}
                       </span>
                     </p>
                   ) : statusInfo.hasCheckedIn ? (
@@ -289,13 +298,17 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
                     <h3 className="text-lg font-medium text-blue-800">User Status: {statusInfo.status}</h3>
                   </div>
                   <p className="text-blue-700 mt-2">
-                    <strong>{selectedUserName}</strong> is marked as <span className="font-semibold">{statusInfo.status}</span> on {new Date(selectedDate).toLocaleDateString()}.
+                    <strong>{selectedUserName}</strong> is marked as <span className="font-semibold">{statusInfo.status}</span> on {formatToEthiopianDate(selectedDate, 'medium')}.
                   </p>
                   {statusInfo.hasCheckedIn && (
                     <p className="text-blue-700 mt-1">
                       Checked in at{' '}
                       <span className="font-semibold">
-                        {userDateAttendance?.checkInTime && new Date(userDateAttendance.checkInTime).toLocaleTimeString()}
+                        {userDateAttendance?.checkInTime && new Date(userDateAttendance.checkInTime).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true
+                        })}
                       </span>
                     </p>
                   )}
@@ -303,7 +316,11 @@ export default function ManualAttendancePanel({ users, loading }: ManualAttendan
                     <p className="text-blue-700 mt-1">
                       Checked out at{' '}
                       <span className="font-semibold">
-                        {userDateAttendance?.checkOutTime && new Date(userDateAttendance.checkOutTime).toLocaleTimeString()}
+                        {userDateAttendance?.checkOutTime && new Date(userDateAttendance.checkOutTime).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true
+                        })}
                       </span>
                     </p>
                   )}

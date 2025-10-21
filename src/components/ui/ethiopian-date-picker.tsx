@@ -84,10 +84,10 @@ export const EthiopianDatePicker: React.FC<EthiopianDatePickerProps> = ({
                         fullWidth={fullWidth}
                         required={required}
                         disabled={disabled}
-                        mindate={minDate}
-                        maxdate={maxDate}
-                        disablepast={disablePast.toString()}
-                        disablefuture={disableFuture.toString()}
+                        minDate={minDate}
+                        maxDate={maxDate}
+                        disablePast={disablePast}
+                        disableFuture={disableFuture}
                     />
                     {helperText && (
                         <p className={`mt-1 text-sm ${error ? 'text-red-500' : 'text-gray-500'}`}>

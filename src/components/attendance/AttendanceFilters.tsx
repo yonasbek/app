@@ -130,7 +130,7 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
               setStartDate(localDate.toISOString().split('T')[0]);
             }}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-app-foreground"
+            className="w-full"
           />
         </div>
 
@@ -148,7 +148,7 @@ export default function AttendanceFilters({ users, onFiltersChange }: Attendance
               setEndDate(localDate.toISOString().split('T')[0]);
             }}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-app-foreground"
+            className="w-full"
           />
         </div>
 

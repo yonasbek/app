@@ -213,7 +213,7 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
                     }
                   } as React.ChangeEvent<HTMLInputElement>);
                 }}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.start_date ? 'border-red-500' : 'border-gray-300'}`}
+                className="w-full"
               />
               {errors.start_date && (
                 <p className="text-red-500 text-sm mt-1">{errors.start_date}</p>
@@ -237,7 +237,7 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
                     }
                   } as React.ChangeEvent<HTMLInputElement>);
                 }}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.end_date ? 'border-red-500' : 'border-gray-300'}`}
+                className="w-full"
               />
               {errors.end_date && (
                 <p className="text-red-500 text-sm mt-1">{errors.end_date}</p>

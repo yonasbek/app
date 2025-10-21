@@ -214,7 +214,7 @@ export default function MemoForm({ initialData, mode }: MemoFormProps) {
                         }
                       } as React.ChangeEvent<HTMLInputElement>);
                     }}
-                    className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-app-foreground focus:border-transparent transition-all"
+                    className="w-full"
                   />
                 </div>
               </div>

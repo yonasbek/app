@@ -183,7 +183,7 @@ export default function LeaveManagement({ currentUser, isManager = false }: Leav
                 const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
                 handleFilterChange('startDate', localDate.toISOString().split('T')[0]);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full"
             />
           </div>
           <div>
@@ -196,7 +196,7 @@ export default function LeaveManagement({ currentUser, isManager = false }: Leav
                 const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
                 handleFilterChange('endDate', localDate.toISOString().split('T')[0]);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full"
             />
           </div>
         </div>

@@ -131,7 +131,12 @@ export default function BookRoomPage() {
             </div>
             <div>
               <label className="block font-semibold mb-1">End Date</label>
-              <EthiopianDatePicker label="" value={form.recurring_pattern.end_date ? new Date(form.recurring_pattern.end_date) : null} onChange={(selectedDate: Date) => setForm((prev: any) => ({ ...prev, recurring_pattern: { ...prev.recurring_pattern, end_date: selectedDate.toISOString().split('T')[0] } }))} />
+              <EthiopianDatePicker
+                label=""
+                value={form.recurring_pattern.end_date ? new Date(form.recurring_pattern.end_date) : null}
+                onChange={(selectedDate: Date) => setForm((prev: any) => ({ ...prev, recurring_pattern: { ...prev.recurring_pattern, end_date: selectedDate.toISOString().split('T')[0] } }))}
+                className="w-full"
+              />
             </div>
           </div>
         )}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Memo, MemoStatus, WorkflowAction, WorkflowActionDto, WorkflowHistory } from '@/types/memo';
 import { memoService } from '@/services/memoService';
-import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
+import { formatToEthiopianDate, formatToEthiopianDateTime } from '@/utils/ethiopianDateUtils';
 import {
   CheckCircle2,
   XCircle,

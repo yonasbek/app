@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Home,
     Calendar,
@@ -17,7 +17,11 @@ import {
     LogOut,
     ChevronLeft,
     ChevronRight,
-    Upload
+    ChevronDown,
+    ChevronUp,
+    Upload,
+    Activity,
+    Stethoscope
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -25,6 +29,16 @@ const menuItems = [
     { path: '/dashboard', name: 'Dashboard', icon: Home },
     { path: '/plans', name: 'Annual Plans', icon: Calendar },
     { path: '/my-tasks', name: 'My Tasks', icon: Calendar },
+    {
+        path: '/info-desk',
+        name: 'Info Desk',
+        icon: BarChart3,
+        subItems: [
+            { path: '/info-desk', name: 'Dashboard', icon: BarChart3 },
+            { path: '/info-desk/ambulance', name: 'Ambulance Reports', icon: Activity },
+            { path: '/info-desk/medical-service', name: 'Medical Service Reports', icon: Stethoscope },
+        ]
+    },
     { path: '/knowledge-base', name: 'Knowledge Base', icon: BookOpen },
     { path: '/memos', name: 'Memos & Proposals', icon: FileText },
     { path: '/attendance', name: 'Attendance', icon: Clock },
@@ -46,11 +60,55 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen }: Sidebar
     const pathname = usePathname();
     const router = useRouter();
     const [isHovered, setIsHovered] = useState(false);
+    const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         router.push('/login');
     };
+
+    const toggleSubMenu = (menuPath: string) => {
+        setExpandedMenus(prev =>
+            prev.includes(menuPath)
+                ? prev.filter(path => path !== menuPath)
+                : [...prev, menuPath]
+        );
+    };
+
+    const isSubMenuExpanded = (menuPath: string) => {
+        return expandedMenus.includes(menuPath);
+    };
+
+    const isSubMenuActive = (item: any) => {
+        if (item.subItems) {
+            return item.subItems.some((subItem: any) =>
+                pathname === subItem.path || pathname.startsWith(subItem.path + '/')
+            );
+        }
+        return pathname === item.path || pathname.startsWith(item.path + '/');
+    };
+
+    const isSubItemActive = (subItem: any) => {
+        return pathname === subItem.path;
+    };
+
+    // Auto-expand sub-menus when navigating to their sub-items and close others
+    useEffect(() => {
+        const shouldExpandMenus: string[] = [];
+        menuItems.forEach(item => {
+            if (item.subItems) {
+                const hasActiveSubItem = item.subItems.some((subItem: any) =>
+                    pathname === subItem.path || pathname.startsWith(subItem.path + '/')
+                );
+                if (hasActiveSubItem) {
+                    shouldExpandMenus.push(item.path);
+                }
+            }
+        });
+
+        // Close all sub-menus first, then expand only the ones that should be open
+        setExpandedMenus(shouldExpandMenus);
+    }, [pathname]);
 
     const showFullContent = !isCollapsed || isHovered;
 
@@ -111,36 +169,85 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen }: Sidebar
                     </div>
 
                     {/* Navigation */}
-                    <nav className={`flex-1 ${isCollapsed ? 'px-2' : 'px-4'} py-6 space-y-1`}>
+                    <nav className={`flex-1 ${isCollapsed ? 'px-2' : 'px-4'} py-6 space-y-1 overflow-y-auto`}>
                         {menuItems.map((item) => {
                             const Icon = item.icon;
-                            const isActive = pathname === item.path || pathname.startsWith(item.path + '/');
+                            const isActive = isSubMenuActive(item);
+                            const hasSubItems = item.subItems && item.subItems.length > 0;
+                            const isExpanded = isSubMenuExpanded(item.path);
 
                             return (
-                                <Link
-                                    key={item.path}
-                                    href={item.path}
-                                    className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 ${isActive
-                                        ? 'bg-app-accent text-app-foreground border-l-3 border-app-foreground'
-                                        : 'text-neutral-600 hover:bg-app-accent hover:text-app-foreground'
-                                        }`}
-                                    onClick={() => {
-                                        // Close mobile menu when clicking a link
-                                        if (isMobileOpen) {
-                                            onToggle();
-                                        }
-                                    }}
-                                >
-                                    {/* Icon - always visible with larger size when collapsed */}
-                                    <Icon
-                                        className={`transition-colors duration-200 ${isActive ? 'text-neutral-700' : 'text-neutral-500'
-                                            } ${(showFullContent || isMobileOpen) ? 'w-5 h-5 mr-3' : 'w-8 h-8 mx-auto'}`}
-                                    />
-                                    {/* Text - only visible when expanded or on mobile */}
-                                    {(showFullContent || isMobileOpen) && (
-                                        <span className="font-medium text-sm">{item.name}</span>
+                                <div key={item.path}>
+                                    {/* Main Menu Item */}
+                                    <div
+                                        className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 cursor-pointer ${isActive
+                                            ? 'bg-app-accent text-app-foreground border-l-3 border-app-foreground'
+                                            : 'text-neutral-600 hover:bg-app-accent hover:text-app-foreground'
+                                            }`}
+                                        onClick={() => {
+                                            if (hasSubItems) {
+                                                toggleSubMenu(item.path);
+                                            } else {
+                                                // Close all sub-menus when clicking on a non-sub-menu item
+                                                setExpandedMenus([]);
+                                                router.push(item.path);
+                                                if (isMobileOpen) {
+                                                    onToggle();
+                                                }
+                                            }
+                                        }}
+                                    >
+                                        {/* Icon - always visible with larger size when collapsed */}
+                                        <Icon
+                                            className={`transition-colors duration-200 ${isActive ? 'text-neutral-700' : 'text-neutral-500'
+                                                } ${(showFullContent || isMobileOpen) ? 'w-5 h-5 mr-3' : 'w-8 h-8 mx-auto'}`}
+                                        />
+                                        {/* Text - only visible when expanded or on mobile */}
+                                        {(showFullContent || isMobileOpen) && (
+                                            <>
+                                                <span className="font-medium text-sm flex-1">{item.name}</span>
+                                                {hasSubItems && (
+                                                    <div className="ml-2">
+                                                        {isExpanded ? (
+                                                            <ChevronUp className="w-4 h-4" />
+                                                        ) : (
+                                                            <ChevronDown className="w-4 h-4" />
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+
+                                    {/* Sub Menu Items */}
+                                    {hasSubItems && (showFullContent || isMobileOpen) && isExpanded && (
+                                        <div className="ml-6 mt-1 space-y-1">
+                                            {item.subItems.map((subItem: any) => {
+                                                const SubIcon = subItem.icon;
+                                                const isSubActive = isSubItemActive(subItem);
+
+                                                return (
+                                                    <Link
+                                                        key={subItem.path}
+                                                        href={subItem.path}
+                                                        className={`flex items-center px-3 py-2 text-sm rounded-lg transition-colors duration-200 ${isSubActive
+                                                            ? 'bg-app-accent text-app-foreground'
+                                                            : 'text-neutral-500 hover:bg-app-accent hover:text-app-foreground'
+                                                            }`}
+                                                        onClick={() => {
+                                                            if (isMobileOpen) {
+                                                                onToggle();
+                                                            }
+                                                        }}
+                                                    >
+                                                        <SubIcon className="w-4 h-4 mr-3" />
+                                                        <span className="font-medium text-sm">{subItem.name}</span>
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
                                     )}
-                                </Link>
+                                </div>
                             );
                         })}
                     </nav>

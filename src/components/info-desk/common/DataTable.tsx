@@ -14,14 +14,14 @@ interface Action {
     label: string;
     onClick: (item: any) => void;
     className?: string;
-    color?: 'blue' | 'red' | 'green' | 'purple' | 'orange' | 'yellow';
+    color?: 'blue' | 'red' | 'green' | 'purple' | 'orange' | 'yellow' | 'indigo' | 'violet' | 'pink' | 'gray' | 'brown' | 'black' | 'white';
 }
 
 interface DataTableProps {
     data: any[];
     columns: Column[];
     actions?: Action[];
-    theme?: 'blue' | 'red' | 'green' | 'purple';
+    theme?: 'blue' | 'red' | 'green' | 'purple' | 'orange' | 'yellow';
     className?: string;
 }
 
@@ -68,6 +68,33 @@ export default function DataTable({
                 green: 'text-green-600 hover:text-green-700 hover:bg-green-100',
                 red: 'text-red-600 hover:text-red-700 hover:bg-red-100'
             }
+        },
+        orange: {
+            header: 'from-orange-50 to-amber-50',
+            hover: 'hover:bg-orange-50',
+            action: {
+                blue: 'text-blue-600 hover:text-blue-700 hover:bg-blue-100',
+                green: 'text-green-600 hover:text-green-700 hover:bg-green-100',
+                red: 'text-red-600 hover:text-red-700 hover:bg-red-100'
+            }
+        },
+        yellow: {
+            header: 'from-yellow-50 to-amber-50',
+            hover: 'hover:bg-yellow-50',
+            action: {
+                blue: 'text-blue-600 hover:text-blue-700 hover:bg-blue-100',
+                green: 'text-green-600 hover:text-green-700 hover:bg-green-100',
+                red: 'text-red-600 hover:text-red-700 hover:bg-red-100'
+            }
+        },
+        indigo: {
+            header: 'from-indigo-50 to-violet-50',
+            hover: 'hover:bg-indigo-50',
+            action: {
+                blue: 'text-blue-600 hover:text-blue-700 hover:bg-blue-100',
+                green: 'text-green-600 hover:text-green-700 hover:bg-green-100',
+                red: 'text-red-600 hover:text-red-700 hover:bg-red-100'
+            }
         }
     };
 
@@ -109,9 +136,8 @@ export default function DataTable({
                         {data.map((item, index) => (
                             <tr
                                 key={item.id || index}
-                                className={`${currentTheme.hover} transition-colors duration-150 ${
-                                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
-                                }`}
+                                className={`${currentTheme.hover} transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                                    }`}
                             >
                                 {columns.map((column) => (
                                     <td
@@ -134,7 +160,7 @@ export default function DataTable({
                                                     <button
                                                         key={actionIndex}
                                                         onClick={() => action.onClick(item)}
-                                                        className={`p-2 rounded-lg transition-all duration-150 ${currentTheme.action[actionColor]} ${action.className || ''}`}
+                                                        className={`p-2 rounded-lg transition-all duration-150 ${(currentTheme.action as Record<string, string>)[actionColor] || ''} ${action.className || ''}`}
                                                         title={action.label}
                                                     >
                                                         <ActionIcon className="w-4 h-4" />

@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { medicalServiceAPI } from '../../services/medicalService';
 import { MedicalDashboardDto, RegionalAmbulanceDashboardDto } from '../../types/medical-service';
-import { 
-  Hospital, 
-  Bed, 
-  Activity, 
-  MapPin, 
-  TrendingUp, 
+import {
+  Hospital,
+  Bed,
+  Activity,
+  MapPin,
+  TrendingUp,
   Users,
   Building2,
   Stethoscope,
@@ -62,7 +62,7 @@ export default function KeyReportsOverview() {
   return (
     <div className="space-y-6">
       {/* Medical Services Summary */}
-      <div className="bg-white rounded-lg shadow-sm border border-app-secondary p-6">
+      <div className="bg-white border-y-2 py-6 border-app-secondary">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium text-app-foreground flex items-center gap-2">
             <Stethoscope className="w-5 h-5 text-blue-600" />
@@ -75,7 +75,7 @@ export default function KeyReportsOverview() {
             View Full Report →
           </a>
         </div>
-        
+
         {medicalData ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {medicalData.cards.slice(0, 4).map((card, index) => (
@@ -84,20 +84,13 @@ export default function KeyReportsOverview() {
                   <div>
                     <p className="text-sm text-neutral-600">{card.title}</p>
                     <p className="text-2xl font-bold text-app-foreground">{card.value.toLocaleString()}</p>
-                    {card.change && (
-                      <p className={`text-xs ${
-                        card.trend === 'up' ? 'text-green-600' : 
-                        card.trend === 'down' ? 'text-red-600' : 'text-gray-600'
-                      }`}>
-                        {card.change}
-                      </p>
-                    )}
+
                   </div>
-                  <div className={`${card.colorClass || 'text-blue-600'}`}>
-                    {index === 0 && <Hospital className="w-6 h-6" />}
-                    {index === 1 && <Bed className="w-6 h-6" />}
-                    {index === 2 && <Activity className="w-6 h-6" />}
-                    {index === 3 && <MapPin className="w-6 h-6" />}
+                  <div className={`${card.colorClass || 'text-blue-900'}`}>
+                    {index === 0 && <Hospital className="w-6 h-6 text-blue-900/80" />}
+                    {index === 1 && <Bed className="w-6 h-6 text-blue-900/80" />}
+                    {index === 2 && <Activity className="w-6 h-6 text-blue-900/80" />}
+                    {index === 3 && <MapPin className="w-6 h-6 text-blue-900/80" />}
                   </div>
                 </div>
               </div>
@@ -111,7 +104,7 @@ export default function KeyReportsOverview() {
       </div>
 
       {/* Ambulance Services Summary */}
-      <div className="bg-white rounded-lg shadow-sm border border-app-secondary p-6">
+      <div className="bg-white border-b-2 pb-6 border-app-secondary">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium text-app-foreground flex items-center gap-2">
             <Ambulance className="w-5 h-5 text-red-600" />
@@ -124,7 +117,7 @@ export default function KeyReportsOverview() {
             View Full Report →
           </a>
         </div>
-        
+
         {ambulanceData ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {ambulanceData.cards.slice(0, 4).map((card, index) => (
@@ -133,20 +126,13 @@ export default function KeyReportsOverview() {
                   <div>
                     <p className="text-sm text-neutral-600">{card.title}</p>
                     <p className="text-2xl font-bold text-app-foreground">{card.value.toLocaleString()}</p>
-                    {card.change && (
-                      <p className={`text-xs ${
-                        card.trend === 'up' ? 'text-green-600' : 
-                        card.trend === 'down' ? 'text-red-600' : 'text-gray-600'
-                      }`}>
-                        {card.change}
-                      </p>
-                    )}
+
                   </div>
-                  <div className={`${card.colorClass || 'text-red-600'}`}>
-                    {index === 0 && <Ambulance className="w-6 h-6" />}
-                    {index === 1 && <Activity className="w-6 h-6" />}
-                    {index === 2 && <TrendingUp className="w-6 h-6" />}
-                    {index === 3 && <MapPin className="w-6 h-6" />}
+                  <div className={`${card.colorClass || 'text-red-900'}`}>
+                    {index === 0 && <Ambulance className="w-6 h-6 text-red-900/80" />}
+                    {index === 1 && <Activity className="w-6 h-6 text-red-900/80" />}
+                    {index === 2 && <TrendingUp className="w-6 h-6 text-red-900/80" />}
+                    {index === 3 && <MapPin className="w-6 h-6 text-red-900/80" />}
                   </div>
                 </div>
               </div>

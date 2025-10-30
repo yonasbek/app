@@ -169,7 +169,7 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen }: Sidebar
                     </div>
 
                     {/* Navigation */}
-                    <nav className={`flex-1 ${isCollapsed ? 'px-2' : 'px-4'} py-6 space-y-1`}>
+                    <nav className={`flex-1 ${isCollapsed ? 'px-2' : 'px-4'} py-6 space-y-1 overflow-y-auto`}>
                         {menuItems.map((item) => {
                             const Icon = item.icon;
                             const isActive = isSubMenuActive(item);

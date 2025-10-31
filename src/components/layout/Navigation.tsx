@@ -8,6 +8,7 @@ const menuItems = [
   { path: '/dashboard', name: 'Dashboard' },
   { path: '/plans', name: 'Annual Plans' },
   { path: '/my-tasks', name: 'My Tasks' },
+  { path: '/info-desk', name: 'Info Desk' },
   { path: '/indicators', name: 'Medical Indicators' },
   { path: '/knowledge-base', name: 'Knowledge Base' },
   { path: '/memos', name: 'Memos & Proposals' },
@@ -46,8 +47,8 @@ export default function Navigation() {
                   key={item.path}
                   href={item.path}
                   className={`inline-flex items-center px-3 py-2 text-sm font-medium ${pathname === item.path
-                      ? 'text-blue-600'
-                      : 'text-gray-500 hover:text-gray-700'
+                    ? 'text-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
                     }`}
                 >
                   {item.name}
@@ -92,8 +93,8 @@ export default function Navigation() {
               key={item.path}
               href={item.path}
               className={`block px-3 py-2 rounded-md text-base font-medium ${pathname === item.path
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                ? 'text-blue-600 bg-blue-50'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                 }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >

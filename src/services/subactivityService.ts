@@ -23,6 +23,21 @@ class SubActivityService {
     return response.data;
   }
 
+  async getByActivityId(activityId: string): Promise<SubActivity[]> {
+    const response = await api.get(`${this.baseUrl}?activity_id=${activityId}`);
+    return response.data;
+  }
+
+  async getByUserId(userId: string): Promise<SubActivity[]> {
+    const response = await api.get(`${this.baseUrl}?user_id=${userId}`);
+    return response.data;
+  }
+
+  async getByUserEmail(userEmail: string): Promise<SubActivity[]> {
+    const response = await api.get(`${this.baseUrl}?user_email=${userEmail}`);
+    return response.data;
+  }
+
   async getById(id: string): Promise<SubActivity> {
     const response = await api.get(`${this.baseUrl}/${id}`);
     return response.data;

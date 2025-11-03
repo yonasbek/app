@@ -56,7 +56,6 @@ export default function AuthLayout({
       <TopBar
         onSidebarToggle={toggleSidebar}
         sidebarCollapsed={sidebarCollapsed}
-        isMobileMenuOpen={isMobileMenuOpen}
       />
 
 

@@ -423,7 +423,12 @@ export default function SubActivityList({ activityId, activityTitle, canEdit = t
                           <Calendar className="w-4 h-4 text-app-primary" />
                         </div>
                         <span>
-                          {new Date(subActivity.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(subActivity.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {subActivity.start_week?.label || 'Week N/A'} - {subActivity.end_week?.label || 'Week N/A'}
+                          {subActivity.start_week?.year && (
+                            subActivity.start_week.year !== subActivity.end_week?.year
+                              ? ` (${subActivity.start_week.year} - ${subActivity.end_week?.year})`
+                              : ` (${subActivity.start_week.year})`
+                          )}
                         </span>
                       </div>
                     </div>

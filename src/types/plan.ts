@@ -10,6 +10,7 @@ export interface Plan {
   calculated_progress?: number; // Calculated from activities' progress
   budget_allocated: number;
   budget_spent: number;
+  budget_source?: string[]; // Budget sources: internal, donor, government, partner
   owner: string;
   created_at?: string;
   updated_at?: string;
@@ -22,6 +23,7 @@ export interface CreatePlanDto {
   plan_type: PlanType;
   status: Plan['status'];
   budget_allocated: number;
+  budget_source?: string[]; // Budget sources: internal, donor, government, partner
   owner: string;
 }
 

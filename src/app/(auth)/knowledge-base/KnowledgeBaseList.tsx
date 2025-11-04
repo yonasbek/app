@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { KnowledgeBaseFile, knowledgeBaseService } from '@/services/knowledgeBaseService';
-import { Search, Filter, LayoutGrid, List, Download, Trash2, FileText } from 'lucide-react';
+import { Search, Filter, LayoutGrid, List, Download, Trash2, FileText, CheckCircle, XCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,6 +27,9 @@ interface KnowledgeBaseListProps {
   onDelete: (id: string) => void;
   onDownload: (id: string) => void;
   isLoading?: boolean;
+  showApproveActions?: boolean;
+  onApprove?: (id: string) => void;
+  onReject?: (id: string) => void;
 }
 
 export default function KnowledgeBaseList({
@@ -34,6 +37,9 @@ export default function KnowledgeBaseList({
   onDelete,
   onDownload,
   isLoading = false,
+  showApproveActions = false,
+  onApprove,
+  onReject,
 }: KnowledgeBaseListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -126,7 +132,10 @@ export default function KnowledgeBaseList({
                 upload_date={file.upload_date}
                 module={CATEGORIES.find(cat => cat.id === file.module)?.name || 'Uncategorized'}
                 onDownload={onDownload}
-                onDelete={onDelete}
+                onDelete={showApproveActions ? undefined : onDelete}
+                showApproveActions={showApproveActions}
+                onApprove={showApproveActions ? onApprove : undefined}
+                onReject={showApproveActions ? onReject : undefined}
               />
             ))
           ) : (

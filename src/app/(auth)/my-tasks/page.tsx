@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { SubActivity } from '@/types/subactivity';
+import { SubActivity, Week } from '@/types/subactivity';
 import { subActivityService } from '@/services/subactivityService';
+import { weekService } from '@/services/weekService';
 import ProgressUpdateModal from '@/components/activity/ProgressUpdateModal';
 
 // SVG Icon Components
@@ -44,9 +45,11 @@ const CalendarIcon = ({ className = "" }: { className?: string }) => (
 
 export default function MyTasksPage() {
   const [myTasks, setMyTasks] = useState<SubActivity[]>([]);
+  const [weeks, setWeeks] = useState<Week[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'in_progress' | 'completed'>('all');
+  const [weekFilter, setWeekFilter] = useState<string>('all');
   const [progressUpdateModal, setProgressUpdateModal] = useState<{ isOpen: boolean; subActivity: SubActivity | null }>({
     isOpen: false,
     subActivity: null
@@ -54,6 +57,7 @@ export default function MyTasksPage() {
 
   useEffect(() => {
     fetchMyTasks();
+    fetchWeeks();
   }, []);
 
   const fetchMyTasks = async () => {
@@ -66,6 +70,23 @@ export default function MyTasksPage() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchWeeks = async () => {
+    try {
+      const currentYear = new Date().getFullYear();
+      let weeksData = await weekService.getAll(currentYear);
+      
+      // If no weeks exist for current year, generate them
+      if (weeksData.length === 0) {
+        await weekService.generateForYear(currentYear);
+        weeksData = await weekService.getAll(currentYear);
+      }
+      
+      setWeeks(weeksData);
+    } catch (err) {
+      console.error('Failed to fetch weeks:', err);
     }
   };
 
@@ -101,30 +122,85 @@ export default function MyTasksPage() {
   };
 
   const getFilteredTasks = () => {
+    let filtered = myTasks;
+
+    // Filter by status
     switch (filter) {
       case 'pending':
-        return myTasks.filter(task => task.status === 'NOT_STARTED');
+        filtered = filtered.filter(task => task.status === 'NOT_STARTED');
+        break;
       case 'in_progress':
-        return myTasks.filter(task => task.status === 'IN_PROGRESS');
+        filtered = filtered.filter(task => task.status === 'IN_PROGRESS');
+        break;
       case 'completed':
-        return myTasks.filter(task => task.status === 'COMPLETED');
+        filtered = filtered.filter(task => task.status === 'COMPLETED');
+        break;
       default:
-        return myTasks;
+        break;
     }
+
+    // Filter by week
+    if (weekFilter !== 'all') {
+      const selectedWeek = weeks.find(w => w.id === weekFilter);
+      if (selectedWeek) {
+        filtered = filtered.filter(task => {
+          if (!task.start_week || !task.end_week) return false;
+          
+          const startWeek = task.start_week;
+          const endWeek = task.end_week;
+          
+          // Task starts, ends, or overlaps with selected week
+          if (startWeek.year === selectedWeek.year && endWeek.year === selectedWeek.year) {
+            // Same year: check if selected week is between start and end
+            return startWeek.week_number <= selectedWeek.week_number && 
+                   selectedWeek.week_number <= endWeek.week_number;
+          } else if (startWeek.year === selectedWeek.year) {
+            // Task starts in selected year, check if selected week is >= start week
+            return startWeek.week_number <= selectedWeek.week_number;
+          } else if (endWeek.year === selectedWeek.year) {
+            // Task ends in selected year, check if selected week is <= end week
+            return selectedWeek.week_number <= endWeek.week_number;
+          } else {
+            // Task spans across selected year
+            return startWeek.year < selectedWeek.year && endWeek.year > selectedWeek.year;
+          }
+        });
+      }
+    }
+
+    return filtered;
   };
 
   const getTaskStats = () => {
-    const total = myTasks.length;
-    const completed = myTasks.filter(task => task.status === 'COMPLETED').length;
-    const inProgress = myTasks.filter(task => task.status === 'IN_PROGRESS').length;
-    const pending = myTasks.filter(task => task.status === 'NOT_STARTED').length;
-    const delayed = myTasks.filter(task => task.status === 'DELAYED').length;
+    const filtered = getFilteredTasks();
+    const total = filtered.length;
+    const completed = filtered.filter(task => task.status === 'COMPLETED').length;
+    const inProgress = filtered.filter(task => task.status === 'IN_PROGRESS').length;
+    const pending = filtered.filter(task => task.status === 'NOT_STARTED').length;
+    const delayed = filtered.filter(task => task.status === 'DELAYED').length;
 
     return { total, completed, inProgress, pending, delayed };
   };
 
-  const isOverdue = (endDate: string) => {
-    return new Date(endDate) < new Date() && new Date(endDate).toDateString() !== new Date().toDateString();
+  const isOverdue = (task: SubActivity) => {
+    if (!task.end_week) return false;
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentWeek = getWeekNumber(currentDate);
+    
+    // Check if end week has passed
+    if (task.end_week.year < currentYear) return true;
+    if (task.end_week.year === currentYear && task.end_week.week_number < currentWeek) return true;
+    
+    return false;
+  };
+
+  const getWeekNumber = (date: Date): number => {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
   };
 
   if (loading) {
@@ -205,26 +281,46 @@ export default function MyTasksPage() {
 
       {/* Filter Tabs */}
       <div className="bg-white rounded-lg shadow-sm border">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8 px-6">
-            {[
-              { key: 'all', label: 'All Tasks', count: stats.total },
-              { key: 'pending', label: 'Pending', count: stats.pending },
-              { key: 'in_progress', label: 'In Progress', count: stats.inProgress },
-              { key: 'completed', label: 'Completed', count: stats.completed }
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setFilter(tab.key as any)}
-                className={`py-3 px-1 border-b-2 font-medium text-sm ${filter === tab.key
-                  ? 'border-app-foreground text-app-foreground'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
+        <div className="border-b border-gray-200 px-6 pt-4 pb-2">
+          <div className="flex items-center justify-between mb-4">
+            <nav className="-mb-px flex space-x-8 flex-1">
+              {[
+                { key: 'all', label: 'All Tasks', count: stats.total },
+                { key: 'pending', label: 'Pending', count: stats.pending },
+                { key: 'in_progress', label: 'In Progress', count: stats.inProgress },
+                { key: 'completed', label: 'Completed', count: stats.completed }
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setFilter(tab.key as any)}
+                  className={`py-3 px-1 border-b-2 font-medium text-sm ${filter === tab.key
+                    ? 'border-app-foreground text-app-foreground'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                >
+                  {tab.label} ({tab.count})
+                </button>
+              ))}
+            </nav>
+            <div className="flex items-center space-x-2">
+              <label htmlFor="week-filter" className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                Filter by Week:
+              </label>
+              <select
+                id="week-filter"
+                value={weekFilter}
+                onChange={(e) => setWeekFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                {tab.label} ({tab.count})
-              </button>
-            ))}
-          </nav>
+                <option value="all">All Weeks</option>
+                {weeks.map((week) => (
+                  <option key={week.id} value={week.id}>
+                    {week.label} ({week.year})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
 
         {/* Tasks List */}
@@ -247,7 +343,7 @@ export default function MyTasksPage() {
                         <span className={`px-2 py-1 text-xs rounded-full ${getPriorityColor(task.priority)}`}>
                           {task.priority} Priority
                         </span>
-                        {isOverdue(task.end_date) && task.status !== 'COMPLETED' && (
+                        {isOverdue(task) && task.status !== 'COMPLETED' && (
                           <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">
                             Overdue
                           </span>
@@ -265,7 +361,12 @@ export default function MyTasksPage() {
                         </div>
                         <div className="flex items-center space-x-1">
                           <CalendarIcon className="h-4 w-4" />
-                          <span>Due: {new Date(task.end_date).toLocaleDateString()}</span>
+                          <span>
+                            Weeks: {task.start_week?.label || 'N/A'} - {task.end_week?.label || 'N/A'}
+                            {task.start_week?.year && task.start_week.year === task.end_week?.year && (
+                              ` (${task.start_week.year})`
+                            )}
+                          </span>
                         </div>
                       </div>
 

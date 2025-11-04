@@ -17,7 +17,8 @@ import {
     LogOut,
     ChevronLeft,
     ChevronRight,
-    Upload
+    Upload,
+    DollarSign
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -25,6 +26,7 @@ const menuItems = [
     { path: '/dashboard', name: 'Dashboard', icon: Home },
     { path: '/plans', name: 'Annual Plans', icon: Calendar },
     { path: '/my-tasks', name: 'My Tasks', icon: Calendar },
+    { path: '/budget', name: 'Budget', icon: DollarSign },
     { path: '/knowledge-base', name: 'Knowledge Base', icon: BookOpen },
     { path: '/memos', name: 'Memos & Proposals', icon: FileText },
     { path: '/attendance', name: 'Attendance', icon: Clock },

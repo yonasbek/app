@@ -1,3 +1,12 @@
+export interface Week {
+  id: string;
+  week_number: number;
+  year: number;
+  label: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface SubActivity {
   id: string;
   title: string;
@@ -10,8 +19,10 @@ export interface SubActivity {
     firstName?: string;
     lastName?: string;
   };
-  start_date: string;
-  end_date: string;
+  start_week_id: string;
+  start_week?: Week;
+  end_week_id: string;
+  end_week?: Week;
   status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'DELAYED';
   progress: number;
   notes?: string;
@@ -24,14 +35,16 @@ export interface SubActivity {
   };
   created_at?: string;
   updated_at?: string;
+  weight?: number;
+
 }
 
 export interface CreateSubActivityDto {
   title: string;
   description?: string;
   user_id: string;
-  start_date: string;
-  end_date: string;
+  start_week_id: string;
+  end_week_id: string;
   status?: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'DELAYED';
   progress?: number;
   notes?: string;

@@ -17,6 +17,7 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
     fiscal_year: '',
     status: 'draft',
     budget_allocated: 0,
+    budget_source: [],
   });
 
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
         fiscal_year: plan.fiscal_year,
         status: plan.status,
         budget_allocated: plan.budget_allocated,
+        budget_source: plan.budget_source || [],
       });
     } catch (err) {
       setError('Failed to fetch plan details');
@@ -48,6 +50,23 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
       ...prev,
       [name]: name === 'budget_allocated' ? parseFloat(value) : value,
     }));
+  };
+
+  const handleBudgetSourceChange = (source: string, checked: boolean) => {
+    setFormData((prev) => {
+      const currentSources = prev.budget_source || [];
+      if (checked) {
+        return {
+          ...prev,
+          budget_source: [...currentSources, source]
+        };
+      } else {
+        return {
+          ...prev,
+          budget_source: currentSources.filter((s: string) => s !== source)
+        };
+      }
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -163,6 +182,26 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
             step="0.01"
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Budget Source
+          </label>
+          <div className="space-y-2">
+            {['internal', 'donor', 'government', 'partner'].map((source) => (
+              <label key={source} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.budget_source?.includes(source) || false}
+                  onChange={(e) => handleBudgetSourceChange(source, e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700 capitalize">{source}</span>
+              </label>
+            ))}
+          </div>
+          <p className="mt-1 text-xs text-gray-500">Select one or more budget sources</p>
         </div>
 
         {error && (

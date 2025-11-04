@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { activityService } from '@/services/activityService';
 import { CreateActivityDto, PlanType } from '@/types/activity';
 import { use } from 'react';
+import { EthiopianDatePicker } from '@/components/ui/ethiopian-date-picker';
 
 export default function NewActivityPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -12,6 +13,8 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
   const [formData, setFormData] = useState<CreateActivityDto>({
     plan_type: 'PFRD',
     plan_year: new Date().getFullYear().toString(),
@@ -168,36 +171,32 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">
-              Start Date
-            </label>
-            <input
-              type="date"
-              id="start_date"
-              name="start_date"
-              value={formData.start_date}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
-            />
-          </div>
+          <EthiopianDatePicker
+            label="Start Date"
+            value={startDate}
+            onChange={(selectedDate: Date) => {
+              setStartDate(selectedDate);
+              setFormData((prev) => ({
+                ...prev,
+                start_date: selectedDate.toISOString().split('T')[0],
+              }));
+            }}
+            required
+          />
 
-          <div>
-            <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">
-              End Date
-            </label>
-            <input
-              type="date"
-              id="end_date"
-              name="end_date"
-              value={formData.end_date}
-              onChange={handleChange}
-              required
-              min={formData.start_date}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
-            />
-          </div>
+          <EthiopianDatePicker
+            label="End Date"
+            value={endDate}
+            onChange={(selectedDate: Date) => {
+              setEndDate(selectedDate);
+              setFormData((prev) => ({
+                ...prev,
+                end_date: selectedDate.toISOString().split('T')[0],
+              }));
+            }}
+            minDate={startDate}
+            required
+          />
         </div>
 
         <div>
@@ -283,11 +282,10 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
           <button
             type="submit"
             disabled={loading}
-            className={`px-4 py-2 text-white rounded ${
-              loading
-                ? 'bg-blue-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700'
-            }`}
+            className={`px-4 py-2 text-white rounded ${loading
+              ? 'bg-blue-400 cursor-not-allowed'
+              : 'bg-blue-600 hover:bg-blue-700'
+              }`}
           >
             {loading ? 'Creating...' : 'Create Activity'}
           </button>

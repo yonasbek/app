@@ -174,3 +174,104 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Ethiopian Date Picker Customization */
+.ethiopian-datepicker-wrapper {
+  position: relative;
+}
+
+/* Hide Gregorian calendar dates when Ethiopian calendar is displayed */
+.ethiopian-datepicker-wrapper .MuiPickersDay-root[aria-label*="("] {
+  position: relative;
+}
+
+/* Hide the Gregorian date text in parentheses */
+.ethiopian-datepicker-wrapper .MuiPickersDay-root::after {
+  content: attr(aria-label);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Style the date picker popup to match Tailwind */
+.MuiPickersPopper-root {
+  z-index: 9999 !important;
+}
+
+.MuiPaper-root.MuiPickersPopper-paper {
+  @apply shadow-lg rounded-lg border border-gray-200;
+  margin-top: 4px !important;
+}
+
+/* Style the calendar header */
+.MuiPickersCalendarHeader-root {
+  @apply bg-gray-50 px-4 py-2 rounded-t-lg;
+}
+
+.MuiPickersCalendarHeader-label {
+  @apply text-gray-800 font-semibold;
+}
+
+/* Style calendar days */
+.MuiPickersDay-root {
+  @apply text-gray-700 hover:bg-blue-50 transition-colors;
+  font-weight: 500 !important;
+}
+
+.MuiPickersDay-root.Mui-selected {
+  @apply bg-blue-500 text-white;
+  font-weight: 600 !important;
+}
+
+.MuiPickersDay-root.Mui-selected:hover {
+  @apply bg-blue-600;
+}
+
+.MuiPickersDay-root:not(.Mui-selected):hover {
+  @apply bg-blue-50;
+}
+
+/* Style today's date */
+.MuiPickersDay-today {
+  @apply border-blue-500 border;
+}
+
+/* Style disabled dates */
+.MuiPickersDay-root.Mui-disabled {
+  @apply text-gray-300;
+}
+
+/* Style month/year selection buttons */
+.MuiPickersArrowSwitcher-button {
+  @apply text-gray-600 hover:bg-gray-100 rounded-md;
+}
+
+/* Style the input field */
+.ethiopian-datepicker-wrapper .MuiInputBase-root {
+  @apply bg-white;
+}
+
+.ethiopian-datepicker-wrapper .MuiInputBase-input {
+  @apply text-gray-900 text-sm;
+  padding: 10px 14px !important;
+}
+
+.ethiopian-datepicker-wrapper .MuiInputLabel-root {
+  @apply text-gray-600;
+}
+
+.ethiopian-datepicker-wrapper .MuiInputLabel-root.Mui-focused {
+  @apply text-blue-500;
+}
+
+/* Hide any secondary calendar or Gregorian dates display */
+.MuiDateCalendar-root .MuiTypography-caption {
+  display: none;
+}
+
+/* Ensure only Ethiopian dates are visible */
+.MuiPickersDay-root > span {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}

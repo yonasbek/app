@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { SubActivity, Week } from '@/types/subactivity';
 import { weekService } from '@/services/weekService';
+import EthiopianDatePicker from '../ui/ethiopian-date-picker';
 
 // SVG Icon Components
 const XIcon = ({ className = "" }: { className?: string }) => (
@@ -122,7 +123,7 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -180,9 +181,8 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.title ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.title ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="Enter sub-activity title"
             />
             {errors.title && (
@@ -199,9 +199,8 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.description ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.description ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="Enter sub-activity description"
             />
             {errors.description && (
@@ -217,9 +216,8 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
               name="user_id"
               value={formData.user_id}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.user_id ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.user_id ? 'border-red-500' : 'border-gray-300'
+                }`}
             >
               <option value="">Select a user</option>
               {users.map((user) => (

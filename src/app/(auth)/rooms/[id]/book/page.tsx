@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { bookingService } from "@/services/bookingService";
+import { EthiopianDatePicker } from "@/components/ui/ethiopian-date-picker";
 
 const initialForm = {
   title: "",
@@ -80,11 +81,33 @@ export default function BookRoomPage() {
         </div>
         <div>
           <label className="block font-semibold mb-1">Start Time</label>
-          <input type="datetime-local" name="start_time" value={form.start_time} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
+          <EthiopianDatePicker
+            label=""
+            value={form.start_time ? new Date(form.start_time) : null}
+            onChange={(selectedDate: Date) => {
+              // Adjust for timezone offset to ensure correct local date
+              const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+              setForm((prev: any) => ({
+                ...prev,
+                start_time: localDate.toISOString().split('T')[0],
+              }));
+            }}
+          />
         </div>
         <div>
           <label className="block font-semibold mb-1">End Time</label>
-          <input type="datetime-local" name="end_time" value={form.end_time} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
+          <EthiopianDatePicker
+            label=""
+            value={form.end_time ? new Date(form.end_time) : null}
+            onChange={(selectedDate: Date) => {
+              // Adjust for timezone offset to ensure correct local date
+              const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+              setForm((prev: any) => ({
+                ...prev,
+                end_time: localDate.toISOString().split('T')[0],
+              }));
+            }}
+          />
         </div>
         <div>
           <label className="inline-flex items-center">
@@ -108,7 +131,12 @@ export default function BookRoomPage() {
             </div>
             <div>
               <label className="block font-semibold mb-1">End Date</label>
-              <input type="date" name="recurring_pattern.end_date" value={form.recurring_pattern.end_date} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <EthiopianDatePicker
+                label=""
+                value={form.recurring_pattern.end_date ? new Date(form.recurring_pattern.end_date) : null}
+                onChange={(selectedDate: Date) => setForm((prev: any) => ({ ...prev, recurring_pattern: { ...prev.recurring_pattern, end_date: selectedDate.toISOString().split('T')[0] } }))}
+                className="w-full"
+              />
             </div>
           </div>
         )}

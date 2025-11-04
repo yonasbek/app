@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { roomService } from "@/services/roomService";
 import { bookingService } from "@/services/bookingService";
+import { formatToEthiopianDateTime } from "@/utils/ethiopianDateUtils";
 import Link from "next/link";
 
 export default function RoomDetailPage() {
@@ -72,8 +73,8 @@ export default function RoomDetailPage() {
                   {bookings.map((booking) => (
                     <tr key={booking.id}>
                       <td className="px-4 py-2 whitespace-nowrap">{booking.title}</td>
-                      <td className="px-4 py-2 whitespace-nowrap">{new Date(booking.start_time).toLocaleString()}</td>
-                      <td className="px-4 py-2 whitespace-nowrap">{new Date(booking.end_time).toLocaleString()}</td>
+                      <td className="px-4 py-2 whitespace-nowrap">{formatToEthiopianDateTime(booking.start_time, true)}</td>
+                      <td className="px-4 py-2 whitespace-nowrap">{formatToEthiopianDateTime(booking.end_time, true)}</td>
                       <td className="px-4 py-2 whitespace-nowrap">{booking.user_name || '-'}</td>
                     </tr>
                   ))}

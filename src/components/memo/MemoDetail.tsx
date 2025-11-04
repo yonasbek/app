@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Memo, MemoStatus, PriorityLevel } from '@/types/memo';
 import { memoService } from '@/services/memoService';
 import MemoWorkflow from './MemoWorkflow';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import {
   ArrowLeft,
   Edit2,
@@ -203,11 +204,7 @@ export default function MemoDetail({ memoId, userRole = 'CREATOR' }: MemoDetailP
               </div>
               <div className="flex items-center space-x-1.5">
                 <Calendar className="w-4 h-4" />
-                <span>{new Date(memo.date_of_issue).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}</span>
+                <span>{formatToEthiopianDate(memo.date_of_issue, 'long')}</span>
               </div>
               <div className={`flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold ${priorityConfig.bgColor} ${priorityConfig.textColor}`}>
                 <PriorityIcon className="w-3.5 h-3.5" />
@@ -273,11 +270,7 @@ export default function MemoDetail({ memoId, userRole = 'CREATOR' }: MemoDetailP
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-5 h-5 text-gray-400" />
                     <span className="text-gray-900 font-medium">
-                      {new Date(memo.date_of_issue).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      {formatToEthiopianDate(memo.date_of_issue, 'long')}
                     </span>
                   </div>
                 </div>
@@ -398,11 +391,7 @@ export default function MemoDetail({ memoId, userRole = 'CREATOR' }: MemoDetailP
                             <div className="font-semibold text-gray-900">{signature.signer_name}</div>
                             <div className="flex items-center space-x-1 text-xs text-gray-600">
                               <Calendar className="w-3 h-3" />
-                              <span>{new Date(signature.signed_at).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                              })}</span>
+                              <span>{formatToEthiopianDate(signature.signed_at, 'medium')}</span>
                             </div>
                           </div>
                         </div>

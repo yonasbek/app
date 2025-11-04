@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { contactService } from '@/services/contactService';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import {
   ContactSuggestion,
   SuggestionStatus,
@@ -111,13 +112,7 @@ export default function ContactSuggestionsPage() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return formatToEthiopianDate(dateString, 'medium');
   };
 
   if (loading) {

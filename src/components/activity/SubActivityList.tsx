@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { SubActivity, SubActivityStats } from '@/types/subactivity';
 import { subActivityService } from '@/services/subactivityService';
 import { userService } from '@/services/userService';
+import { formatToEthiopianDate, formatEthiopianDateRange } from '@/utils/ethiopianDateUtils';
 import {
   Plus,
   Edit2,

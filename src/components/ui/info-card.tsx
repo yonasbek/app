@@ -4,6 +4,7 @@ import { Star, MessageCircle, UserPlus, FileText, Download, Trash2, CheckCircle,
 import { cn } from "@/lib/utils"
 import { Button } from "./button"
 import { Badge } from "./badge"
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils'
 
 type FileCardProps = {
     id: string
@@ -44,7 +45,7 @@ export function FileCard({ id, document_name, document_size, upload_date, module
                     <div className="flex flex-wrap justify-center gap-x-2 text-xs text-muted-foreground px-2 text-center">
                         <span>{(document_size / 1024).toFixed(2)} KB</span>
                         <span>•</span>
-                        <span>{new Date(upload_date).toLocaleDateString()}</span>
+                        <span>{formatToEthiopianDate(upload_date, 'short')}</span>
                     </div>
                     <Badge variant="outline" className="transition-all duration-300 group-hover:bg-primary/10">
                         {module}

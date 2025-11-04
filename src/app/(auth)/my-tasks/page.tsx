@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { SubActivity, Week } from '@/types/subactivity';
 import { subActivityService } from '@/services/subactivityService';
 import { weekService } from '@/services/weekService';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import ProgressUpdateModal from '@/components/activity/ProgressUpdateModal';
 
 // SVG Icon Components
@@ -12,31 +13,21 @@ const CheckCircleIcon = ({ className = "" }: { className?: string }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
 );
-
 const ClockIcon = ({ className = "" }: { className?: string }) => (
   <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
 );
-
 const AlertTriangleIcon = ({ className = "" }: { className?: string }) => (
   <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.081 16.5c-.77.833.192 2.5 1.732 2.5z" />
   </svg>
 );
-
 const TargetIcon = ({ className = "" }: { className?: string }) => (
   <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
 );
-
-const UserIcon = ({ className = "" }: { className?: string }) => (
-  <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-  </svg>
-);
-
 const CalendarIcon = ({ className = "" }: { className?: string }) => (
   <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -54,6 +45,23 @@ export default function MyTasksPage() {
     isOpen: false,
     subActivity: null
   });
+
+  // --- due-date helpers ---
+  const daysUntil = (dateStr: string) => {
+    const today = new Date();
+    const due = new Date(dateStr);
+    const t = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const d = new Date(due.getFullYear(), due.getMonth(), due.getDate()).getTime();
+    const diffMs = d - t;
+    return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  };
+
+  const isDueSoon = (dateStr: string, status: SubActivity['status'], daysThreshold = 7) => {
+    // Only consider tasks that are pending or in progress
+    if (status === 'COMPLETED') return false;
+    const d = daysUntil(dateStr);
+    return d <= daysThreshold && d >= 0;
+  };
 
   useEffect(() => {
     fetchMyTasks();
@@ -92,7 +100,6 @@ export default function MyTasksPage() {
 
   const handleUpdateProgress = async (subActivityId: string, data: any) => {
     try {
-      console.log(data, 'data here');
       await subActivityService.updateProgress(subActivityId, { progress: data.progress, notes: data.notes });
       setProgressUpdateModal({ isOpen: false, subActivity: null });
       fetchMyTasks(); // Refresh the list
@@ -367,6 +374,13 @@ export default function MyTasksPage() {
                               ` (${task.start_week.year})`
                             )}
                           </span>
+                          {/* <span>Due: {formatToEthiopianDate(task.end_date, 'medium')}</span>
+
+                          {isDueSoon(task.end_date, task.status) && (
+                            <span className="ml-3 px-2 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-800">
+                              Due in {daysUntil(task.end_date)} day{daysUntil(task.end_date) !== 1 ? 's' : ''}
+                            </span>
+                          )} */}
                         </div>
                       </div>
 
@@ -411,7 +425,6 @@ export default function MyTasksPage() {
         <ProgressUpdateModal
           subActivity={progressUpdateModal.subActivity}
           onSubmit={(data) => {
-            console.log(data, 'data here');
             handleUpdateProgress(progressUpdateModal.subActivity!.id, data)
           }}
           onCancel={() => setProgressUpdateModal({ isOpen: false, subActivity: null })}
@@ -420,4 +433,4 @@ export default function MyTasksPage() {
       )}
     </div>
   );
-} 
+}

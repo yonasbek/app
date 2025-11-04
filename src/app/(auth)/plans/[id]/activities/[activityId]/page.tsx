@@ -5,6 +5,7 @@ import { Activity } from '@/types/activity';
 import { Plan } from '@/types/plan';
 import { activityService } from '@/services/activityService';
 import { planService } from '@/services/planService';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import { use } from 'react';
 import {
   ArrowLeft,
@@ -168,11 +169,7 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ id: s
               </div>
               <p className="text-sm text-app-foreground font-medium">
                 {activity?.end_date
-                  ? new Date(activity.end_date).toLocaleDateString('en-US', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                  })
+                  ? formatToEthiopianDate(activity.end_date, 'long')
                   : 'Not set'}
               </p>
             </div>
@@ -185,11 +182,7 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ id: s
               </div>
               <p className="text-sm text-app-foreground font-medium">
                 {activity?.start_date
-                  ? new Date(activity.start_date).toLocaleDateString('en-US', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                  })
+                  ? formatToEthiopianDate(activity.start_date, 'long')
                   : 'Not set'}
               </p>
             </div>

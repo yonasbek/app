@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Memo, MemoStatus } from '@/types/memo';
 import { memoService } from '@/services/memoService';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import Link from 'next/link';
 
 export default function MemoWorkflowPage() {
@@ -80,8 +81,8 @@ export default function MemoWorkflowPage() {
                     <p className="text-sm text-gray-600 mb-2">{memo.department}</p>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-gray-500">
-                        Submitted: {memo.submitted_to_desk_head_at 
-                          ? new Date(memo.submitted_to_desk_head_at).toLocaleDateString()
+                        Submitted: {memo.submitted_to_desk_head_at
+                          ? formatToEthiopianDate(memo.submitted_to_desk_head_at, 'short')
                           : 'N/A'}
                       </span>
                       <Link
@@ -126,8 +127,8 @@ export default function MemoWorkflowPage() {
                     )}
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-gray-500">
-                        Submitted to LEO: {memo.submitted_to_leo_at 
-                          ? new Date(memo.submitted_to_leo_at).toLocaleDateString()
+                        Submitted to LEO: {memo.submitted_to_leo_at
+                          ? formatToEthiopianDate(memo.submitted_to_leo_at, 'short')
                           : 'N/A'}
                       </span>
                       <Link

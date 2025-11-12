@@ -22,7 +22,8 @@ import {
     ChevronDown,
     ChevronUp,
     Activity,
-    Stethoscope
+    Stethoscope,
+    Star
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -31,6 +32,7 @@ const menuItems = [
     { path: '/plans', name: 'Annual Plans', icon: Calendar },
     { path: '/my-tasks', name: 'My Tasks', icon: Calendar },
     { path: '/budget', name: 'Budget', icon: DollarSign },
+    { path: '/flagship-activities', name: 'Flagship Activities', icon: Star },
     {
         path: '/info-desk',
         name: 'Info Desk',

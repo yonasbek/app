@@ -1,167 +1,43 @@
-// Enums
-export enum EnrollmentStatus {
-  PENDING = 'pending',
-  CONFIRMED = 'confirmed',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-  FAILED = 'failed'
-}
+export type TrainingType = 'workshop' | 'event' | 'mentorship' | 'field_trip' | 'other';
+export type TrainingLocation = 'local' | 'abroad';
 
-// Main Entities
-export interface Course {
+export interface Training {
   id: string;
   title: string;
+  type: TrainingType;
+  location_type: TrainingLocation;
+  location?: string;
+  country?: string;
+  start_date: string;
+  end_date: string;
+  organizer?: string;
   description?: string;
-  is_active: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  trainers?: Trainer[];
-  enrollments?: CourseEnrollment[];
+  trip_report?: string[];
+  photos?: string[];
+  attendance?: string[];
+  additional_letter?: string[];
+  participants_count?: number;
+  remarks?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export interface Trainer {
-  id: string;
-  name: string;
-  phone?: string;
-  email: string;
-  is_active: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  courses?: Course[];
-}
-
-export interface Trainee {
-  id: string;
-  name: string;
-  phone?: string;
-  email: string;
-  is_active: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  enrollments?: CourseEnrollment[];
-}
-
-export interface CourseEnrollment {
-  id: string;
-  course_id: string;
-  trainee_id: string;
-  status: EnrollmentStatus;
-  enrolled_at: Date;
-  started_at?: Date;
-  completed_at?: Date;
-  progress_percentage?: number;
-  final_grade?: number;
-  certificate_url?: string;
-  notes?: string;
-  feedback?: string;
-  attendance_required: boolean;
-  attendance_count: number;
-  total_sessions: number;
-  payment_required: boolean;
-  amount_paid?: number;
-  payment_date?: Date;
-  payment_method?: string;
-  payment_reference?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  course?: Course;
-  trainee?: Trainee;
-}
-
-// Form Data Types
-export interface CourseFormData {
+export interface CreateTrainingDto {
   title: string;
+  type: TrainingType;
+  location_type: TrainingLocation;
+  location?: string;
+  country?: string;
+  start_date: string;
+  end_date: string;
+  organizer?: string;
   description?: string;
-  is_active: boolean;
+  trip_report?: string[];
+  photos?: string[];
+  attendance?: string[];
+  additional_letter?: string[];
+  participants_count?: number;
+  remarks?: string;
 }
 
-export interface TrainerFormData {
-  name: string;
-  phone?: string;
-  email: string;
-  is_active: boolean;
-}
-
-export interface TraineeFormData {
-  name: string;
-  phone?: string;
-  email: string;
-  is_active: boolean;
-}
-
-export interface EnrollmentFormData {
-  course_id: string;
-  trainee_id: string;
-  attendance_required: boolean;
-  total_sessions: number;
-  payment_required: boolean;
-  amount_paid?: number;
-  payment_method?: string;
-  payment_reference?: string;
-  notes?: string;
-}
-
-export interface AssignTrainerFormData {
-  trainer_ids: string[];
-}
-
-// Filter Types
-export interface CourseFilters {
-  search?: string;
-  status?: string;
-  level?: string;
-  is_active?: boolean;
-}
-
-export interface TrainerFilters {
-  search?: string;
-  status?: string;
-  specialization?: string;
-  is_active?: boolean;
-}
-
-export interface TraineeFilters {
-  search?: string;
-  status?: string;
-  organization?: string;
-  is_active?: boolean;
-}
-
-export interface EnrollmentFilters {
-  search?: string;
-  status?: string;
-  course_id?: string;
-  trainee_id?: string;
-}
-
-// Statistics Types
-export interface CourseStatistics {
-  total_enrollments: number;
-  completed_enrollments: number;
-  in_progress_enrollments: number;
-  pending_enrollments: number;
-  completion_rate: number;
-  average_progress: number;
-}
-
-export interface TrainerStatistics {
-  total_courses: number;
-  active_courses: number;
-  total_trainees: number;
-  average_rating: number;
-}
-
-export interface TraineeStatistics {
-  total_enrollments: number;
-  completed_courses: number;
-  in_progress_courses: number;
-  average_grade: number;
-}
-
-export interface EnrollmentStatistics {
-  total_enrollments: number;
-  by_status: Record<string, number>;
-  by_course: Record<string, number>;
-  completion_rate: number;
-}
+export interface UpdateTrainingDto extends Partial<CreateTrainingDto> {}

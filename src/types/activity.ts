@@ -37,6 +37,7 @@ export interface CreateActivityDto {
   supporting_documents?: string[];
   plan_id: string;
   flagship_activity?: boolean;
+  main_activity: string;
 }
 
 export interface UpdateActivityDto extends Partial<CreateActivityDto> {} 

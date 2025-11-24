@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { planService } from '@/services/planService';
 import { Plan, UpdatePlanDto } from '@/types/plan';
 import { use } from 'react';
+import BackButton from '@/components/ui/BackButton';
 
 export default function EditPlanPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -109,7 +110,8 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6">
+        <BackButton href="/plans/list" label="Back to Plans" className="mb-4" />
         <h1 className="text-2xl font-bold text-gray-900">Edit Plan</h1>
       </div>
 
@@ -145,7 +147,7 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
             <option value="2015">2015</option>
             <option value="2016">2016</option>
             <option value="2017">2017</option>
-            <option value="2018">2018</option>
+            <option defaultChecked value="2018">2018</option>
             <option value="2019">2019</option>
             <option value="2020">2020</option>
             <option value="2021">2021</option>

@@ -25,6 +25,7 @@ import {
 import { useRouter } from 'next/navigation';
 import Card from '@/components/ui/Card';
 import SubActivityList from '@/components/activity/SubActivityList';
+import BackButton from '@/components/ui/BackButton';
 
 export default function ActivityDetailPage({ params }: { params: Promise<{ id: string; activityId: string }> }) {
   const resolvedParams = use(params);
@@ -117,13 +118,7 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ id: s
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Back Button */}
-      <button
-        onClick={() => router.push(`/plans/${resolvedParams.id}/activities`)}
-        className="inline-flex items-center text-app-primary hover:text-app-primary-light transition-colors duration-200 group"
-      >
-        <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-        <span className="font-medium">Back to Activities</span>
-      </button>
+      <BackButton href={`/plans/${resolvedParams.id}/activities`} label="Back to Activities" />
 
       {/* Activity Title */}
       <div>

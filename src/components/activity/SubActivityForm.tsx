@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { SubActivity, Week } from '@/types/subactivity';
 import { weekService } from '@/services/weekService';
+import { subActivityService } from '@/services/subactivityService';
 import EthiopianDatePicker from '../ui/ethiopian-date-picker';
 
 // SVG Icon Components
@@ -43,10 +44,18 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
   const [weeks, setWeeks] = useState<Week[]>([]);
   const [loadingWeeks, setLoadingWeeks] = useState(true);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [existingSubActivities, setExistingSubActivities] = useState<SubActivity[]>([]);
+  const [totalOtherWeights, setTotalOtherWeights] = useState(0);
 
   useEffect(() => {
     fetchWeeks();
-  }, []);
+    fetchExistingSubActivities();
+  }, [activityId]);
+
+  useEffect(() => {
+    // Recalculate total other weights when existing sub-activities or current sub-activity changes
+    calculateTotalOtherWeights();
+  }, [existingSubActivities, subActivity]);
 
   useEffect(() => {
     if (subActivity) {
@@ -83,6 +92,24 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
     }
   };
 
+  const fetchExistingSubActivities = async () => {
+    try {
+      const data = await subActivityService.getByActivityId(activityId);
+      setExistingSubActivities(data);
+    } catch (err) {
+      console.error('Failed to fetch existing sub-activities:', err);
+    }
+  };
+
+  const calculateTotalOtherWeights = () => {
+    // Calculate total weight of all other sub-activities (excluding the current one being edited)
+    const otherSubActivities = existingSubActivities.filter(
+      (sub) => !subActivity || sub.id !== subActivity.id
+    );
+    const total = otherSubActivities.reduce((sum, sub) => sum + (sub.weight || 0), 0);
+    setTotalOtherWeights(total);
+  };
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -117,6 +144,15 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
       }
     }
 
+    // Validate weight: total weights should not exceed 100
+    if (formData.weight && formData.weight > 0) {
+      const currentWeight = formData.weight || 0;
+      const totalWeight = totalOtherWeights + currentWeight;
+      if (totalWeight > 100) {
+        newErrors.weight = `Total weight exceeds 100. Current total: ${totalOtherWeights}%, your input: ${currentWeight}%, combined: ${totalWeight}%`;
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -138,14 +174,40 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // For weight field, validate in real-time
+    if (name === 'weight') {
+      const weightValue = parseFloat(value) || 0;
+      const totalWeight = totalOtherWeights + weightValue;
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: weightValue
+      }));
 
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      // Clear or set error based on validation
+      if (weightValue > 0 && totalWeight > 100) {
+        setErrors(prev => ({
+          ...prev,
+          weight: `Total weight exceeds 100. Current total: ${totalOtherWeights}%, your input: ${weightValue}%, combined: ${totalWeight}%`
+        }));
+      } else {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors.weight;
+          return newErrors;
+        });
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+
+      // Clear error when user starts typing
+      if (errors[name]) {
+        setErrors(prev => ({ ...prev, [name]: '' }));
+      }
     }
   };
 
@@ -320,11 +382,30 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
             <input
               type="number"
               name="weight"
+              min="0"
+              max={100 - totalOtherWeights}
+              step="1"
               value={formData.weight}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.weight ? 'border-red-500' : 'border-gray-300'
+              }`}
               placeholder="Enter weight"
             />
+            <div className="mt-1 text-sm text-gray-600">
+              <div>Other sub-activities total: <span className="font-medium">{totalOtherWeights}%</span></div>
+              <div>Available: <span className="font-medium">{100 - totalOtherWeights}%</span></div>
+              {formData.weight > 0 && (
+                <div className="mt-1">
+                  Combined total: <span className={`font-medium ${totalOtherWeights + formData.weight > 100 ? 'text-red-600' : 'text-green-600'}`}>
+                    {totalOtherWeights + formData.weight}%
+                  </span>
+                </div>
+              )}
+            </div>
+            {errors.weight && (
+              <p className="text-red-500 text-sm mt-1">{errors.weight}</p>
+            )}
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">

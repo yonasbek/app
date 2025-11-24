@@ -6,6 +6,8 @@ export enum ContactType {
   UNIVERSITY_HOSPITALS = 'UNIVERSITY_HOSPITALS',
   ASSOCIATIONS = 'ASSOCIATIONS',
   PARTNERS = 'PARTNERS',
+  MOH = 'MOH',
+  OTHER = 'OTHER',
 }
 
 export enum ContactPosition {
@@ -124,6 +126,40 @@ export interface AutocompleteResponse {
   regions: string[];
 }
 
+export enum RegionType {
+  ADDIS_ABABA = 'ADDIS_ABABA',
+  AMHARA = 'AMHARA',
+  OROMIA = 'OROMIA',
+  SNNP = 'SNNP',
+  TIGRAY = 'TIGRAY',
+  HARARI = 'HARARI',
+  GAMBELA = 'GAMBELA',
+  BENISHANGUL_GUMUZ = 'BENISHANGUL_GUMUZ',
+  AFAR = 'AFAR',
+  CENTRAL_ETHIOPIA = 'CENTRAL_ETHIOPIA',
+  SIDAMA = 'SIDAMA',
+  SOMALI = 'SOMALI',
+  SOUTH_ETHIOPIA = 'SOUTH_ETHIOPIA',
+  OTHER = 'OTHER',
+}
+
+export const Region_LABELS: Record<RegionType, string> = { 
+  [RegionType.ADDIS_ABABA]: 'Addis Ababa',
+  [RegionType.AMHARA]: 'Amhara',
+  [RegionType.OROMIA]: 'Oromia',
+  [RegionType.SNNP]: 'SNNP',
+  [RegionType.TIGRAY]: 'Tigray',
+  [RegionType.HARARI]: 'Harari',
+  [RegionType.GAMBELA]: 'Gambela',
+  [RegionType.BENISHANGUL_GUMUZ]: 'Benishangul Gumuz',
+  [RegionType.AFAR]: 'Afar',
+  [RegionType.CENTRAL_ETHIOPIA]: 'Central Ethiopia',
+  [RegionType.SIDAMA]: 'Sidama',
+  [RegionType.SOMALI]: 'Somali',
+  [RegionType.SOUTH_ETHIOPIA]: 'South Ethiopia',
+  [RegionType.OTHER]: 'Other',
+}
+
 export const CONTACT_TYPE_LABELS: Record<ContactType, string> = {
   [ContactType.MOH_AGENCIES]: 'MoH Agencies',
   [ContactType.REGIONAL_HEALTH_BUREAU]: 'Regional Health Bureau',
@@ -132,6 +168,8 @@ export const CONTACT_TYPE_LABELS: Record<ContactType, string> = {
   [ContactType.UNIVERSITY_HOSPITALS]: 'University Hospitals',
   [ContactType.ASSOCIATIONS]: 'Associations',
   [ContactType.PARTNERS]: 'Partners',
+  [ContactType.MOH]: 'MoH',
+  [ContactType.OTHER]: 'Other',
 };
 
 export const CONTACT_POSITION_LABELS: Record<ContactPosition, string> = {

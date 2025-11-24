@@ -8,7 +8,8 @@ import { PlanType } from '@/types/activity';
 import { planService } from '@/services/planService';
 import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import Card from '@/components/ui/Card';
-import { Eye, Edit, List, Plus, LayoutGrid, Table } from 'lucide-react';
+import { Eye, Edit, List, Plus, LayoutGrid, Table, ArrowLeft } from 'lucide-react';
+import BackButton from '@/components/ui/BackButton';
 import {
   Modal,
   ModalContent,
@@ -269,6 +270,9 @@ function PlansListContent() {
 
   return (
     <div className="space-y-4 animate-fadeIn">
+      {/* Back Button */}
+      <BackButton href="/plans" label="Back to Plans" />
+      
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <h1 className="text-2xl font-bold text-app-foreground">

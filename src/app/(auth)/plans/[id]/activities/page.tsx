@@ -22,6 +22,7 @@ import {
   AlertCircle,
   Search
 } from 'lucide-react';
+import BackButton from '@/components/ui/BackButton';
 
 export default function PlanActivitiesPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -121,15 +122,7 @@ export default function PlanActivitiesPage({ params }: { params: Promise<{ id: s
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Back Button */}
-      <div className="flex justify-left items-center">
-        <button
-          onClick={() => window.history.back()}
-          className="link flex items-center justify-center space-x-2"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Plans</span>
-        </button>
-      </div>
+      <BackButton href={`/plans`} label="Back to Plan" />
 
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">

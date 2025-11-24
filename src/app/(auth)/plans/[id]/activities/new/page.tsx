@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { activityService } from '@/services/activityService';
 import { CreateActivityDto, PlanType } from '@/types/activity';
 import { use } from 'react';
 import { EthiopianDatePicker } from '@/components/ui/ethiopian-date-picker';
+import BackButton from '@/components/ui/BackButton';
+import { planService } from '@/services/planService';
 
 export default function NewActivityPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -17,7 +19,8 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [formData, setFormData] = useState<CreateActivityDto>({
     plan_type: 'PFRD',
-    plan_year: new Date().getFullYear().toString(),
+    plan_year: '',
+    main_activity: '',
     title: '',
     strategic_objective: '',
     responsible_department: '',
@@ -31,6 +34,22 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
     plan_id: resolvedParams.id,
     flagship_activity: false,
   });
+
+  // get plan by id
+  const getPlan = async () => {
+    const plan = await planService.getById(resolvedParams.id);
+    setFormData((prev) => ({
+      ...prev,
+      plan_type: plan.plan_type,
+      plan_year: plan.fiscal_year,
+      main_activity: plan.title,
+      strategic_objective: plan.plan_type,
+    }));
+  };
+  useEffect(() => {
+    console.log('resolvedParams', resolvedParams);
+    getPlan();
+  }, [resolvedParams]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -66,7 +85,8 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6">
+        <BackButton href={`/plans/${resolvedParams.id}/activities`} label="Back to Activities" className="mb-4" />
         <h1 className="text-2xl font-bold text-gray-900">Create New Activity</h1>
       </div>
 
@@ -82,6 +102,7 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
               value={formData.plan_type}
               onChange={handleChange}
               required
+              disabled
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
             >
               <option value="PFRD">PFRD - Pre-Facility & Referral Development</option>
@@ -102,13 +123,28 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
               value={formData.plan_year}
               onChange={handleChange}
               required
+              disabled
               pattern="\d{4}"
               placeholder="YYYY"
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
             />
           </div>
         </div>
-
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+            Main Activity
+          </label>
+          <input
+            type="text"
+            id="main_activity"
+            name="main activity"
+            disabled
+            value={formData.main_activity}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+          />
+        </div>
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700">
             Activity Title
@@ -126,7 +162,7 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
 
         <div>
           <label htmlFor="strategic_objective" className="block text-sm font-medium text-gray-700">
-            Strategic Objective
+            Strategic Objective (Description)
           </label>
           <textarea
             id="strategic_objective"
@@ -140,7 +176,7 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div>
+          {/* <div>
             <label htmlFor="responsible_department" className="block text-sm font-medium text-gray-700">
               Responsible Department
             </label>
@@ -153,7 +189,7 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
               required
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
             />
-          </div>
+          </div> */}
 
           <div>
             <label htmlFor="assigned_person" className="block text-sm font-medium text-gray-700">

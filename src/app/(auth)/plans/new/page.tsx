@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { planService } from '@/services/planService';
 import { CreatePlanDto } from '@/types/plan';
 import { PlanType } from '@/types/activity';
+import BackButton from '@/components/ui/BackButton';
 
 function NewPlanContent() {
   const router = useRouter();
@@ -49,7 +50,8 @@ function NewPlanContent() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6">
+        <BackButton href="/plans" label="Back to Plans" className="mb-4" />
         <h1 className="text-2xl font-bold text-gray-900">Create New Plan</h1>
       </div>
 

@@ -9,20 +9,24 @@ export interface KnowledgeBaseFile {
   updated_at: string;
   module: string;
   category: string;
+  status?: string;
+  requires_approval?: boolean;
 }
 
 class KnowledgeBaseService {
   private baseUrl = '/upload';
 
-  async list(): Promise<KnowledgeBaseFile[]> {
-    const res = await api.get(`${this.baseUrl}`);
+  async list(status?: string): Promise<KnowledgeBaseFile[]> {
+    const url = status ? `${this.baseUrl}?status=${status}` : this.baseUrl;
+    const res = await api.get(url);
     return res.data;
   }
 
-  async upload(file: File, category: string): Promise<KnowledgeBaseFile> {
+  async upload(file: File, category: string, requiresApproval: boolean = false): Promise<KnowledgeBaseFile> {
     const formData = new FormData();
     formData.append('files', file);
     formData.append('module', category);
+    formData.append('requires_approval', requiresApproval.toString());
 
     try {
       const res = await api.post(this.baseUrl, formData, {
@@ -33,6 +37,19 @@ class KnowledgeBaseService {
       console.error('Error uploading file:', error);
       throw error;
     }
+  }
+
+  async listPending(): Promise<KnowledgeBaseFile[]> {
+    const res = await api.get(`${this.baseUrl}/pending`);
+    return res.data;
+  }
+
+  async approve(id: string): Promise<void> {
+    await api.post(`${this.baseUrl}/${id}/approve`);
+  }
+
+  async reject(id: string): Promise<void> {
+    await api.post(`${this.baseUrl}/${id}/reject`);
   }
 
   async delete(id: string): Promise<void> {

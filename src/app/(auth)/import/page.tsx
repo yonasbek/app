@@ -137,7 +137,7 @@ export default function ImportPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Data Import</h1>
-          <p className="text-gray-600">Import CSV files and view imported data</p>
+          <p className="text-gray-600">Import XLSX files and view imported data</p>
         </div>
       </div>
 
@@ -146,7 +146,7 @@ export default function ImportPage() {
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-4">
             <Upload className="h-6 w-6 text-app-primary" />
-            <h2 className="text-lg font-semibold">Import CSV File</h2>
+            <h2 className="text-lg font-semibold">Import XLSX File</h2>
           </div>
 
           <div className="space-y-4">
@@ -165,7 +165,7 @@ export default function ImportPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                CSV or XLSX File
+                XLSX File
               </label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <input
@@ -181,7 +181,7 @@ export default function ImportPage() {
                 >
                   <FileText className="h-8 w-8 text-gray-400 mb-2" />
                   <span className="text-sm text-gray-600">
-                    {file ? file.name : 'Click to select CSV or XLSX file'}
+                    {file ? file.name : 'Click to select XLSX file'}
                   </span>
                 </label>
               </div>

@@ -3,25 +3,42 @@ import React, { useEffect, useState } from 'react';
 import { knowledgeBaseService, KnowledgeBaseFile } from '@/services/knowledgeBaseService';
 import KnowledgeBaseUpload from './KnowledgeBaseUpload';
 import KnowledgeBaseList from './KnowledgeBaseList';
-import { Loader2, FileText, Upload } from 'lucide-react';
+import { Loader2, FileText, Upload, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import KnowledgeBaseSummary from './KnowledgeBaseSummary';
+import Link from 'next/link';
 
 export default function KnowledgeBasePage() {
   const [files, setFiles] = useState<KnowledgeBaseFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    // Check if user is admin
+    try {
+      const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+      setIsAdmin(userRole === 'admin' || userRole === 'administrator');
+    } catch (error) {
+      console.warn('Unable to determine user role');
+    }
+  }, []);
 
   const loadFiles = async () => {
     setLoading(true);
     try {
-      const data = await knowledgeBaseService.list();
-      data.sort((a: KnowledgeBaseFile, b: KnowledgeBaseFile) => {
+      // Only load published documents (status === 'published' or no status/requires_approval)
+      const data = await knowledgeBaseService.list('published');
+      // Filter to only show published documents
+      const publishedFiles = data.filter((file: KnowledgeBaseFile) => 
+        file.status === 'published' || (!file.status && !file.requires_approval)
+      );
+      publishedFiles.sort((a: KnowledgeBaseFile, b: KnowledgeBaseFile) => {
         const aDate = new Date(a.updated_at || a.upload_date);
         const bDate = new Date(b.updated_at || b.upload_date);
         return bDate.getTime() - aDate.getTime();
       });
-      setFiles(data);
+      setFiles(publishedFiles);
     } finally {
       setLoading(false);
     }
@@ -59,13 +76,26 @@ export default function KnowledgeBasePage() {
             </p>
           </div>
         </div>
-        <Button
-          onClick={() => setUploadModalOpen(true)}
-          className="gap-2 bg-app-foreground text-white hover:text-app-foreground border border-app-foreground "
-        >
-          <Upload className="h-4 w-4" />
-          Upload Document
-        </Button>
+        <div className="flex items-center gap-3">
+          {/* {isAdmin && ( */}
+            <Link href="/knowledge-base/approvals">
+              <Button
+                variant="outline"
+                className="gap-2 border-yellow-500 text-yellow-600 hover:bg-yellow-50"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                Approve Documents
+              </Button>
+            </Link>
+          {/* )} */}
+          <Button
+            onClick={() => setUploadModalOpen(true)}
+            className="gap-2 bg-app-foreground text-white hover:text-app-foreground border border-app-foreground "
+          >
+            <Upload className="h-4 w-4" />
+            Upload Document
+          </Button>
+        </div>
       </div>
 
       <KnowledgeBaseSummary

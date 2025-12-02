@@ -35,6 +35,7 @@ export default function LoginPage() {
       window.localStorage.setItem('email', JSON.stringify(response.data?.email));
       window.localStorage.setItem('role', JSON.stringify(response.data?.role));
       window.localStorage.setItem('token', response.data.token);
+      window.localStorage.setItem('userId', response.data.id);
       if (rememberMe) {
         window.localStorage.setItem('rememberMe', 'true');
       }

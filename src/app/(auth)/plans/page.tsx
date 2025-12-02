@@ -21,28 +21,28 @@ import { planService } from '@/services/planService';
 const planTypesConfig = [
   {
     type: 'PFRD',
-    title: 'Pre-Facility & Referral Development Plan',
+    title: 'Prefacility and referral service desk',
     description: 'Strategic planning for pre-facility development and referral systems',
     icon: Target,
     color: 'from-app-primary to-app-primary-light',
   },
   {
     type: 'ECCD',
-    title: 'Emergency & Critical Care Development Plan',
+    title: ' Emergency and critical care services desk',
     description: 'Planning for emergency services and critical care development',
     icon: DollarSign,
     color: 'from-green-500 to-emerald-500',
   },
   {
     type: 'HDD',
-    title: 'Hospital Development Directorate Plan',
+    title: 'Hospital and diagnostic service desk',
     description: 'Comprehensive hospital development and management planning',
     icon: Users,
     color: 'from-app-primary-light to-app-primary',
   },
   {
     type: 'SRD',
-    title: 'Specialty & Rehabilitative Services Plan',
+    title: 'Specialty and rehabilitation service desk',
     description: 'Planning for specialty care and rehabilitation services',
     icon: Laptop,
     color: 'from-orange-500 to-red-500',

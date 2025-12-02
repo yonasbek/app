@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { planService } from '@/services/planService';
 import { Plan, UpdatePlanDto } from '@/types/plan';
 import { use } from 'react';
+import BackButton from '@/components/ui/BackButton';
 
 export default function EditPlanPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -17,6 +18,7 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
     fiscal_year: '',
     status: 'draft',
     budget_allocated: 0,
+    budget_source: [],
   });
 
   useEffect(() => {
@@ -31,6 +33,7 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
         fiscal_year: plan.fiscal_year,
         status: plan.status,
         budget_allocated: plan.budget_allocated,
+        budget_source: plan.budget_source || [],
       });
     } catch (err) {
       setError('Failed to fetch plan details');
@@ -48,6 +51,23 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
       ...prev,
       [name]: name === 'budget_allocated' ? parseFloat(value) : value,
     }));
+  };
+
+  const handleBudgetSourceChange = (source: string, checked: boolean) => {
+    setFormData((prev) => {
+      const currentSources = prev.budget_source || [];
+      if (checked) {
+        return {
+          ...prev,
+          budget_source: [...currentSources, source]
+        };
+      } else {
+        return {
+          ...prev,
+          budget_source: currentSources.filter((s: string) => s !== source)
+        };
+      }
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,7 +110,8 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6">
+        <BackButton href="/plans/list" label="Back to Plans" className="mb-4" />
         <h1 className="text-2xl font-bold text-gray-900">Edit Plan</h1>
       </div>
 
@@ -122,10 +143,15 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
             required
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
           >
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-            <option value="2022">2022</option>
+            <option value="2014">2014</option>
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>
+            <option value="2017">2017</option>
+            <option defaultChecked value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+
           </select>
         </div>
 
@@ -163,6 +189,26 @@ export default function EditPlanPage({ params }: { params: Promise<{ id: string 
             step="0.01"
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Budget Source
+          </label>
+          <div className="space-y-2">
+            {['internal', 'donor', 'government', 'partner'].map((source) => (
+              <label key={source} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.budget_source?.includes(source) || false}
+                  onChange={(e) => handleBudgetSourceChange(source, e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700 capitalize">{source}</span>
+              </label>
+            ))}
+          </div>
+          <p className="mt-1 text-xs text-gray-500">Select one or more budget sources</p>
         </div>
 
         {error && (

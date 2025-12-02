@@ -3,340 +3,333 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { trainingService } from '@/services/trainingService';
+import { Training, TrainingType, TrainingLocation } from '@/types/training';
+import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import Card from '@/components/ui/Card';
 import {
   BookOpen,
-  Users,
-  UserCheck,
-  GraduationCap,
   Plus,
-  BarChart3,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  AlertTriangle,
-  ArrowRight,
+  Search,
   Calendar,
-  DollarSign,
-  Award
+  MapPin,
+  Users,
+  FileText,
+  Image as ImageIcon,
+  FileCheck,
+  Mail,
+  Globe,
+  Building,
+  Filter,
+  X
 } from 'lucide-react';
 
-interface TrainingStats {
-  courses: {
-    total: number;
-    active: number;
-    completed: number;
-  };
-  trainers: {
-    total: number;
-    active: number;
-  };
-  trainees: {
-    total: number;
-    active: number;
-  };
-  enrollments: {
-    total: number;
-    completed: number;
-    in_progress: number;
-  };
-}
-
 export default function TrainingPage() {
-  const [stats, setStats] = useState<TrainingStats>({
-    courses: { total: 0, active: 0, completed: 0 },
-    trainers: { total: 0, active: 0 },
-    trainees: { total: 0, active: 0 },
-    enrollments: { total: 0, completed: 0, in_progress: 0 }
-  });
+  const [trainings, setTrainings] = useState<Training[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState<TrainingType | 'all'>('all');
+  const [locationFilter, setLocationFilter] = useState<TrainingLocation | 'all'>('all');
 
   useEffect(() => {
-    loadStats();
+    loadTrainings();
   }, []);
 
-  const loadStats = async () => {
+  const loadTrainings = async () => {
     try {
       setLoading(true);
-      const [courses, trainers, trainees, enrollments] = await Promise.all([
-        trainingService.getAllCourses(),
-        trainingService.getAllTrainers(),
-        trainingService.getAllTrainees(),
-        trainingService.getAllEnrollments()
-      ]);
-
-      setStats({
-        courses: {
-          total: courses.length,
-          active: courses.filter(c => c.is_active).length,
-          completed: 0 // Simplified - no status tracking
-        },
-        trainers: {
-          total: trainers.length,
-          active: trainers.filter(t => t.is_active).length
-        },
-        trainees: {
-          total: trainees.length,
-          active: trainees.filter(t => t.is_active).length
-        },
-        enrollments: {
-          total: enrollments.length,
-          completed: enrollments.filter(e => e.status === 'completed').length,
-          in_progress: enrollments.filter(e => e.status === 'in_progress').length
-        }
-      });
-    } catch (error) {
-      console.error('Failed to load training stats:', error);
+      const data = await trainingService.getAll();
+      setTrainings(data);
+    } catch (err) {
+      setError('Failed to load trainings');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const trainingModules = [
-    {
-      title: 'Courses',
-      description: 'Manage training courses, curriculum, and schedules',
-      icon: BookOpen,
-      href: '/training/courses',
-      color: 'from-blue-500 to-blue-600',
-      stats: { value: stats.courses.total.toString(), label: 'Total Courses' }
-    },
-    {
-      title: 'Trainers',
-      description: 'Manage instructors and training staff',
-      icon: Users,
-      href: '/training/trainers',
-      color: 'from-green-500 to-green-600',
-      stats: { value: stats.trainers.total.toString(), label: 'Active Trainers' }
-    },
-    {
-      title: 'Trainees',
-      description: 'Manage students and course participants',
-      icon: UserCheck,
-      href: '/training/trainees',
-      color: 'from-purple-500 to-purple-600',
-      stats: { value: stats.trainees.total.toString(), label: 'Registered Trainees' }
-    },
-    {
-      title: 'Enrollments',
-      description: 'Track course enrollments and progress',
-      icon: GraduationCap,
-      href: '/training/enrollments',
-      color: 'from-orange-500 to-orange-600',
-      stats: { value: stats.enrollments.total.toString(), label: 'Total Enrollments' }
-    }
-  ];
+  const filteredTrainings = trainings.filter((training) => {
+    const matchesSearch =
+      training.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      training.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      training.organizer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      training.location?.toLowerCase().includes(searchTerm.toLowerCase());
 
-  const quickActions = [
-    {
-      title: 'Create Course',
-      description: 'Add a new training course',
-      icon: Plus,
-      href: '/training/courses/new',
-      color: 'bg-blue-500 hover:bg-blue-600'
-    },
-    {
-      title: 'Add Trainer',
-      description: 'Register a new instructor',
-      icon: Users,
-      href: '/training/trainers/new',
-      color: 'bg-green-500 hover:bg-green-600'
-    },
-    {
-      title: 'Register Trainee',
-      description: 'Add a new student',
-      icon: UserCheck,
-      href: '/training/trainees/new',
-      color: 'bg-purple-500 hover:bg-purple-600'
-    },
-    {
-      title: 'Enroll Student',
-      description: 'Enroll trainee in course',
-      icon: GraduationCap,
-      href: '/training/enrollments/new',
-      color: 'bg-orange-500 hover:bg-orange-600'
-    }
-  ];
+    const matchesType = typeFilter === 'all' || training.type === typeFilter;
+    const matchesLocation = locationFilter === 'all' || training.location_type === locationFilter;
+
+    return matchesSearch && matchesType && matchesLocation;
+  });
+
+  const getTypeLabel = (type: TrainingType) => {
+    const labels: Record<TrainingType, string> = {
+      workshop: 'Workshop',
+      event: 'Event',
+      mentorship: 'Mentorship',
+      field_trip: 'Field Trip',
+      other: 'Other'
+    };
+    return labels[type] || type;
+  };
+
+  const getTypeColor = (type: TrainingType) => {
+    const colors: Record<TrainingType, string> = {
+      workshop: 'bg-blue-100 text-blue-800',
+      event: 'bg-purple-100 text-purple-800',
+      mentorship: 'bg-green-100 text-green-800',
+      field_trip: 'bg-orange-100 text-orange-800',
+      other: 'bg-gray-100 text-gray-800'
+    };
+    return colors[type] || 'bg-gray-100 text-gray-800';
+  };
+
+  const stats = {
+    total: trainings.length,
+    local: trainings.filter(t => t.location_type === 'local').length,
+    abroad: trainings.filter(t => t.location_type === 'abroad').length,
+    workshops: trainings.filter(t => t.type === 'workshop').length,
+    events: trainings.filter(t => t.type === 'event').length,
+    mentorships: trainings.filter(t => t.type === 'mentorship').length,
+    fieldTrips: trainings.filter(t => t.type === 'field_trip').length,
+  };
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Training Management</h1>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="bg-gray-200 h-32 rounded-lg"></div>
-            </div>
-          ))}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading trainings...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Training Management</h1>
-          <p className="text-gray-600 mt-1">Manage courses, trainers, trainees, and enrollments</p>
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100">
+            <BookOpen className="w-7 h-7 text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Training Management</h1>
+            <p className="text-gray-600 text-sm mt-1">
+              Track and manage all training activities, workshops, events, and field trips
+            </p>
+          </div>
         </div>
+        <Link
+          href="/training/new"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus className="w-5 h-5" />
+          <span>New Training</span>
+        </Link>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="p-6">
-          <div className="flex items-center">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <BookOpen className="h-6 w-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Courses</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.courses.total}</p>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm text-gray-600">
-            <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-            {stats.courses.completed} completed
-          </div>
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
+        <Card className="p-4">
+          <div className="text-sm text-gray-600">Total</div>
+          <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
         </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <Users className="h-6 w-6 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Active Trainers</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.trainers.active}</p>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm text-gray-600">
-            <Users className="h-4 w-4 text-gray-400 mr-1" />
-            {stats.trainers.total} total
-          </div>
+        <Card className="p-4">
+          <div className="text-sm text-gray-600">Local</div>
+          <div className="text-2xl font-bold text-blue-600">{stats.local}</div>
         </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <UserCheck className="h-6 w-6 text-purple-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Active Trainees</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.trainees.active}</p>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm text-gray-600">
-            <UserCheck className="h-4 w-4 text-gray-400 mr-1" />
-            {stats.trainees.total} total
-          </div>
+        <Card className="p-4">
+          <div className="text-sm text-gray-600">Abroad</div>
+          <div className="text-2xl font-bold text-purple-600">{stats.abroad}</div>
         </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center">
-            <div className="p-3 bg-orange-100 rounded-lg">
-              <GraduationCap className="h-6 w-6 text-orange-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Enrollments</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.enrollments.total}</p>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm text-gray-600">
-            <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-            {stats.enrollments.in_progress} in progress
+        <Card className="p-4">
+          <div className="text-sm text-gray-600">Workshops</div>
+          <div className="text-2xl font-bold text-green-600">{stats.workshops}</div>
+        </Card>
+        <Card className="p-4">
+          <div className="text-sm text-gray-600">Events</div>
+          <div className="text-2xl font-bold text-orange-600">{stats.events}</div>
+        </Card>
+        <Card className="p-4">
+          <div className="text-sm text-gray-600">Mentorships</div>
+          <div className="text-2xl font-bold text-indigo-600">{stats.mentorships}</div>
+        </Card>
+        <Card className="p-4">
+          <div className="text-sm text-gray-600">Field Trips</div>
+          <div className="text-2xl font-bold text-red-600">{stats.fieldTrips}</div>
+        </Card>
+        <Card className="p-4">
+          <div className="text-sm text-gray-600">Other</div>
+          <div className="text-2xl font-bold text-gray-600">
+            {stats.total - stats.workshops - stats.events - stats.mentorships - stats.fieldTrips}
           </div>
         </Card>
       </div>
 
-      {/* Training Modules */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {trainingModules.map((module, index) => (
-          <Link key={index} href={module.href}>
-            <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start space-x-4">
-                  <div className={`p-3 rounded-lg bg-gradient-to-r ${module.color}`}>
-                    <module.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">{module.title}</h3>
-                    <p className="text-gray-600 mt-1">{module.description}</p>
-                    <div className="mt-3 flex items-center text-sm text-gray-500">
-                      <span className="font-medium">{module.stats.value}</span>
-                      <span className="ml-1">{module.stats.label}</span>
-                    </div>
-                  </div>
+      {/* Filters */}
+      <Card className="p-4 mb-6">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search trainings..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value as TrainingType | 'all')}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="all">All Types</option>
+            <option value="workshop">Workshop</option>
+            <option value="event">Event</option>
+            <option value="mentorship">Mentorship</option>
+            <option value="field_trip">Field Trip</option>
+            <option value="other">Other</option>
+          </select>
+          <select
+            value={locationFilter}
+            onChange={(e) => setLocationFilter(e.target.value as TrainingLocation | 'all')}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="all">All Locations</option>
+            <option value="local">Local</option>
+            <option value="abroad">Abroad</option>
+          </select>
+          {(typeFilter !== 'all' || locationFilter !== 'all' || searchTerm) && (
+            <button
+              onClick={() => {
+                setTypeFilter('all');
+                setLocationFilter('all');
+                setSearchTerm('');
+              }}
+              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+            >
+              <X className="w-4 h-4" />
+              Clear
+            </button>
+          )}
+        </div>
+      </Card>
+
+      {/* Trainings List */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <p className="text-red-800">{error}</p>
+        </div>
+      )}
+
+      {filteredTrainings.length === 0 ? (
+        <Card className="p-12 text-center">
+          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Trainings Found</h3>
+          <p className="text-gray-600 mb-6">
+            {searchTerm || typeFilter !== 'all' || locationFilter !== 'all'
+              ? 'Try adjusting your filters'
+              : 'Get started by creating your first training'}
+          </p>
+          {!searchTerm && typeFilter === 'all' && locationFilter === 'all' && (
+            <Link
+              href="/training/new"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              <span>Create Training</span>
+            </Link>
+          )}
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredTrainings.map((training) => (
+            <Link
+              key={training.id}
+              href={`/training/${training.id}`}
+              className="block"
+            >
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer h-full">
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 flex-1">{training.title}</h3>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(training.type)}`}>
+                    {getTypeLabel(training.type)}
+                  </span>
                 </div>
-                <ArrowRight className="h-5 w-5 text-gray-400" />
-              </div>
-            </Card>
-          </Link>
-        ))}
-      </div>
 
-      {/* Quick Actions */}
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {quickActions.map((action, index) => (
-            <Link key={index} href={action.href}>
-              <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-lg ${action.color} text-white`}>
-                    <action.icon className="h-5 w-5" />
+                {training.description && (
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">{training.description}</p>
+                )}
+
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Calendar className="w-4 h-4" />
+                    <span>
+                      {formatToEthiopianDate(training.start_date)} - {formatToEthiopianDate(training.end_date)}
+                    </span>
                   </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">{action.title}</h3>
-                    <p className="text-sm text-gray-600">{action.description}</p>
-                  </div>
+                  {training.location && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      {training.location_type === 'abroad' ? (
+                        <Globe className="w-4 h-4" />
+                      ) : (
+                        <MapPin className="w-4 h-4" />
+                      )}
+                      <span>
+                        {training.location_type === 'abroad' && training.country
+                          ? `${training.location}, ${training.country}`
+                          : training.location}
+                      </span>
+                    </div>
+                  )}
+                  {training.organizer && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Users className="w-4 h-4" />
+                      <span>{training.organizer}</span>
+                    </div>
+                  )}
+                  {training.participants_count !== undefined && training.participants_count > 0 && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Users className="w-4 h-4" />
+                      <span>{training.participants_count} participants</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
+                  {training.trip_report && training.trip_report.length > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <FileText className="w-3 h-3" />
+                      <span>{training.trip_report.length}</span>
+                    </div>
+                  )}
+                  {training.photos && training.photos.length > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <ImageIcon className="w-3 h-3" />
+                      <span>{training.photos.length}</span>
+                    </div>
+                  )}
+                  {training.attendance && training.attendance.length > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <FileCheck className="w-3 h-3" />
+                      <span>{training.attendance.length}</span>
+                    </div>
+                  )}
+                  {training.additional_letter && training.additional_letter.length > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <Mail className="w-3 h-3" />
+                      <span>{training.additional_letter.length}</span>
+                    </div>
+                  )}
                 </div>
               </Card>
             </Link>
           ))}
         </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
-        <Card className="p-6">
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-green-100 rounded-full">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-900">New course "Advanced JavaScript" created</p>
-                <p className="text-xs text-gray-500">2 hours ago</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-100 rounded-full">
-                <Users className="h-4 w-4 text-blue-600" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-900">5 new trainees registered</p>
-                <p className="text-xs text-gray-500">4 hours ago</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-orange-100 rounded-full">
-                <GraduationCap className="h-4 w-4 text-orange-600" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-900">12 students completed "React Fundamentals"</p>
-                <p className="text-xs text-gray-500">1 day ago</p>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </div>
+      )}
     </div>
   );
 }
-
-

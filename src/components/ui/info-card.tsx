@@ -1,6 +1,6 @@
 "use client"
 
-import { Star, MessageCircle, UserPlus, FileText, Download, Trash2 } from "lucide-react"
+import { Star, MessageCircle, UserPlus, FileText, Download, Trash2, CheckCircle, XCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "./button"
 import { Badge } from "./badge"
@@ -13,10 +13,13 @@ type FileCardProps = {
     upload_date: string
     module: string
     onDownload: (id: string) => void
-    onDelete: (id: string) => void
+    onDelete?: (id: string) => void
+    showApproveActions?: boolean
+    onApprove?: (id: string) => void
+    onReject?: (id: string) => void
 }
 
-export function FileCard({ id, document_name, document_size, upload_date, module, onDownload, onDelete }: FileCardProps) {
+export function FileCard({ id, document_name, document_size, upload_date, module, onDownload, onDelete, showApproveActions = false, onApprove, onReject }: FileCardProps) {
     return (
         <div className="group relative overflow-hidden rounded-xl bg-white p-4 shadow-[8px_8px_16px_rgba(0,0,0,0.1),-8px_-8px_16px_rgba(255,255,255,0.9)]  transition-all duration-300 hover:shadow-[12px_12px_24px_rgba(0,0,0,0.15),-12px_-12px_24px_rgba(255,255,255,1)] dark:hover:shadow-[12px_12px_24px_rgba(0,0,0,0.4),-12px_-12px_24px_rgba(255,255,255,0.15)] hover:scale-[1.02] hover:-translate-y-1">
             <div className="flex flex-col space-y-3 w-full">
@@ -58,13 +61,32 @@ export function FileCard({ id, document_name, document_size, upload_date, module
                     >
                         <Download className="h-4 w-4" />
                     </Button>
-                    <Button
-                        variant="outline"
-                        onClick={() => onDelete(id)}
-                        className="text-destructive w-full hover:text-destructive/80 p-2 transition-transform duration-300 hover:scale-110 border-red-400 text-red-400"
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {showApproveActions && onApprove && onReject ? (
+                        <>
+                            <Button
+                                variant="outline"
+                                onClick={() => onApprove(id)}
+                                className="text-green-600 w-full hover:text-green-700 p-2 transition-transform duration-300 hover:scale-110 border-green-400 bg-green-50 hover:bg-green-100"
+                            >
+                                <CheckCircle className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => onReject(id)}
+                                className="text-red-600 w-full hover:text-red-700 p-2 transition-transform duration-300 hover:scale-110 border-red-400 bg-red-50 hover:bg-red-100"
+                            >
+                                <XCircle className="h-4 w-4" />
+                            </Button>
+                        </>
+                    ) : onDelete ? (
+                        <Button
+                            variant="outline"
+                            onClick={() => onDelete(id)}
+                            className="text-destructive w-full hover:text-destructive/80 p-2 transition-transform duration-300 hover:scale-110 border-red-400 text-red-400"
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    ) : null}
                 </div>
             </div>
 

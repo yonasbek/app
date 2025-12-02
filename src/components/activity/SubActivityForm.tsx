@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { SubActivity } from '@/types/subactivity';
+import { SubActivity, Week } from '@/types/subactivity';
+import { weekService } from '@/services/weekService';
+import { subActivityService } from '@/services/subactivityService';
 import EthiopianDatePicker from '../ui/ethiopian-date-picker';
 
 // SVG Icon Components
@@ -32,13 +34,28 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
     title: '',
     description: '',
     user_id: '',
-    start_date: '',
-    end_date: '',
+    start_week_id: '',
+    end_week_id: '',
     priority: 'MEDIUM' as 'HIGH' | 'MEDIUM' | 'LOW',
-    notes: ''
+    notes: '',
+    weight: 0
   });
 
+  const [weeks, setWeeks] = useState<Week[]>([]);
+  const [loadingWeeks, setLoadingWeeks] = useState(true);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [existingSubActivities, setExistingSubActivities] = useState<SubActivity[]>([]);
+  const [totalOtherWeights, setTotalOtherWeights] = useState(0);
+
+  useEffect(() => {
+    fetchWeeks();
+    fetchExistingSubActivities();
+  }, [activityId]);
+
+  useEffect(() => {
+    // Recalculate total other weights when existing sub-activities or current sub-activity changes
+    calculateTotalOtherWeights();
+  }, [existingSubActivities, subActivity]);
 
   useEffect(() => {
     if (subActivity) {
@@ -46,13 +63,52 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
         title: subActivity.title || '',
         description: subActivity.description || '',
         user_id: subActivity.user_id || '',
-        start_date: subActivity.start_date ? new Date(subActivity.start_date).toISOString().split('T')[0] : '',
-        end_date: subActivity.end_date ? new Date(subActivity.end_date).toISOString().split('T')[0] : '',
+        start_week_id: subActivity.start_week_id || '',
+        end_week_id: subActivity.end_week_id || '',
         priority: subActivity.priority as 'HIGH' | 'MEDIUM' | 'LOW' || 'MEDIUM' as ``,
-        notes: subActivity.notes || ''
+        notes: subActivity.notes || '',
+        weight: subActivity.weight || 0
       });
     }
   }, [subActivity]);
+
+  const fetchWeeks = async () => {
+    try {
+      setLoadingWeeks(true);
+      const currentYear = new Date().getFullYear();
+      let weeksData = await weekService.getAll(currentYear);
+      
+      // If no weeks exist for current year, generate them
+      if (weeksData.length === 0) {
+        await weekService.generateForYear(currentYear);
+        weeksData = await weekService.getAll(currentYear);
+      }
+      
+      setWeeks(weeksData);
+    } catch (err) {
+      console.error('Failed to fetch weeks:', err);
+    } finally {
+      setLoadingWeeks(false);
+    }
+  };
+
+  const fetchExistingSubActivities = async () => {
+    try {
+      const data = await subActivityService.getByActivityId(activityId);
+      setExistingSubActivities(data);
+    } catch (err) {
+      console.error('Failed to fetch existing sub-activities:', err);
+    }
+  };
+
+  const calculateTotalOtherWeights = () => {
+    // Calculate total weight of all other sub-activities (excluding the current one being edited)
+    const otherSubActivities = existingSubActivities.filter(
+      (sub) => !subActivity || sub.id !== subActivity.id
+    );
+    const total = otherSubActivities.reduce((sum, sub) => sum + (sub.weight || 0), 0);
+    setTotalOtherWeights(total);
+  };
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -69,16 +125,32 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
       newErrors.user_id = 'Please select a user';
     }
 
-    if (!formData.start_date) {
-      newErrors.start_date = 'Start date is required';
+    if (!formData.start_week_id) {
+      newErrors.start_week_id = 'Start week is required';
     }
 
-    if (!formData.end_date) {
-      newErrors.end_date = 'End date is required';
+    if (!formData.end_week_id) {
+      newErrors.end_week_id = 'End week is required';
     }
 
-    if (formData.start_date && formData.end_date && formData.start_date > formData.end_date) {
-      newErrors.end_date = 'End date must be after start date';
+    if (formData.start_week_id && formData.end_week_id) {
+      const startWeek = weeks.find(w => w.id === formData.start_week_id);
+      const endWeek = weeks.find(w => w.id === formData.end_week_id);
+      
+      if (startWeek && endWeek) {
+        if (startWeek.year > endWeek.year || (startWeek.year === endWeek.year && startWeek.week_number > endWeek.week_number)) {
+          newErrors.end_week_id = 'End week must be after or equal to start week';
+        }
+      }
+    }
+
+    // Validate weight: total weights should not exceed 100
+    if (formData.weight && formData.weight > 0) {
+      const currentWeight = formData.weight || 0;
+      const totalWeight = totalOtherWeights + currentWeight;
+      if (totalWeight > 100) {
+        newErrors.weight = `Total weight exceeds 100. Current total: ${totalOtherWeights}%, your input: ${currentWeight}%, combined: ${totalWeight}%`;
+      }
     }
 
     setErrors(newErrors);
@@ -102,14 +174,40 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // For weight field, validate in real-time
+    if (name === 'weight') {
+      const weightValue = parseFloat(value) || 0;
+      const totalWeight = totalOtherWeights + weightValue;
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: weightValue
+      }));
 
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      // Clear or set error based on validation
+      if (weightValue > 0 && totalWeight > 100) {
+        setErrors(prev => ({
+          ...prev,
+          weight: `Total weight exceeds 100. Current total: ${totalOtherWeights}%, your input: ${weightValue}%, combined: ${totalWeight}%`
+        }));
+      } else {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors.weight;
+          return newErrors;
+        });
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+
+      // Clear error when user starts typing
+      if (errors[name]) {
+        setErrors(prev => ({ ...prev, [name]: '' }));
+      }
     }
   };
 
@@ -198,49 +296,51 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Start Date *
+                Start Week *
               </label>
-              <EthiopianDatePicker
-                label=""
-                value={formData.start_date ? new Date(formData.start_date) : null}
-                onChange={(selectedDate: Date) => {
-                  // Adjust for timezone offset to ensure correct local date
-                  const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
-                  handleChange({
-                    target: {
-                      name: "start_date",
-                      value: localDate.toISOString().split('T')[0],
-                    }
-                  } as React.ChangeEvent<HTMLInputElement>);
-                }}
-                className="w-full"
-              />
-              {errors.start_date && (
-                <p className="text-red-500 text-sm mt-1">{errors.start_date}</p>
+              <select
+                name="start_week_id"
+                value={formData.start_week_id}
+                onChange={handleChange}
+                disabled={loadingWeeks}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.start_week_id ? 'border-red-500' : 'border-gray-300'
+                } ${loadingWeeks ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+              >
+                <option value="">Select start week</option>
+                {weeks.map((week) => (
+                  <option key={week.id} value={week.id}>
+                    {week.label} ({week.year})
+                  </option>
+                ))}
+              </select>
+              {errors.start_week_id && (
+                <p className="text-red-500 text-sm mt-1">{errors.start_week_id}</p>
               )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                End Date *
+                End Week *
               </label>
-              <EthiopianDatePicker
-                label=""
-                value={formData.end_date ? new Date(formData.end_date) : null}
-                onChange={(selectedDate: Date) => {
-                  // Adjust for timezone offset to ensure correct local date
-                  const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
-                  handleChange({
-                    target: {
-                      name: "end_date",
-                      value: localDate.toISOString().split('T')[0],
-                    }
-                  } as React.ChangeEvent<HTMLInputElement>);
-                }}
-                className="w-full"
-              />
-              {errors.end_date && (
-                <p className="text-red-500 text-sm mt-1">{errors.end_date}</p>
+              <select
+                name="end_week_id"
+                value={formData.end_week_id}
+                onChange={handleChange}
+                disabled={loadingWeeks}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.end_week_id ? 'border-red-500' : 'border-gray-300'
+                } ${loadingWeeks ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+              >
+                <option value="">Select end week</option>
+                {weeks.map((week) => (
+                  <option key={week.id} value={week.id}>
+                    {week.label} ({week.year})
+                  </option>
+                ))}
+              </select>
+              {errors.end_week_id && (
+                <p className="text-red-500 text-sm mt-1">{errors.end_week_id}</p>
               )}
             </div>
           </div>
@@ -273,6 +373,39 @@ export default function SubActivityForm({ subActivity, activityId, users, onSubm
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Add any additional notes..."
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Weight
+            </label>
+            <input
+              type="number"
+              name="weight"
+              min="0"
+              max={100 - totalOtherWeights}
+              step="1"
+              value={formData.weight}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.weight ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="Enter weight"
+            />
+            <div className="mt-1 text-sm text-gray-600">
+              <div>Other sub-activities total: <span className="font-medium">{totalOtherWeights}%</span></div>
+              <div>Available: <span className="font-medium">{100 - totalOtherWeights}%</span></div>
+              {formData.weight > 0 && (
+                <div className="mt-1">
+                  Combined total: <span className={`font-medium ${totalOtherWeights + formData.weight > 100 ? 'text-red-600' : 'text-green-600'}`}>
+                    {totalOtherWeights + formData.weight}%
+                  </span>
+                </div>
+              )}
+            </div>
+            {errors.weight && (
+              <p className="text-red-500 text-sm mt-1">{errors.weight}</p>
+            )}
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">

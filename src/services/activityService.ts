@@ -87,6 +87,11 @@ class ActivityService {
     const response = await axios.get(`${this.baseUrl}/gantt`);
     return response.data;
   }
+
+  async getFlagshipActivities(): Promise<Activity[]> {
+    const response = await axios.get(`${this.baseUrl}?flagship=true`);
+    return response.data;
+  }
 }
 
 export const activityService = new ActivityService(); 

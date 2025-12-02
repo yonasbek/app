@@ -9,7 +9,9 @@ import {
   ContactType,
   ContactPosition,
   CONTACT_TYPE_LABELS,
-  CONTACT_POSITION_LABELS
+  CONTACT_POSITION_LABELS,
+  RegionType,
+  Region_LABELS
 } from '@/types/contact';
 
 // SVG Icons
@@ -216,14 +218,17 @@ export default function SuggestNewContactPage({ params }: SuggestNewContactPageP
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Region *
               </label>
-              <input
-                type="text"
+              <select
                 value={formData.region}
-                onChange={(e) => handleInputChange('region', e.target.value)}
+                onChange={(e) => handleInputChange('region', e.target.value as RegionType)}
                 className="w-full border border-gray-300 rounded-md px-3 py-2"
-                placeholder="Enter region"
                 required
-              />
+              >
+                <option value="">Select Region</option>
+                {Object.entries(Region_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>{label as string}</option>
+                ))}
+              </select>
             </div>
 
             {/* Location */}

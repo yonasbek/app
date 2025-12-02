@@ -25,6 +25,7 @@ export default function KnowledgeBaseUpload({ open, onOpenChange, onUpload }: Kn
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [requiresApproval, setRequiresApproval] = useState(false);
 
   const handleFileSelect = () => {
     // This is called after file is selected
@@ -42,9 +43,10 @@ export default function KnowledgeBaseUpload({ open, onOpenChange, onUpload }: Kn
     }
     try {
       setIsUploading(true);
-      await knowledgeBaseService.upload(selectedFile, selectedCategory);
+      await knowledgeBaseService.upload(selectedFile, selectedCategory, requiresApproval);
       onUpload();
       onOpenChange(false);
+      setRequiresApproval(false);
     } catch (error) {
       console.error('Upload failed:', error);
       throw error;
@@ -57,6 +59,7 @@ export default function KnowledgeBaseUpload({ open, onOpenChange, onUpload }: Kn
     onOpenChange(false);
     setSelectedCategory('');
     setSelectedFile(null);
+    setRequiresApproval(false);
   };
 
   const handleUploadComplete = () => {
@@ -114,6 +117,19 @@ export default function KnowledgeBaseUpload({ open, onOpenChange, onUpload }: Kn
                 "text/plain"
               ]}
             />
+          </div>
+
+          <div className="mt-4">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={requiresApproval}
+                onChange={(e) => setRequiresApproval(e.target.checked)}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-700">Request for approval</span>
+            </label>
+            <p className="mt-1 text-xs text-gray-500">If checked, document will require admin approval before being published</p>
           </div>
         </div>
         {(

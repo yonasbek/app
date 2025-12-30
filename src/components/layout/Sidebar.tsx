@@ -26,8 +26,9 @@ import {
     Star
 } from 'lucide-react';
 import Image from 'next/image';
+import { filterMenuItems } from '@/utils/menuPermissions';
 
-const menuItems = [
+const allMenuItems = [
     { path: '/dashboard', name: 'Dashboard', icon: Home },
     { path: '/plans', name: 'Annual Plans', icon: Calendar },
     { path: '/my-tasks', name: 'My Tasks', icon: Calendar },
@@ -50,6 +51,7 @@ const menuItems = [
     { path: '/contacts', name: 'Contacts', icon: Phone },
     { path: '/training', name: 'Training', icon: BookOpen },
     { path: '/users', name: 'Users', icon: Users },
+    { path: '/admin/roles', name: 'Role Management', icon: Settings },
     { path: '/import', name: 'Data Import', icon: Upload },
     { path: '/reports', name: 'Reports', icon: BarChart3 },
 ];
@@ -65,9 +67,33 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen }: Sidebar
     const router = useRouter();
     const [isHovered, setIsHovered] = useState(false);
     const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+    const [userPermissions, setUserPermissions] = useState<string[]>([]);
+    const [menuItems, setMenuItems] = useState(allMenuItems);
+
+    // Load user permissions from localStorage
+    useEffect(() => {
+        try {
+            const permissionsStr = localStorage.getItem('permissions');
+            if (permissionsStr) {
+                const permissions = JSON.parse(permissionsStr);
+                setUserPermissions(permissions);
+                // Filter menu items based on permissions
+                const filtered = filterMenuItems([...allMenuItems], permissions);
+                setMenuItems(filtered);
+            } else {
+                // If no permissions stored, show all menus (backward compatibility)
+                setMenuItems([] as any);
+            }
+        } catch (error) {
+            console.warn('Failed to load permissions, showing all menus');
+            setMenuItems(allMenuItems);
+        }
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('permissions');
+        localStorage.removeItem('role');
         router.push('/login');
     };
 

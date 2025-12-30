@@ -1,0 +1,161 @@
+Module/Feature,Page/Component,Button/Action Name,Action Type,Description,Current Location
+Dashboard,Dashboard,View Dashboard,View,View dashboard overview,/dashboard
+Dashboard,Dashboard,Quick Action - Create Memo,Create,Quick action to create memo,/memos/create
+Dashboard,Dashboard,Quick Action - Book Room,Create,Quick action to book room,/rooms/book
+Dashboard,Dashboard,Quick Action - View Reports,View,Quick action to view reports,/reports
+Dashboard,Dashboard,Quick Action - Manage Users,Manage,Quick action to manage users,/users
+Annual Plans,Plans Main,View Plans,View,View all plan types,/plans
+Annual Plans,Plans Main,Create Strategic Initiative,Create,Create new plan,/plans/new
+Annual Plans,Plans List,View Plans List,View,View plans by type,/plans/list
+Annual Plans,Plans List,Create Initiative,Create,Create new plan initiative,/plans/list
+Annual Plans,Plans List,Edit Plan,Update,Edit existing plan,/plans/[id]/edit
+Annual Plans,Plans List,View Plan,View,View plan details,/plans/[id]
+Annual Plans,Plans List,View Activities,View,View plan activities,/plans/[id]/activities
+Annual Plans,Plans List,Delete Plan,Delete,Delete plan,Plans List Page
+Annual Plans,Plans List,Card View Toggle,View,Switch to card view,Plans List Page
+Annual Plans,Plans List,Table View Toggle,View,Switch to table view,Plans List Page
+Annual Plans,Plan Activities,View Activities,View,View activities for plan,/plans/[id]/activities
+Annual Plans,Plan Activities,Add Main Activity,Create,Create new activity,/plans/[id]/activities/new
+Annual Plans,Plan Activities,View Activity,View,View activity details,/plans/[id]/activities/[activityId]
+Annual Plans,Plan Activities,Edit Activity,Update,Edit activity,/plans/[id]/activities/[activityId]/edit
+Annual Plans,Plan Activities,Delete Activity,Delete,Delete activity,Plan Activities Page
+Annual Plans,Activity Detail,View Sub-Activities,View,View sub-activities,Activity Detail Page
+Annual Plans,Activity Detail,Add Sub-Activity,Create,Create new sub-activity,Activity Detail Page
+Annual Plans,Activity Detail,Edit Sub-Activity,Update,Edit sub-activity,Activity Detail Page
+Annual Plans,Activity Detail,Delete Sub-Activity,Delete,Delete sub-activity,Activity Detail Page
+Annual Plans,Activity Detail,Update Progress,Update,Update sub-activity progress,Activity Detail Page
+Annual Plans,New Plan,Create Plan,Create,Create new plan,/plans/new
+Annual Plans,New Plan,Cancel,Action,Cancel plan creation,/plans/new
+Annual Plans,Edit Plan,Update Plan,Update,Update plan details,/plans/[id]/edit
+Annual Plans,Edit Plan,Cancel,Action,Cancel plan edit,/plans/[id]/edit
+Annual Plans,New Activity,Create Activity,Create,Create new activity,/plans/[id]/activities/new
+Annual Plans,New Activity,Cancel,Action,Cancel activity creation,/plans/[id]/activities/new
+Budget,Budget Page,View Budget,View,View budget overview,/budget
+Budget,Budget Page,Expand Plan,View,Expand plan to see activities,Budget Page
+Budget,Budget Page,Expand Activity,View,Expand activity to see sub-activities,Budget Page
+Flagship Activities,Flagship Activities,View Flagship Activities,View,View flagship activities,/flagship-activities
+Flagship Activities,Flagship Activities,Expand Activity,View,Expand activity to see sub-activities,Flagship Activities Page
+Users,Users List,View Users,View,View all users,/users
+Users,Users List,Add User,Create,Create new user,/users/new
+Users,Users List,Edit User,Update,Edit user details,/users/edit/[id]
+Users,Users List,Delete User,Delete,Delete user,Users List Page
+Users,Users List,Refresh Users,Action,Refresh users list,Users List Page
+Users,New User,Create User,Create,Create new user,/users/new
+Users,New User,Cancel,Action,Cancel user creation,/users/new
+Users,Edit User,Update User,Update,Update user details,/users/edit/[id]
+Users,Edit User,Cancel,Action,Cancel user edit,/users/edit/[id]
+Contacts,Contacts List,View Contacts,View,View all contacts,/contacts
+Contacts,Contacts List,Add Contact,Create,Create new contact,/contacts/new
+Contacts,Contacts List,Edit Contact,Update,Edit contact details,/contacts/[id]/edit
+Contacts,Contacts List,Delete Contact,Delete,Delete contact,Contacts List Page
+Contacts,Contacts List,View Suggestions,View,View contact suggestions,/contacts/suggestions
+Contacts,Contacts List,Suggest Contact,Create,Suggest new contact,/contacts/suggest-new
+Contacts,Contacts List,Export Contacts,Export,Export contacts to CSV/XLSX,Contacts List Page
+Contacts,Contacts List,Search Contacts,View,Search contacts,Contacts List Page
+Contacts,Contacts List,Filter Contacts,View,Filter contacts,Contacts List Page
+Contacts,Contact Detail,Suggest Update,Create,Suggest contact update,/contacts/[id]/suggest
+Contacts,New Contact,Create Contact,Create,Create new contact,/contacts/new
+Contacts,New Contact,Cancel,Action,Cancel contact creation,/contacts/new
+Contacts,Edit Contact,Update Contact,Update,Update contact details,/contacts/[id]/edit
+Contacts,Edit Contact,Cancel,Action,Cancel contact edit,/contacts/[id]/edit
+Training,Training List,View Trainings,View,View all trainings,/training
+Training,Training List,New Training,Create,Create new training,/training/new
+Training,Training List,View Training,View,View training details,/training/[id]
+Training,Training List,Edit Training,Update,Edit training,/training/[id]/edit
+Training,Training List,Delete Training,Delete,Delete training,Training List Page
+Training,Training List,Search Trainings,View,Search trainings,Training List Page
+Training,Training List,Filter Trainings,View,Filter trainings by type/location,Training List Page
+Training,New Training,Create Training,Create,Create new training,/training/new
+Training,New Training,Cancel,Action,Cancel training creation,/training/new
+Training,Edit Training,Update Training,Update,Update training details,/training/[id]/edit
+Training,Edit Training,Cancel,Action,Cancel training edit,/training/[id]/edit
+Training,Training Detail,View Training,View,View training details,/training/[id]
+Training,Training Detail,Edit Training,Update,Edit training,/training/[id]/edit
+Training,Training Detail,Upload Trip Report,Create,Upload trip report document,Training Detail Page
+Training,Training Detail,Upload Photos,Create,Upload photos,Training Detail Page
+Training,Training Detail,Upload Attendance,Create,Upload attendance document,Training Detail Page
+Training,Training Detail,Upload Additional Letter,Create,Upload additional letter,Training Detail Page
+Training,Training Detail,Delete Document,Delete,Delete uploaded document,Training Detail Page
+Knowledge Base,Knowledge Base,View Documents,View,View knowledge base documents,/knowledge-base
+Knowledge Base,Knowledge Base,Upload Document,Create,Upload new document,/knowledge-base
+Knowledge Base,Knowledge Base,Approve Documents,Approve,Approve pending documents,/knowledge-base/approvals
+Knowledge Base,Knowledge Base,Download Document,View,Download document,Knowledge Base Page
+Knowledge Base,Knowledge Base,Delete Document,Delete,Delete document,Knowledge Base Page
+Knowledge Base,Knowledge Base Approvals,View Pending,View,View pending documents,/knowledge-base/approvals
+Knowledge Base,Knowledge Base Approvals,Approve Document,Approve,Approve document,Approvals Page
+Knowledge Base,Knowledge Base Approvals,Reject Document,Reject,Reject document,Approvals Page
+Memos,Memos List,View Memos,View,View all memos,/memos
+Memos,Memos List,Create Memo,Create,Create new memo,/memos/create
+Memos,Memos List,View Memo,View,View memo details,/memos/[id]
+Memos,Memos List,Edit Memo,Update,Edit memo,/memos/[id]/edit
+Memos,Memos List,Delete Memo,Delete,Delete memo,Memos List Page
+Memos,Memos List,Search Memos,View,Search memos,Memos List Page
+Memos,Memos List,Filter Memos,View,Filter memos by status/priority,Memos List Page
+Memos,Memo Detail,View Memo,View,View memo details,/memos/[id]
+Memos,Memo Detail,Edit Memo,Update,Edit memo,/memos/[id]/edit
+Memos,Memo Detail,Approve Memo,Approve,Approve memo,Memo Detail Page
+Memos,Memo Detail,Reject Memo,Reject,Reject memo,Memo Detail Page
+Memos,Memo Detail,Submit for Review,Action,Submit memo for review,Memo Detail Page
+Memos,New Memo,Create Memo,Create,Create new memo,/memos/create
+Memos,New Memo,Cancel,Action,Cancel memo creation,/memos/create
+Memos,Edit Memo,Update Memo,Update,Update memo details,/memos/[id]/edit
+Memos,Edit Memo,Cancel,Action,Cancel memo edit,/memos/[id]/edit
+Rooms,Rooms List,View Rooms,View,View all rooms,/rooms
+Rooms,Rooms List,Add Room,Create,Create new room,/rooms/new
+Rooms,Rooms List,View Room,View,View room details,/rooms/[id]
+Rooms,Rooms List,Edit Room,Update,Edit room,/rooms/[id]/edit
+Rooms,Rooms List,Delete Room,Delete,Delete room,Rooms List Page
+Rooms,Rooms List,Book Room,Create,Book room,/rooms/[id]/book
+Rooms,Rooms List,Search Rooms,View,Search rooms,Rooms List Page
+Rooms,Rooms List,Filter Rooms,View,Filter rooms,Rooms List Page
+Rooms,New Room,Create Room,Create,Create new room,/rooms/new
+Rooms,New Room,Cancel,Action,Cancel room creation,/rooms/new
+Rooms,Edit Room,Update Room,Update,Update room details,/rooms/[id]/edit
+Rooms,Edit Room,Cancel,Action,Cancel room edit,/rooms/[id]/edit
+Rooms,Room Detail,View Room,View,View room details,/rooms/[id]
+Rooms,Room Detail,Book Room,Create,Book room,/rooms/[id]/book
+Rooms,Room Detail,Edit Room,Update,Edit room,/rooms/[id]/edit
+Rooms,Room Detail,Delete Room,Delete,Delete room,Room Detail Page
+Rooms,Room Booking,Book Room,Create,Book room,/rooms/[id]/book
+Rooms,Room Booking,Cancel Booking,Action,Cancel booking,/rooms/[id]/book
+Attendance,Attendance Page,View Attendance,View,View attendance records,/attendance
+Attendance,Attendance Page,Check In/Out,Update,Record check in/out,/attendance
+Attendance,Attendance Page,View Records,View,View attendance records,/attendance
+Attendance,Attendance Page,Manage Leaves,Manage,Manage leave requests,/attendance
+Attendance,Attendance Page,View Reports,View,View monthly reports,/attendance
+Attendance,Attendance Page,Manual Attendance,Update,Record manual attendance,Attendance Page
+Attendance,Attendance Page,Filter Records,View,Filter attendance records,Attendance Page
+Attendance,Attendance Page,Export Records,Export,Export attendance records,Attendance Page
+Info Desk,Info Desk Dashboard,View Dashboard,View,View info desk dashboard,/info-desk
+Info Desk,Info Desk Dashboard,View Ambulance Reports,View,View ambulance reports,/info-desk/ambulance
+Info Desk,Info Desk Dashboard,View Medical Service Reports,View,View medical service reports,/info-desk/medical-service
+Info Desk,Ambulance Reports,View Reports,View,View ambulance reports,/info-desk/ambulance
+Info Desk,Ambulance Reports,Create Report,Create,Create new ambulance report,Ambulance Reports Page
+Info Desk,Ambulance Reports,Edit Report,Update,Edit ambulance report,Ambulance Reports Page
+Info Desk,Ambulance Reports,Delete Report,Delete,Delete ambulance report,Ambulance Reports Page
+Info Desk,Ambulance Reports,Export Reports,Export,Export reports,Ambulance Reports Page
+Info Desk,Ambulance Reports,Filter Reports,View,Filter reports,Ambulance Reports Page
+Info Desk,Medical Service Reports,View Reports,View,View medical service reports,/info-desk/medical-service
+Info Desk,Medical Service Reports,Create Report,Create,Create new medical service report,Medical Service Reports Page
+Info Desk,Medical Service Reports,Edit Report,Update,Edit medical service report,Medical Service Reports Page
+Info Desk,Medical Service Reports,Delete Report,Delete,Delete medical service report,Medical Service Reports Page
+Info Desk,Medical Service Reports,Export Reports,Export,Export reports,Medical Service Reports Page
+Info Desk,Medical Service Reports,Filter Reports,View,Filter reports,Medical Service Reports Page
+Reports,Reports Page,View Reports,View,View all reports,/reports
+Reports,Reports Page,Download Report,Export,Download report,Reports Page
+Reports,Reports Page,Export Report,Export,Export report to CSV/XLSX,Reports Page
+Reports,Reports Page,Filter Reports,View,Filter reports,Reports Page
+Data Import,Import Page,View Imports,View,View import history,/import
+Data Import,Import Page,Upload File,Create,Upload CSV/XLSX file,/import
+Data Import,Import Page,View Import Details,View,View import details,/import
+Data Import,Import Page,Delete Import,Delete,Delete import record,Import Page
+My Tasks,My Tasks,View Tasks,View,View assigned tasks,/my-tasks
+My Tasks,My Tasks,Update Task,Update,Update task status,/my-tasks
+My Tasks,My Tasks,Complete Task,Update,Mark task as complete,/my-tasks
+Role Management,Role Management,View Roles,View,View all roles,/admin/roles
+Role Management,Role Management,Create Role,Create,Create new role,/admin/roles
+Role Management,Role Management,Edit Role,Update,Edit role permissions,/admin/roles
+Role Management,Role Management,Delete Role,Delete,Delete role,/admin/roles
+Role Management,Role Management,Assign Permissions,Update,Assign permissions to role,Role Management Page
+Role Management,Role Management,View Permissions,View,View role permissions,Role Management Page
+

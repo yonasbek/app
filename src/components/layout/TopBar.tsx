@@ -27,13 +27,26 @@ export default function TopBar({ onSidebarToggle, sidebarCollapsed }: TopBarProp
       const id = localStorage.getItem('userId') ?? '';
       const fullName = localStorage.getItem('fullName') ?? '';
       const email = localStorage.getItem('email') ?? '';
-      const role = localStorage.getItem('role') ?? '';
+      const roleStr = localStorage.getItem('role') ?? '';
+      
+      // Handle role - can be string or object
+      let roleName = '';
+      if (roleStr) {
+        try {
+          const role = JSON.parse(roleStr);
+          // If role is an object, extract the name property
+          roleName = typeof role === 'object' && role !== null ? (role.name || '') : role;
+        } catch {
+          // If parsing fails, treat as string
+          roleName = roleStr;
+        }
+      }
+      
       setUserInfo({
         id,
         fullName: fullName ? JSON.parse(fullName) : '',
         email: email ? JSON.parse(email) : '',
-        role: role ? JSON.parse(role) : '',
-
+        role: roleName,
       });
     }
   }, []);

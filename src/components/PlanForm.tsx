@@ -25,9 +25,10 @@ export default function PlanForm({
     const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState<any>({
         title: initialData?.title || '',
-        fiscal_year: initialData?.fiscal_year || new Date().getFullYear().toString(),
+        fiscal_year: initialData?.fiscal_year || '2018',
         status: initialData?.status || 'draft',
         budget_allocated: initialData?.budget_allocated || 0,
+        currency: initialData?.currency || 'ETB',
         budget_source: initialData?.budget_source || [],
         // owner: initialData?.owner || '',
         plan_type: initialData?.plan_type || planType,
@@ -40,6 +41,7 @@ export default function PlanForm({
                 fiscal_year: initialData.fiscal_year,
                 status: initialData.status,
                 budget_allocated: initialData.budget_allocated,
+                currency: initialData.currency || 'ETB',
                 budget_source: initialData.budget_source || [],
                 // owner: initialData.owner,
                 plan_type: initialData.plan_type,
@@ -84,8 +86,8 @@ export default function PlanForm({
         try {
             await onSubmit(formData);
             onSuccess();
-        } catch (err) {
-            setError('Failed to create plan. Please try again.');
+        } catch (err: any) {
+            setError(err?.response?.data?.message || err?.message || `Failed to ${mode === 'edit' ? 'update' : 'create'} plan. Please try again.`);
             console.error(err);
         } finally {
             setLoading(false);
@@ -125,7 +127,7 @@ export default function PlanForm({
             <option value="2015">2015</option>
             <option value="2016">2016</option>
             <option value="2017">2017</option>
-            <option defaultChecked value="2018">2018</option>
+            <option value="2018">2018</option>
             <option value="2019">2019</option>
             <option value="2020">2020</option>
             <option value="2021">2021</option>
@@ -168,21 +170,43 @@ export default function PlanForm({
                 </div>
             )} */}
 
-            <div>
-                <label htmlFor="budget_allocated" className="block text-sm font-medium text-gray-700">
-                    Budget Allocated
-                </label>
-                <input
-                    type="number"
-                    id="budget_allocated"
-                    name="budget_allocated"
-                    value={formData.budget_allocated}
-                    onChange={handleChange}
-                    required
-                    min="0"
-                    step="0.01"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
-                />
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <label htmlFor="budget_allocated" className="block text-sm font-medium text-gray-700">
+                        Budget Allocated
+                    </label>
+                    <input
+                        type="number"
+                        id="budget_allocated"
+                        name="budget_allocated"
+                        value={formData.budget_allocated}
+                        onChange={handleChange}
+                        required
+                        min="0"
+                        step="0.01"
+                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+                    />
+                </div>
+                <div>
+                    <label htmlFor="currency" className="block text-sm font-medium text-gray-700">
+                        Currency
+                    </label>
+                    <select
+                        id="currency"
+                        name="currency"
+                        value={formData.currency || 'ETB'}
+                        onChange={handleChange}
+                        required
+                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+                    >
+                        <option value="ETB">ETB - Ethiopian Birr</option>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="JPY">JPY - Japanese Yen</option>
+                        <option value="CNY">CNY - Chinese Yuan</option>
+                    </select>
+                </div>
             </div>
 
             <div>

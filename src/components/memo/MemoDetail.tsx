@@ -274,13 +274,15 @@ export default function MemoDetail({ memoId, userRole = 'CREATOR' }: MemoDetailP
                     </span>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Signature</label>
-                  <div className="flex items-center space-x-2">
-                    <User className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-900 font-medium">{memo.signature}</span>
+                {memo.signature && (
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Signature</label>
+                    <div className="flex items-center space-x-2">
+                      <User className="w-5 h-5 text-gray-400" />
+                      <span className="text-gray-900 font-medium">{memo.signature}</span>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { bookingService } from "@/services/bookingService";
 import { EthiopianDatePicker } from "@/components/ui/ethiopian-date-picker";
+import BackButton from "@/components/ui/BackButton";
 
 const initialForm = {
   title: "",
@@ -16,6 +17,19 @@ const initialForm = {
     interval: 1,
     end_date: "",
   },
+};
+
+// Helper function to format date for datetime-local input
+const formatDateTimeLocal = (date: Date | string | null): string => {
+  if (!date) return "";
+  const d = typeof date === "string" ? new Date(date) : date;
+  // Format: YYYY-MM-DDTHH:mm
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
 export default function BookRoomPage() {
@@ -68,6 +82,7 @@ export default function BookRoomPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-lg">
+      <BackButton href={`/rooms/${roomId}`} label="Back to Room" className="mb-4" />
       <h1 className="text-2xl font-bold mb-6 text-center">Book Meeting Room</h1>
       <form className="space-y-5 bg-white p-6 rounded shadow" onSubmit={handleSubmit}>
         {error && <div className="text-red-500 text-center">{error}</div>}
@@ -80,33 +95,43 @@ export default function BookRoomPage() {
           <textarea name="description" value={form.description} onChange={handleChange} className="w-full border rounded px-3 py-2" rows={3} />
         </div>
         <div>
-          <label className="block font-semibold mb-1">Start Time</label>
-          <EthiopianDatePicker
-            label=""
-            value={form.start_time ? new Date(form.start_time) : null}
-            onChange={(selectedDate: Date) => {
-              // Adjust for timezone offset to ensure correct local date
-              const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+          <label className="block font-semibold mb-1">Start Date & Time</label>
+          <input
+            type="datetime-local"
+            name="start_time"
+            value={form.start_time ? formatDateTimeLocal(form.start_time) : ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Convert to ISO string for backend
+              const date = value ? new Date(value).toISOString() : "";
               setForm((prev: any) => ({
                 ...prev,
-                start_time: localDate.toISOString().split('T')[0],
+                start_time: date,
               }));
             }}
+            min={formatDateTimeLocal(new Date())}
+            className="w-full border rounded px-3 py-2"
+            required
           />
         </div>
         <div>
-          <label className="block font-semibold mb-1">End Time</label>
-          <EthiopianDatePicker
-            label=""
-            value={form.end_time ? new Date(form.end_time) : null}
-            onChange={(selectedDate: Date) => {
-              // Adjust for timezone offset to ensure correct local date
-              const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+          <label className="block font-semibold mb-1">End Date & Time</label>
+          <input
+            type="datetime-local"
+            name="end_time"
+            value={form.end_time ? formatDateTimeLocal(form.end_time) : ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Convert to ISO string for backend
+              const date = value ? new Date(value).toISOString() : "";
               setForm((prev: any) => ({
                 ...prev,
-                end_time: localDate.toISOString().split('T')[0],
+                end_time: date,
               }));
             }}
+            min={form.start_time ? formatDateTimeLocal(form.start_time) : formatDateTimeLocal(new Date())}
+            className="w-full border rounded px-3 py-2"
+            required
           />
         </div>
         <div>

@@ -3,22 +3,23 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { activityService } from '@/services/activityService';
-import { CreateActivityDto, PlanType } from '@/types/activity';
+import { CreateActivityDto, PlanType, UpdateActivityDto } from '@/types/activity';
 import { use } from 'react';
 import { EthiopianDatePicker } from '@/components/ui/ethiopian-date-picker';
 import BackButton from '@/components/ui/BackButton';
 import { planService } from '@/services/planService';
 
-export default function NewActivityPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditActivityPage({ params }: { params: Promise<{ id: string; activityId: string }> }) {
   const router = useRouter();
   const resolvedParams = use(params);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [planLoading, setPlanLoading] = useState(true);
   const [files, setFiles] = useState<File[]>([]);
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
-  const [formData, setFormData] = useState<CreateActivityDto>({
+  const [formData, setFormData] = useState<UpdateActivityDto>({
     plan_type: 'PFRD',
     plan_year: '',
     main_activity: '',
@@ -36,29 +37,52 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
     flagship_activity: false,
   });
 
-  // get plan by id
-  const getPlan = async () => {
+  useEffect(() => {
+    fetchActivity();
+  }, []);
+
+  const fetchActivity = async () => {
     try {
-      setPlanLoading(true);
-      const plan = await planService.getById(resolvedParams.id);
-      setFormData((prev) => ({
-        ...prev,
-        plan_type: plan.plan_type,
-        plan_year: plan.fiscal_year,
+      setLoading(true);
+      setError(null);
+      
+      const [plan, activity] = await Promise.all([
+        planService.getById(resolvedParams.id),
+        activityService.getById(resolvedParams.activityId)
+      ]);
+
+      const startDateObj = activity.start_date ? new Date(activity.start_date) : new Date();
+      const endDateObj = activity.end_date ? new Date(activity.end_date) : new Date();
+
+      setStartDate(startDateObj);
+      setEndDate(endDateObj);
+
+      setFormData({
+        plan_type: activity.plan_type,
+        plan_year: activity.plan_year,
         main_activity: plan.title,
-        strategic_objective: plan.plan_type,
-      }));
-    } catch (err) {
-      console.error('Failed to fetch plan:', err);
-      setError('Failed to load plan details');
-    } finally {
+        title: activity.title,
+        strategic_objective: activity.strategic_objective,
+        responsible_department: activity.responsible_department || '',
+        assigned_person: activity.assigned_person,
+        start_date: activity.start_date ? new Date(activity.start_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        end_date: activity.end_date ? new Date(activity.end_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        budget_allocated: activity.budget_allocated || 0,
+        status: activity.status,
+        remarks: activity.remarks || '',
+        supporting_documents: activity.supporting_documents || [],
+        plan_id: resolvedParams.id,
+        flagship_activity: activity.flagship_activity || false,
+      });
+      
       setPlanLoading(false);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Failed to fetch activity details');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
-  useEffect(() => {
-    console.log('resolvedParams', resolvedParams);
-    getPlan();
-  }, [resolvedParams]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -79,38 +103,56 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Don't submit if plan is still loading
     if (planLoading) {
-      setError('Please wait for plan details to load');
+      setError('Please wait for activity details to load');
       return;
     }
     
-    setLoading(true);
+    setSaving(true);
     setError(null);
 
     try {
-      await activityService.create(formData, files);
-      router.push(`/plans/${resolvedParams.id}/activities`);
-    } catch (err) {
-      setError('Failed to create activity. Please try again.');
+      await activityService.update(resolvedParams.activityId, formData, files.length > 0 ? files : undefined);
+      router.push(`/plans/${resolvedParams.id}/activities/${resolvedParams.activityId}`);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Failed to update activity. Please try again.');
       console.error(err);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  if (planLoading) {
+  if (loading || planLoading) {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
-          <BackButton href={`/plans/${resolvedParams.id}/activities`} label="Back to Activities" className="mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900">Create New Activity</h1>
+          <BackButton href={`/plans/${resolvedParams.id}/activities/${resolvedParams.activityId}`} label="Back to Activity" className="mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900">Edit Activity</h1>
         </div>
         <div className="flex justify-center items-center h-64 bg-white p-6 rounded-lg shadow">
           <div className="text-center">
             <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading plan details...</p>
+            <p className="text-gray-600">Loading activity details...</p>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !formData.title) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-6">
+          <BackButton href={`/plans/${resolvedParams.id}/activities`} label="Back to Activities" className="mb-4" />
+        </div>
+        <div className="bg-red-50 p-4 rounded-md">
+          <p className="text-red-800">{error}</p>
+          <button
+            onClick={() => router.back()}
+            className="mt-4 px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );
@@ -119,8 +161,8 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <BackButton href={`/plans/${resolvedParams.id}/activities`} label="Back to Activities" className="mb-4" />
-        <h1 className="text-2xl font-bold text-gray-900">Create New Activity</h1>
+        <BackButton href={`/plans/${resolvedParams.id}/activities/${resolvedParams.activityId}`} label="Back to Activity" className="mb-4" />
+        <h1 className="text-2xl font-bold text-gray-900">Edit Activity</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
@@ -165,13 +207,13 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="main_activity" className="block text-sm font-medium text-gray-700">
             Main Activity
           </label>
           <input
             type="text"
             id="main_activity"
-            name="main activity"
+            name="main_activity"
             disabled
             value={formData.main_activity}
             onChange={handleChange}
@@ -210,21 +252,6 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          {/* <div>
-            <label htmlFor="responsible_department" className="block text-sm font-medium text-gray-700">
-              Responsible Department
-            </label>
-            <input
-              type="text"
-              id="responsible_department"
-              name="responsible_department"
-              value={formData.responsible_department}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
-            />
-          </div> */}
-
           <div>
             <label htmlFor="assigned_person" className="block text-sm font-medium text-gray-700">
               Assigned Person
@@ -309,7 +336,6 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
             value={formData.status}
             onChange={handleChange}
             required
-            disabled
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
           >
             <option value="NOT_STARTED">Not Started</option>
@@ -335,7 +361,7 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
 
         <div>
           <label htmlFor="supporting_documents" className="block text-sm font-medium text-gray-700">
-            Supporting Documents
+            Supporting Documents {formData.supporting_documents && formData.supporting_documents.length > 0 && `(${formData.supporting_documents.length} existing)`}
           </label>
           <input
             type="file"
@@ -350,6 +376,7 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
               file:bg-blue-50 file:text-blue-700
               hover:file:bg-blue-100"
           />
+          <p className="mt-1 text-xs text-gray-500">Select new files to add. Existing files will be preserved.</p>
         </div>
 
         {error && (
@@ -366,16 +393,17 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
           </button>
           <button
             type="submit"
-            disabled={loading}
-            className={`px-4 py-2 text-white rounded ${loading
+            disabled={saving}
+            className={`px-4 py-2 text-white rounded ${saving
               ? 'bg-blue-400 cursor-not-allowed'
               : 'bg-blue-600 hover:bg-blue-700'
               }`}
           >
-            {loading ? 'Creating...' : 'Create Activity'}
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </form>
     </div>
   );
-} 
+}
+

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Memo, MemoType, PriorityLevel, MemoStatus, CreateMemoDto } from '@/types/memo';
+import { PlanType } from '@/types/activity';
 import { memoService } from '@/services/memoService';
 import {
   FileText,
@@ -37,7 +38,6 @@ export default function MemoForm({ initialData, mode }: MemoFormProps) {
       ? new Date(initialData.date_of_issue).toISOString().split('T')[0]
       : new Date().toISOString().split('T')[0],
     priority_level: initialData?.priority_level || PriorityLevel.NORMAL,
-    signature: initialData?.signature || '',
     authorId: '',
     approverIds: [],
     status: initialData?.status || MemoStatus.DRAFT,
@@ -181,15 +181,20 @@ export default function MemoForm({ initialData, mode }: MemoFormProps) {
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <Building2 className="h-5 w-5 text-gray-400" />
                   </div>
-                  <input
-                    type="text"
+                  <select
                     name="department"
                     value={formData.department}
                     onChange={handleChange}
                     required
-                    placeholder="Enter department"
-                    className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-app-foreground focus:border-transparent transition-all"
-                  />
+                    className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-app-foreground focus:border-transparent transition-all appearance-none bg-white"
+                  >
+                    <option value="">Select Department</option>
+                    <option value="PFRD">PFRD - Pre-Facility & Referral Development</option>
+                    <option value="ECCD">ECCD - Emergency & Critical Care Development</option>
+                    <option value="HDD">HDD - Hospital Development Directorate</option>
+                    <option value="SRD">SRD - Specialty & Rehabilitative Services</option>
+                    <option value="LEO">LEO - Lead Executive Officer Plan</option>
+                  </select>
                 </div>
               </div>
 
@@ -217,27 +222,6 @@ export default function MemoForm({ initialData, mode }: MemoFormProps) {
                     className="w-full"
                   />
                 </div>
-              </div>
-            </div>
-
-            {/* Signature */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Signature *
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  name="signature"
-                  value={formData.signature}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter signature name"
-                  className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-app-foreground focus:border-transparent transition-all"
-                />
               </div>
             </div>
           </div>

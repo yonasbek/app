@@ -14,6 +14,7 @@ interface BudgetSummary {
   plan_title: string;
   plan_type: string;
   fiscal_year: string;
+  currency?: string;
   plan_budget_allocated: number;
   plan_budget_spent: number;
   calculated_activity_budget_allocated: number;
@@ -123,6 +124,7 @@ export default function BudgetPage() {
           plan_title: plan.title,
           plan_type: plan.plan_type,
           fiscal_year: plan.fiscal_year,
+          currency: plan.currency || 'ETB',
           // Plan budget allocated: use sum of activity budgets (or plan's own budget if different)
           plan_budget_allocated: plan.budget_allocated || calculatedActivityBudgetAllocated,
           // Plan budget spent: calculated from completed sub-activities across all activities
@@ -161,13 +163,17 @@ export default function BudgetPage() {
     setExpandedActivities(newExpanded);
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
+  const formatCurrency = (amount: number, currency: string = 'ETB') => {
+    const currencySymbols: { [key: string]: string } = {
+      'ETB': 'Br',
+      'USD': '$',
+      'EUR': '€',
+      'GBP': '£',
+      'JPY': '¥',
+      'CNY': '¥'
+    };
+    const symbol = currencySymbols[currency] || currency;
+    return `${symbol}${amount?.toLocaleString() || 0}`;
   };
 
   const calculateBudgetUtilization = (allocated: number, spent: number) => {
@@ -386,13 +392,13 @@ export default function BudgetPage() {
                                 <div>
                                   <span className="text-gray-600">Allocated: </span>
                                   <span className="font-semibold text-gray-900">
-                                    {formatCurrency(activity.activity_budget_allocated)}
+                                    {formatCurrency(activity.activity_budget_allocated, summary.currency)}
                                   </span>
                                 </div>
                                 <div>
                                   <span className="text-gray-600">Spent: </span>
                                   <span className={`font-semibold ${getBudgetStatusColor(activity.activity_budget_allocated, activity.activity_budget_spent)}`}>
-                                    {formatCurrency(activity.activity_budget_spent)}
+                                    {formatCurrency(activity.activity_budget_spent, summary.currency)}
                                   </span>
                                 </div>
                                 <div>
@@ -426,13 +432,13 @@ export default function BudgetPage() {
                                         <div>
                                           <span className="text-gray-600">Allocated: </span>
                                           <span className="font-semibold text-gray-900">
-                                            {formatCurrency(subactivity.calculated_budget_allocated)}
+                                            {formatCurrency(subactivity.calculated_budget_allocated, summary.currency)}
                                           </span>
                                         </div>
                                         <div>
                                           <span className="text-gray-600">Spent: </span>
                                           <span className={`font-semibold ${getBudgetStatusColor(subactivity.calculated_budget_allocated, subactivity.calculated_budget_spent)}`}>
-                                            {formatCurrency(subactivity.calculated_budget_spent)}
+                                            {formatCurrency(subactivity.calculated_budget_spent, summary.currency)}
                                           </span>
                                         </div>
                                         {subactivity.weight !== undefined && (

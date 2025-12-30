@@ -19,6 +19,20 @@ import {
 } from '@/components/ui/modal';
 import PlanForm from '@/components/PlanForm';
 
+// Helper function to format currency
+function formatCurrency(amount: number, currency: string = 'ETB'): string {
+  const currencySymbols: { [key: string]: string } = {
+    'ETB': 'Br',
+    'USD': '$',
+    'EUR': '€',
+    'GBP': '£',
+    'JPY': '¥',
+    'CNY': '¥'
+  };
+  const symbol = currencySymbols[currency] || currency;
+  return `${symbol}${amount?.toLocaleString() || 0}`;
+}
+
 function PlanCardSkeleton() {
   return (
     <Card className="relative overflow-hidden border border-gray-100 bg-white p-6 rounded-2xl shadow-sm">
@@ -138,8 +152,9 @@ function PlansListContent() {
 
   const handleEditPlan = async (data: any) => {
     if (editingPlan) {
-      await planService.update(editingPlan.id, data);
+      return await planService.update(editingPlan.id, data);
     }
+    throw new Error('No plan selected for editing');
   };
 
   const getStatusColor = (status: Plan['status']) => {
@@ -302,10 +317,14 @@ function PlansListContent() {
               className="block w-full sm:w-44 rounded-lg border border-gray-300 py-2 px-3 text-sm text-app-foreground bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
             >
               <option value="">All Fiscal Years</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-              <option value="2022">2022</option>
+              <option value="2014">2014</option>
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>
+            <option value="2017">2017</option>
+            <option defaultChecked value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
             </select>
             <div className="relative flex-1 sm:max-w-xs">
               <input
@@ -401,8 +420,8 @@ function PlansListContent() {
                       />
                     </div>
                     <div className="flex justify-between text-xs text-gray-500">
-                      <span>${plan.budget_spent?.toLocaleString()}</span>
-                      <span>${plan.budget_allocated?.toLocaleString()}</span>
+                      <span>{formatCurrency(plan.budget_spent, plan.currency)}</span>
+                      <span>{formatCurrency(plan.budget_allocated, plan.currency)}</span>
                     </div>
                   </div>
                 </div>
@@ -497,7 +516,7 @@ function PlansListContent() {
                       </td>
                       <td className="px-6 py-3">
                         <div className="text-sm font-medium text-app-foreground mb-1.5">
-                          ${plan.budget_spent?.toLocaleString()} / ${plan.budget_allocated?.toLocaleString()}
+                          {formatCurrency(plan.budget_spent, plan.currency)} / {formatCurrency(plan.budget_allocated, plan.currency)}
                         </div>
                         <div className="flex items-center gap-3">
                           <div className="flex-1 bg-blue-100 rounded-full h-2.5 max-w-[120px] overflow-hidden">

@@ -112,7 +112,7 @@ export default function RoomListPage() {
           className="px-6 py-3 gradient-primary text-white rounded-lg font-medium hover:shadow-lg transition-all duration-200 flex items-center space-x-2 mt-4 sm:mt-0"
         >
           <Plus className="w-4 h-4" />
-          <span>Add Room</span>
+          <span>Add Meeting Room</span>
         </Link>
       </div>
 
@@ -125,7 +125,7 @@ export default function RoomListPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-app-foreground">{statistics.total}</p>
-              <p className="text-sm text-app-foreground">Total Rooms</p>
+              <p className="text-sm text-app-foreground">Total Meeting Rooms</p>
             </div>
           </div>
         </Card>
@@ -204,7 +204,7 @@ export default function RoomListPage() {
                 className="inline-flex items-center space-x-2 px-6 py-3 gradient-primary text-white rounded-lg hover:shadow-lg transition-all duration-200"
               >
                 <Plus className="w-4 h-4" />
-                <span>Add Room</span>
+                <span>Add Meeting Room</span>
               </Link>
             )}
           </Card>
@@ -217,7 +217,7 @@ export default function RoomListPage() {
                   <table className="min-w-full">
                     <thead>
                       <tr className="border-b border-gray-200">
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Room Name</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Meeting Room Name</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Capacity</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Floor</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>

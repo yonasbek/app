@@ -122,7 +122,7 @@ export interface CreateMemoDto {
   recipient_ids: string[];
   date_of_issue: string;
   priority_level?: PriorityLevel;
-  signature: string;
+  signature?: string;
   tags?: string[];
   status: MemoStatus;
 }

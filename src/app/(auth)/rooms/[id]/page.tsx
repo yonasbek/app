@@ -6,6 +6,7 @@ import { roomService } from "@/services/roomService";
 import { bookingService } from "@/services/bookingService";
 import { formatToEthiopianDateTime } from "@/utils/ethiopianDateUtils";
 import Link from "next/link";
+import BackButton from "@/components/ui/BackButton";
 
 export default function RoomDetailPage() {
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function RoomDetailPage() {
         <div className="text-center py-8 text-gray-500">Room not found</div>
       ) : (
         <>
+          <BackButton href="/rooms" label="Back to Meetings Rooms" className="mb-4" />
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">{room.name}</h1>
             <Link href={`/rooms/${room.id}/edit`} className="text-indigo-600 hover:text-indigo-900">Edit</Link>
@@ -50,7 +52,29 @@ export default function RoomDetailPage() {
             <div className="text-gray-700">Floor: {room.floor}</div>
             <div className="text-gray-700">Status: <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${room.status === 'available' ? 'bg-green-100 text-green-800' : room.status === 'occupied' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>{room.status}</span></div>
             {room.description && <div className="text-gray-700 mt-2">{room.description}</div>}
-            {room.image && <img src={room.image} alt={room.name} className="mt-2 rounded w-full max-w-md" />}
+            {room.images && room.images.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold mb-2">Images</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {room.images.map((image: string, index: number) => {
+                    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-mo6f.onrender.com';
+                    const imageUrl = `${API_URL}/upload/${image}`;
+                    return (
+                      <img
+                        key={index}
+                        src={imageUrl}
+                        alt={`${room.name} - Image ${index + 1}`}
+                        className="w-full h-48 object-cover rounded-lg border shadow-sm hover:shadow-md transition-shadow"
+                        onError={(e) => {
+                          console.error('Failed to load image:', image);
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
           <div className="mb-6">
             <Link href={`/rooms/${room.id}/book`} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Book Room</Link>

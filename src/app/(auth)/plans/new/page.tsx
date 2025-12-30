@@ -15,9 +15,10 @@ function NewPlanContent() {
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CreatePlanDto>({
     title: '',
-    fiscal_year: new Date().getFullYear().toString(),
+    fiscal_year: '2024',
     status: 'draft',
     budget_allocated: 0,
+    currency: 'ETB',
     owner: '',
     plan_type: planType,
   });
@@ -123,21 +124,43 @@ function NewPlanContent() {
           />
         </div>
 
-        <div>
-          <label htmlFor="budget_allocated" className="block text-sm font-medium text-gray-700">
-            Budget Allocated
-          </label>
-          <input
-            type="number"
-            id="budget_allocated"
-            name="budget_allocated"
-            value={formData.budget_allocated}
-            onChange={handleChange}
-            required
-            min="0"
-            step="0.01"
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="budget_allocated" className="block text-sm font-medium text-gray-700">
+              Budget Allocated
+            </label>
+            <input
+              type="number"
+              id="budget_allocated"
+              name="budget_allocated"
+              value={formData.budget_allocated}
+              onChange={handleChange}
+              required
+              min="0"
+              step="0.01"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label htmlFor="currency" className="block text-sm font-medium text-gray-700">
+              Currency
+            </label>
+            <select
+              id="currency"
+              name="currency"
+              value={formData.currency || 'ETB'}
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="ETB">ETB - Ethiopian Birr</option>
+              <option value="USD">USD - US Dollar</option>
+              <option value="EUR">EUR - Euro</option>
+              <option value="GBP">GBP - British Pound</option>
+              <option value="JPY">JPY - Japanese Yen</option>
+              <option value="CNY">CNY - Chinese Yuan</option>
+            </select>
+          </div>
         </div>
 
         {error && (

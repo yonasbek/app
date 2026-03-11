@@ -314,7 +314,7 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
           >
             <option value="NOT_STARTED">Not Started</option>
             <option value="IN_PROGRESS">In Progress</option>
-            <option value="COMPLETED">Completed</option>
+            <option value="COMPLETED">Completed</option> 
             <option value="DELAYED">Delayed</option>
           </select>
         </div>

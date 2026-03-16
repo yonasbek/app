@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { activityService } from '@/services/activityService';
 import { CreateActivityDto, PlanType } from '@/types/activity';
+import { DEPARTMENT_OPTIONS } from '@/constants/departments';
 import { use } from 'react';
 import { EthiopianDatePicker } from '@/components/ui/ethiopian-date-picker';
 import BackButton from '@/components/ui/BackButton';
@@ -138,11 +139,9 @@ export default function NewActivityPage({ params }: { params: Promise<{ id: stri
               disabled
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
             >
-              <option value="PFRD">PFRD - Pre-Facility & Referral Development</option>
-              <option value="ECCD">ECCD - Emergency & Critical Care Development</option>
-              <option value="HDD">HDD - Hospital Development Directorate</option>
-              <option value="SRD">SRD - Specialty & Rehabilitative Services</option>
-              <option value="LEO">LEO - Lead Executive Officer Plan</option>
+              {DEPARTMENT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
             </select>
           </div>
 

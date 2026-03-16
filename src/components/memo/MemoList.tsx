@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Memo, MemoStatus, PriorityLevel } from '@/types/memo';
 import { memoService } from '@/services/memoService';
+import { getStoredPermissions } from '@/utils/menuPermissions';
 import Card from '@/components/ui/Card';
 import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import Link from 'next/link';
@@ -33,10 +34,19 @@ export default function MemoList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const [showFilters, setShowFilters] = useState(false);
+  const permissions = getStoredPermissions();
+  const canSeePendingQueue =
+    permissions.includes('Desk Head Review Memos') || permissions.includes('LEO Review Memos');
 
   useEffect(() => {
     loadMemos();
   }, []);
+
+  useEffect(() => {
+    if (!canSeePendingQueue && activeTab === 'pending') {
+      setActiveTab('all');
+    }
+  }, [canSeePendingQueue, activeTab]);
 
   const loadMemos = async () => {
     try {
@@ -146,7 +156,9 @@ export default function MemoList() {
   const tabs: { id: FilterTab; label: string; count: number; icon: typeof FileText }[] = [
     { id: 'all', label: 'All Memos', count: statusCounts.all, icon: FileText },
     { id: 'approved', label: 'Approved', count: statusCounts.approved, icon: CheckCircle },
-    { id: 'pending', label: 'Pending', count: statusCounts.pending, icon: Clock },
+    ...(canSeePendingQueue
+      ? [{ id: 'pending' as const, label: 'Pending', count: statusCounts.pending, icon: Clock }]
+      : []),
     { id: 'urgent', label: 'Urgent', count: statusCounts.urgent, icon: AlertTriangle },
     { id: 'rejected', label: 'Rejected', count: statusCounts.rejected, icon: X },
   ];
@@ -206,18 +218,20 @@ export default function MemoList() {
           </div>
         </div>
 
-        {/* Pending Card */}
-        <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Clock className="w-5 h-5 text-amber-600" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-medium text-gray-500 mb-0.5">Pending</p>
-              <p className="text-2xl font-bold text-gray-900">{statusCounts.pending}</p>
+        {/* Pending Card - only for Desk Head / LEO (queue they act on) */}
+        {canSeePendingQueue && (
+          <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Clock className="w-5 h-5 text-amber-600" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-gray-500 mb-0.5">Pending</p>
+                <p className="text-2xl font-bold text-gray-900">{statusCounts.pending}</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Urgent Card */}
         <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all">

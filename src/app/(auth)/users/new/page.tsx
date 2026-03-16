@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authService, RegisterData } from "@/services/authService";
 import { roleService } from "@/services/roleService";
-import { departmentService } from "@/services/departmentService";
+import { DEPARTMENT_OPTIONS } from "@/constants/departments";
 import Link from "next/link";
 import { userService } from "@/services/userService";
 
@@ -23,7 +23,7 @@ export default function RegisterPage() {
     email: "",
     phoneNumber: "",
     jobTitle: "",
-    departmentId: "",
+    department: "",
     username: "",
     password: "",
     confirmPassword: "",
@@ -34,20 +34,11 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [roleOptions, setRoleOptions] = useState<any[]>([]);
-  const [departmentOptions, setDepartmentOptions] = useState<any[]>([]);
   const [supervisorOptions, setSupervisorOptions] = useState<any[]>([]);
 
   useEffect(() => {
-    // Fetch roles and departments from backend
-    roleService.getAll().then((roles) => {
-      setRoleOptions(roles);
-    });
-    departmentService.getAll().then((departments) => {
-      setDepartmentOptions(departments);
-    });
-    userService.getAll().then((users) => {
-      setSupervisorOptions(users);
-    });
+    roleService.getAll().then((roles) => setRoleOptions(roles));
+    userService.getAll().then((users) => setSupervisorOptions(users));
   }, []);
 
   const validate = () => {
@@ -57,7 +48,7 @@ export default function RegisterPage() {
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Invalid email address";
     if (!form.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
     if (!form.jobTitle) newErrors.jobTitle = "Job Title is required";
-    if (!form.departmentId) newErrors.departmentId = "Department is required";
+    if (!form.department) newErrors.department = "Department is required";
     if (!form.username) newErrors.username = "Username is required";
     if (!form.password) newErrors.password = "Password is required";
     if (form.password !== form.confirmPassword) newErrors.confirmPassword = "Passwords do not match";
@@ -119,13 +110,13 @@ export default function RegisterPage() {
         </div>
         <div>
           <label className="block font-semibold mb-1">Department<span className="text-red-500">*</span></label>
-          <select name="departmentId" value={form.departmentId} onChange={handleChange} className="w-full border rounded px-3 py-2" required>
+          <select name="department" value={form.department} onChange={handleChange} className="w-full border rounded px-3 py-2" required>
             <option value="">Select Department</option>
-            {departmentOptions.map((opt) => (
-              <option key={opt.id} value={opt.id}>{opt.name}</option>
+            {DEPARTMENT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
-          {errors.departmentId && <div className="text-red-500 text-sm">{errors.departmentId}</div>}
+          {errors.department && <div className="text-red-500 text-sm">{errors.department}</div>}
         </div>
         <div>
           <label className="block font-semibold mb-1">Username<span className="text-red-500">*</span></label>

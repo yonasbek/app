@@ -9,8 +9,10 @@ import BackButton from "@/components/ui/BackButton";
 const initialForm = {
   title: "",
   description: "",
-  start_time: "",
-  end_time: "",
+  start_date: new Date() as Date,
+  start_time: "09:00", // HH:mm for time input
+  end_date: new Date() as Date,
+  end_time: "10:00", // HH:mm for time input
   is_recurring: false,
   recurring_pattern: {
     frequency: "weekly",
@@ -19,18 +21,14 @@ const initialForm = {
   },
 };
 
-// Helper function to format date for datetime-local input
-const formatDateTimeLocal = (date: Date | string | null): string => {
+// Combine Ethiopian date (date-only) with time string "HH:mm" into ISO string for API
+function combineDateAndTime(date: Date | null, timeStr: string): string {
   if (!date) return "";
-  const d = typeof date === "string" ? new Date(date) : date;
-  // Format: YYYY-MM-DDTHH:mm
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  const hours = String(d.getHours()).padStart(2, "0");
-  const minutes = String(d.getMinutes()).padStart(2, "0");
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-};
+  const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
+  const d = new Date(date);
+  d.setHours(hours, minutes, 0, 0);
+  return d.toISOString();
+}
 
 export default function BookRoomPage() {
   const router = useRouter();
@@ -62,12 +60,14 @@ export default function BookRoomPage() {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
+    const start_time = combineDateAndTime(form.start_date, form.start_time);
+    const end_time = combineDateAndTime(form.end_date, form.end_time);
     try {
       await bookingService.create({
         ...form,
         room_id: roomId,
-        start_time: form.start_time,
-        end_time: form.end_time,
+        start_time,
+        end_time,
         is_recurring: form.is_recurring,
         recurring_pattern: form.is_recurring ? form.recurring_pattern : undefined,
         attendee_ids: [], // You can add attendee selection if needed
@@ -94,45 +94,64 @@ export default function BookRoomPage() {
           <label className="block font-semibold mb-1">Description</label>
           <textarea name="description" value={form.description} onChange={handleChange} className="w-full border rounded px-3 py-2" rows={3} />
         </div>
-        <div>
-          <label className="block font-semibold mb-1">Start Date & Time</label>
-          <input
-            type="datetime-local"
-            name="start_time"
-            value={form.start_time ? formatDateTimeLocal(form.start_time) : ""}
-            onChange={(e) => {
-              const value = e.target.value;
-              // Convert to ISO string for backend
-              const date = value ? new Date(value).toISOString() : "";
-              setForm((prev: any) => ({
-                ...prev,
-                start_time: date,
-              }));
-            }}
-            min={formatDateTimeLocal(new Date())}
-            className="w-full border rounded px-3 py-2"
-            required
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-semibold mb-1">Start Date (Ethiopian)</label>
+            <EthiopianDatePicker
+              label=""
+              value={form.start_date}
+              onChange={(selectedDate: Date) =>
+                setForm((prev: any) => ({ ...prev, start_date: selectedDate }))
+              }
+              disablePast
+              className="w-full"
+              required
+            />
+          </div>
+          <div>
+            <label className="block font-semibold mb-1">Start Time</label>
+            <input
+              type="time"
+              name="start_time"
+              value={form.start_time}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              required
+            />
+          </div>
         </div>
-        <div>
-          <label className="block font-semibold mb-1">End Date & Time</label>
-          <input
-            type="datetime-local"
-            name="end_time"
-            value={form.end_time ? formatDateTimeLocal(form.end_time) : ""}
-            onChange={(e) => {
-              const value = e.target.value;
-              // Convert to ISO string for backend
-              const date = value ? new Date(value).toISOString() : "";
-              setForm((prev: any) => ({
-                ...prev,
-                end_time: date,
-              }));
-            }}
-            min={form.start_time ? formatDateTimeLocal(form.start_time) : formatDateTimeLocal(new Date())}
-            className="w-full border rounded px-3 py-2"
-            required
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-semibold mb-1">End Date (Ethiopian)</label>
+            <EthiopianDatePicker
+              label=""
+              value={form.end_date}
+              onChange={(selectedDate: Date) =>
+                setForm((prev: any) => ({ ...prev, end_date: selectedDate }))
+              }
+              minDate={form.start_date || undefined}
+              disablePast
+              className="w-full"
+              required
+            />
+          </div>
+          <div>
+            <label className="block font-semibold mb-1">End Time</label>
+            <input
+              type="time"
+              name="end_time"
+              value={form.end_time}
+              onChange={handleChange}
+              min={
+                form.start_date && form.end_date &&
+                form.start_date.toDateString() === form.end_date.toDateString()
+                  ? form.start_time
+                  : undefined
+              }
+              className="w-full border rounded px-3 py-2"
+              required
+            />
+          </div>
         </div>
         <div>
           <label className="inline-flex items-center">
@@ -155,11 +174,23 @@ export default function BookRoomPage() {
               <input type="number" name="recurring_pattern.interval" value={form.recurring_pattern.interval} onChange={handleChange} className="w-full border rounded px-3 py-2" min={1} />
             </div>
             <div>
-              <label className="block font-semibold mb-1">End Date</label>
+              <label className="block font-semibold mb-1">End Date (Ethiopian)</label>
               <EthiopianDatePicker
                 label=""
-                value={form.recurring_pattern.end_date ? new Date(form.recurring_pattern.end_date) : null}
-                onChange={(selectedDate: Date) => setForm((prev: any) => ({ ...prev, recurring_pattern: { ...prev.recurring_pattern, end_date: selectedDate.toISOString().split('T')[0] } }))}
+                value={
+                  form.recurring_pattern.end_date?.trim()
+                    ? new Date(form.recurring_pattern.end_date)
+                    : null
+                }
+                onChange={(selectedDate: Date) =>
+                  setForm((prev: any) => ({
+                    ...prev,
+                    recurring_pattern: {
+                      ...prev.recurring_pattern,
+                      end_date: selectedDate.toISOString().split("T")[0],
+                    },
+                  }))
+                }
                 className="w-full"
               />
             </div>

@@ -3,7 +3,7 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { userService } from "@/services/userService";
 import { roleService } from "@/services/roleService";
-import { departmentService } from "@/services/departmentService";
+import { DEPARTMENT_OPTIONS } from "@/constants/departments";
 
 export default function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -11,7 +11,6 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
   const userId = resolvedParams.id;
   const [form, setForm] = useState<any>(null);
   const [roleOptions, setRoleOptions] = useState<any[]>([]);
-  const [departmentOptions, setDepartmentOptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,15 +19,19 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     const fetchData = async () => {
       if (!userId) {
         router.push("/users");
-      };
+      }
       setLoading(true);
       try {
         const user = await userService.getById(userId);
         const roles = await roleService.getAll();
-        const departments = await departmentService.getAll();
-        setForm({ ...user, role: user.roleId, department: user.departmentId });
+        const dept = user.department as { code?: string; name?: string } | undefined;
+        let departmentCode = dept?.code ?? "";
+        if (!departmentCode && dept?.name) {
+          const match = (["PFRD", "ECCD", "HDD", "SRD", "LEO"] as const).find((c) => dept.name!.startsWith(c));
+          if (match) departmentCode = match;
+        }
+        setForm({ ...user, role: user.roleId, department: departmentCode });
         setRoleOptions(roles);
-        setDepartmentOptions(departments);
       } catch {
         setError("Failed to load user data");
       } finally {
@@ -51,7 +54,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
       await userService.update(userId, {
         ...form,
         roleId: form.role,
-        departmentId: form.department,
+        department: form.department || undefined,
       });
       router.push("/users");
     } catch (err: any) {
@@ -112,8 +115,8 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
           <label className="block font-semibold mb-1">Department</label>
           <select name="department" value={form.department || ''} onChange={handleChange} className="w-full border rounded px-3 py-2">
             <option value="">Select Department</option>
-            {departmentOptions.map((opt) => (
-              <option key={opt.id} value={opt.id}>{opt.name}</option>
+            {DEPARTMENT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
         </div>

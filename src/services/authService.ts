@@ -5,7 +5,8 @@ export interface RegisterData {
   email: string;
   phoneNumber: string;
   jobTitle: string;
-  departmentId: string;
+  /** Department code: PFRD, ECCD, HDD, SRD, LEO. Use DEPARTMENT_OPTIONS from @/constants/departments. */
+  department: string;
   username: string;
   password: string;
   confirmPassword: string;

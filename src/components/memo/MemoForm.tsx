@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Memo, MemoType, PriorityLevel, MemoStatus, CreateMemoDto } from '@/types/memo';
-import { PlanType } from '@/types/activity';
+import { DEPARTMENT_OPTIONS } from '@/constants/departments';
 import { memoService } from '@/services/memoService';
 import {
   FileText,
@@ -189,11 +189,9 @@ export default function MemoForm({ initialData, mode }: MemoFormProps) {
                     className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-app-foreground focus:border-transparent transition-all appearance-none bg-white"
                   >
                     <option value="">Select Department</option>
-                    <option value="PFRD">PFRD - Pre-Facility & Referral Development</option>
-                    <option value="ECCD">ECCD - Emergency & Critical Care Development</option>
-                    <option value="HDD">HDD - Hospital Development Directorate</option>
-                    <option value="SRD">SRD - Specialty & Rehabilitative Services</option>
-                    <option value="LEO">LEO - Lead Executive Officer Plan</option>
+                    {DEPARTMENT_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
                   </select>
                 </div>
               </div>

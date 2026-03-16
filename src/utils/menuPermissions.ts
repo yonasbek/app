@@ -30,6 +30,21 @@ export const menuPermissions: MenuPermission[] = [
 ];
 
 /**
+ * Get current user permission names from localStorage (set at login).
+ */
+export function getStoredPermissions(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem('permissions');
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Check if user has permission to access a menu item
  * @param userPermissions - Array of permission names the user has
  * @param menuPath - The path of the menu item

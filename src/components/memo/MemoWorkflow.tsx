@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Memo, MemoStatus, WorkflowAction, WorkflowActionDto, WorkflowHistory } from '@/types/memo';
 import { memoService } from '@/services/memoService';
 import { formatToEthiopianDate, formatToEthiopianDateTime } from '@/utils/ethiopianDateUtils';
+import { getStoredPermissions } from '@/utils/menuPermissions';
 import {
   CheckCircle2,
   XCircle,
@@ -21,10 +22,12 @@ import {
 interface MemoWorkflowProps {
   memo: Memo;
   onMemoUpdate: (updatedMemo: Memo) => void;
-  userRole?: string; // 'DESK_HEAD' | 'LEO' | 'CREATOR'
+  userRole?: string; // kept for backward compat; permissions are used for gating
 }
 
 export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkflowProps) {
+  const permissions = getStoredPermissions();
+  const hasPermission = (name: string) => permissions.includes(name);
   const [workflowHistory, setWorkflowHistory] = useState<WorkflowHistory | null>(null);
   const [loading, setLoading] = useState(false);
   const [comment, setComment] = useState('');
@@ -174,9 +177,13 @@ export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkf
     }
   };
 
-  const canSubmitToDeskHead = memo.status === MemoStatus.DRAFT || memo.status === MemoStatus.RETURNED_TO_CREATOR;
-  const canPerformDeskHeadAction = memo.status === MemoStatus.PENDING_DESK_HEAD && userRole === 'DESK_HEAD';
-  const canPerformLeoAction = memo.status === MemoStatus.PENDING_LEO && userRole === 'LEO';
+  const canSubmitToDeskHead =
+    (memo.status === MemoStatus.DRAFT || memo.status === MemoStatus.RETURNED_TO_CREATOR) &&
+    hasPermission('Submit Memo to Desk Head');
+  const canPerformDeskHeadAction =
+    memo.status === MemoStatus.PENDING_DESK_HEAD && hasPermission('Desk Head Review Memos');
+  const canPerformLeoAction =
+    memo.status === MemoStatus.PENDING_LEO && hasPermission('LEO Review Memos');
   const canGenerateDocument = memo.status === MemoStatus.APPROVED;
 
   const statusInfo = getStatusInfo(memo.status);
@@ -221,57 +228,73 @@ export default function MemoWorkflow({ memo, onMemoUpdate, userRole }: MemoWorkf
             </button>
           )}
 
-          {/* {canPerformDeskHeadAction && ( */}
-          <>
-            <button
-              onClick={() => openActionModal(WorkflowAction.SUBMIT_TO_LEO)}
-              disabled={loading}
-              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 py-3 rounded-lg hover:from-emerald-700 hover:to-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
-            >
-              <ArrowRight className="w-5 h-5" />
-              <span>Forward to LEO</span>
-            </button>
-            <button
-              onClick={() => openActionModal(WorkflowAction.RETURN_TO_CREATOR)}
-              disabled={loading}
-              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-3 rounded-lg hover:from-orange-700 hover:to-orange-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
-            >
-              <RotateCcw className="w-5 h-5" />
-              <span>Return to Creator</span>
-            </button>
-            <button
-              onClick={() => openActionModal(WorkflowAction.REJECT)}
-              disabled={loading}
-              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-rose-600 to-rose-700 text-white px-4 py-3 rounded-lg hover:from-rose-700 hover:to-rose-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
-            >
-              <XCircle className="w-5 h-5" />
-              <span>Reject</span>
-            </button>
-          </>
-          {/* )} */}
+          {canPerformDeskHeadAction && (
+            <>
+              <button
+                onClick={() => openActionModal(WorkflowAction.SUBMIT_TO_LEO)}
+                disabled={loading}
+                className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 py-3 rounded-lg hover:from-emerald-700 hover:to-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+              >
+                <ArrowRight className="w-5 h-5" />
+                <span>Forward to LEO</span>
+              </button>
+              <button
+                onClick={() => openActionModal(WorkflowAction.RETURN_TO_CREATOR)}
+                disabled={loading}
+                className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-3 rounded-lg hover:from-orange-700 hover:to-orange-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+              >
+                <RotateCcw className="w-5 h-5" />
+                <span>Return to Creator</span>
+              </button>
+              <button
+                onClick={() => openActionModal(WorkflowAction.REJECT)}
+                disabled={loading}
+                className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-rose-600 to-rose-700 text-white px-4 py-3 rounded-lg hover:from-rose-700 hover:to-rose-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+              >
+                <XCircle className="w-5 h-5" />
+                <span>Reject</span>
+              </button>
+            </>
+          )}
 
-          {/* {canPerformLeoAction && ( */}
-          <>
-            <button
-              onClick={() => openActionModal(WorkflowAction.APPROVE)}
-              disabled={loading}
-              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 py-3 rounded-lg hover:from-emerald-700 hover:to-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
-            >
-              <CheckCircle2 className="w-5 h-5" />
-              <span>Approve</span>
-            </button>
-          </>
-          {/* )} */}
+          {canPerformLeoAction && (
+            <>
+              <button
+                onClick={() => openActionModal(WorkflowAction.APPROVE)}
+                disabled={loading}
+                className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 py-3 rounded-lg hover:from-emerald-700 hover:to-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+              >
+                <CheckCircle2 className="w-5 h-5" />
+                <span>Approve</span>
+              </button>
+              <button
+                onClick={() => openActionModal(WorkflowAction.RETURN_TO_CREATOR)}
+                disabled={loading}
+                className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-3 rounded-lg hover:from-orange-700 hover:to-orange-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+              >
+                <RotateCcw className="w-5 h-5" />
+                <span>Return to Creator</span>
+              </button>
+              <button
+                onClick={() => openActionModal(WorkflowAction.REJECT)}
+                disabled={loading}
+                className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-rose-600 to-rose-700 text-white px-4 py-3 rounded-lg hover:from-rose-700 hover:to-rose-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+              >
+                <XCircle className="w-5 h-5" />
+                <span>Reject</span>
+              </button>
+            </>
+          )}
 
-          {/* {canGenerateDocument && ( */}
-          <button
-            onClick={handleGenerateDocument}
-            className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-3 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-sm hover:shadow-md font-medium"
-          >
-            <Printer className="w-5 h-5" />
-            <span>Generate & Print Document</span>
-          </button>
-          {/* )} */}
+          {canGenerateDocument && (
+            <button
+              onClick={handleGenerateDocument}
+              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-3 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+            >
+              <Printer className="w-5 h-5" />
+              <span>Generate & Print Document</span>
+            </button>
+          )}
         </div>
       </div>
 

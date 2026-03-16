@@ -1,4 +1,7 @@
-export type PlanType = 'PFRD' | 'ECCD' | 'HDD' | 'SRD' | 'LEO';
+import type { DepartmentCodeType } from '@/constants/departments';
+
+/** Same as department codes: PFRD, ECCD, HDD, SRD, LEO. Use DEPARTMENT_OPTIONS from @/constants/departments for labels. */
+export type PlanType = DepartmentCodeType;
 
 export interface Activity {
   id: string;

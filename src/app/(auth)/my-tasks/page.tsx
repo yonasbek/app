@@ -6,6 +6,8 @@ import { subActivityService } from '@/services/subactivityService';
 import { weekService } from '@/services/weekService';
 import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import ProgressUpdateModal from '@/components/activity/ProgressUpdateModal';
+import { DEPARTMENT_OPTIONS_WITH_ALL } from '@/constants/departments';
+import type { PlanType } from '@/types/activity';
 
 // SVG Icon Components
 const CheckCircleIcon = ({ className = "" }: { className?: string }) => (
@@ -34,13 +36,29 @@ const CalendarIcon = ({ className = "" }: { className?: string }) => (
   </svg>
 );
 
+function getIsAdmin(): boolean {
+  if (typeof window === 'undefined') return false;
+  const roleStr = localStorage.getItem('role') ?? '';
+  if (!roleStr) return false;
+  try {
+    const role = JSON.parse(roleStr);
+    const name = typeof role === 'object' && role !== null ? (role.name || '') : roleStr;
+    const roleLower = String(name).toLowerCase();
+    return roleLower === 'admin' || roleLower === 'administrator';
+  } catch {
+    return String(roleStr).toLowerCase() === 'admin' || String(roleStr).toLowerCase() === 'administrator';
+  }
+}
+
 export default function MyTasksPage() {
+  const [isAdmin, setIsAdmin] = useState(false);
   const [myTasks, setMyTasks] = useState<SubActivity[]>([]);
   const [weeks, setWeeks] = useState<Week[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'in_progress' | 'completed'>('all');
   const [weekFilter, setWeekFilter] = useState<string>('all');
+  const [departmentFilter, setDepartmentFilter] = useState<PlanType | 'all'>('all');
   const [progressUpdateModal, setProgressUpdateModal] = useState<{ isOpen: boolean; subActivity: SubActivity | null }>({
     isOpen: false,
     subActivity: null
@@ -64,6 +82,7 @@ export default function MyTasksPage() {
   };
 
   useEffect(() => {
+    setIsAdmin(getIsAdmin());
     fetchMyTasks();
     fetchWeeks();
   }, []);
@@ -71,10 +90,13 @@ export default function MyTasksPage() {
   const fetchMyTasks = async () => {
     try {
       setLoading(true);
-      const tasks = await subActivityService.getMyTasks();
+      const admin = getIsAdmin();
+      const tasks = admin
+        ? await subActivityService.getAll()
+        : await subActivityService.getMyTasks();
       setMyTasks(tasks);
     } catch (err) {
-      setError('Failed to fetch your tasks');
+      setError(getIsAdmin() ? 'Failed to fetch tasks' : 'Failed to fetch your tasks');
       console.error(err);
     } finally {
       setLoading(false);
@@ -175,6 +197,11 @@ export default function MyTasksPage() {
       }
     }
 
+    // Admin: filter by department (plan type)
+    if (isAdmin && departmentFilter !== 'all') {
+      filtered = filtered.filter(task => task.activity?.plan_type === departmentFilter);
+    }
+
     return filtered;
   };
 
@@ -233,8 +260,12 @@ export default function MyTasksPage() {
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">My Tasks</h1>
-        <p className="text-gray-600 mt-1">Manage your assigned subactivities and track your progress</p>
+        <h1 className="text-3xl font-bold text-gray-900">{isAdmin ? 'All Tasks' : 'My Tasks'}</h1>
+        <p className="text-gray-600 mt-1">
+          {isAdmin
+            ? 'View and filter all subactivities by department (plan type).'
+            : 'Manage your assigned subactivities and track your progress'}
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -309,7 +340,26 @@ export default function MyTasksPage() {
                 </button>
               ))}
             </nav>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center flex-wrap gap-3">
+              {isAdmin && (
+                <>
+                  <label htmlFor="department-filter" className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                    Department:
+                  </label>
+                  <select
+                    id="department-filter"
+                    value={departmentFilter}
+                    onChange={(e) => setDepartmentFilter(e.target.value as PlanType | 'all')}
+                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    {DEPARTMENT_OPTIONS_WITH_ALL.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
               <label htmlFor="week-filter" className="text-sm font-medium text-gray-700 whitespace-nowrap">
                 Filter by Week:
               </label>
@@ -334,7 +384,9 @@ export default function MyTasksPage() {
         <div>
           {filteredTasks.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              {filter === 'all' ? 'No tasks assigned to you yet.' : `No ${filter.replace('_', ' ')} tasks.`}
+              {isAdmin
+                ? (departmentFilter === 'all' ? 'No tasks found.' : `No tasks for ${DEPARTMENT_OPTIONS_WITH_ALL.find(o => o.value === departmentFilter)?.label ?? departmentFilter}.`)
+                : (filter === 'all' ? 'No tasks assigned to you yet.' : `No ${filter.replace('_', ' ')} tasks.`)}
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
@@ -361,11 +413,21 @@ export default function MyTasksPage() {
                         <p className="text-gray-600 mb-3">{task.description}</p>
                       )}
 
-                      <div className="flex items-center space-x-6 text-sm text-gray-500 mb-3">
+                      <div className="flex items-center flex-wrap gap-x-6 gap-y-1 text-sm text-gray-500 mb-3">
                         <div className="flex items-center space-x-1">
                           <TargetIcon className="h-4 w-4" />
                           <span>Activity: {task.activity?.title}</span>
                         </div>
+                        {isAdmin && task.activity?.plan_type && (
+                          <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-700 text-xs font-medium">
+                            {task.activity.plan_type}
+                          </span>
+                        )}
+                        {isAdmin && task.user && (
+                          <span className="text-gray-500">
+                            Assigned to: {task.user.fullName || [task.user.firstName, task.user.lastName].filter(Boolean).join(' ') || task.user.email || '—'}
+                          </span>
+                        )}
                         <div className="flex items-center space-x-1">
                           <CalendarIcon className="h-4 w-4" />
                           <span>

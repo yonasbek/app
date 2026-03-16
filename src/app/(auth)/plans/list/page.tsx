@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Plan } from '@/types/plan';
 import { PlanType } from '@/types/activity';
+import { getDepartmentLabel } from '@/constants/departments';
 import { planService } from '@/services/planService';
 import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import Card from '@/components/ui/Card';
@@ -167,16 +168,7 @@ function PlansListContent() {
     }
   };
 
-  const getPlanTypeTitle = (type: PlanType) => {
-    switch (type) {
-      case 'PFRD': return 'Pre-Facility & Referral Development Plan';
-      case 'ECCD': return 'Emergency & Critical Care Development Plan';
-      case 'HDD': return 'Hospital Development Directorate Plan';
-      case 'SRD': return 'Specialty & Rehabilitative Services Plan';
-      case 'LEO': return 'Lead Executive Officer Plan';
-      default: return '';
-    }
-  };
+  const getPlanTypeTitle = (type: PlanType) => getDepartmentLabel(type) || type;
 
   const getBudgetProgress = (plan: Plan) => {
     if (!plan.budget_allocated || plan.budget_allocated === 0) return 0;

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Memo, MemoStatus } from '@/types/memo';
 import { memoService } from '@/services/memoService';
+import { getStoredPermissions } from '@/utils/menuPermissions';
 import { formatToEthiopianDate } from '@/utils/ethiopianDateUtils';
 import Link from 'next/link';
 
@@ -10,17 +11,26 @@ export default function MemoWorkflowPage() {
   const [pendingDeskHead, setPendingDeskHead] = useState<Memo[]>([]);
   const [pendingLEO, setPendingLEO] = useState<Memo[]>([]);
   const [loading, setLoading] = useState(true);
+  const permissions = getStoredPermissions();
+  const canDeskHead = permissions.includes('Desk Head Review Memos');
+  const canLeo = permissions.includes('LEO Review Memos');
 
   useEffect(() => {
     loadPendingMemos();
   }, []);
 
   const loadPendingMemos = async () => {
+    if (!canDeskHead && !canLeo) {
+      setLoading(false);
+      return;
+    }
     try {
-      const [deskHeadMemos, leoMemos] = await Promise.all([
-        memoService.getMemosPendingDeskHead(),
-        memoService.getMemosPendingLEO()
-      ]);
+      const promises: Promise<Memo[]>[] = [];
+      if (canDeskHead) promises.push(memoService.getMemosPendingDeskHead());
+      else promises.push(Promise.resolve([]));
+      if (canLeo) promises.push(memoService.getMemosPendingLEO());
+      else promises.push(Promise.resolve([]));
+      const [deskHeadMemos, leoMemos] = await Promise.all(promises);
       setPendingDeskHead(deskHeadMemos);
       setPendingLEO(leoMemos);
     } catch (error) {
@@ -45,6 +55,23 @@ export default function MemoWorkflowPage() {
     return <div className="p-6">Loading...</div>;
   }
 
+  if (!canDeskHead && !canLeo) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">Memo Workflow Dashboard</h1>
+          <Link href="/memos" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            All Memos
+          </Link>
+        </div>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 text-center">
+          <p className="text-amber-800 font-medium">You don’t have access to the workflow queue.</p>
+          <p className="text-amber-700 text-sm mt-1">This dashboard is for Desk Head and LEO roles to review pending memos.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -58,7 +85,8 @@ export default function MemoWorkflowPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pending Desk Head Review */}
+        {/* Pending Desk Head Review - only if user has permission */}
+        {canDeskHead && (
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -98,8 +126,10 @@ export default function MemoWorkflowPage() {
             )}
           </div>
         </div>
+        )}
 
-        {/* Pending LEO Review */}
+        {/* Pending LEO Review - only if user has permission */}
+        {canLeo && (
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -144,26 +174,33 @@ export default function MemoWorkflowPage() {
             )}
           </div>
         </div>
+        )}
       </div>
 
-      {/* Quick Stats */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Workflow Statistics</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-600">{pendingDeskHead.length}</div>
-            <div className="text-sm text-gray-600">Pending Desk Head</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{pendingLEO.length}</div>
-            <div className="text-sm text-gray-600">Pending LEO</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-gray-600">{pendingDeskHead.length + pendingLEO.length}</div>
-            <div className="text-sm text-gray-600">Total Pending</div>
+      {/* Quick Stats - only when user has at least one workflow permission */}
+      {(canDeskHead || canLeo) && (
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Workflow Statistics</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {canDeskHead && (
+              <div className="text-center">
+                <div className="text-2xl font-bold text-yellow-600">{pendingDeskHead.length}</div>
+                <div className="text-sm text-gray-600">Pending Desk Head</div>
+              </div>
+            )}
+            {canLeo && (
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">{pendingLEO.length}</div>
+                <div className="text-sm text-gray-600">Pending LEO</div>
+              </div>
+            )}
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-600">{pendingDeskHead.length + pendingLEO.length}</div>
+              <div className="text-sm text-gray-600">Total Pending</div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 } 
